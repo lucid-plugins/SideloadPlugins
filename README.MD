@@ -13,14 +13,14 @@ Current Plugin List:
 - Private Plugins: (Paid with Source Code Included along with compiled plugin jar after purchase)
     - Lucid Gauntlet - It's like Gauntlet Extended but includes auto features like auto-prayer/wep switching at Hunllef to make
       the Hunllef fight nothing but having to dodge tornados and tiles. Makes getting combat achievements a piece of cake.
-        (is NOT a full auto plugin, but does include some auto features)
+        - and more! (Note: This is NOT a full auto plugin, but does include some auto features)
     - Lucid ToA - All the benefits of ToA extended with tons of helper features added in:
       - Auto-pray (All pray-able bosses have auto prayers)
       - Auto-dodge (most dodge-able attacks have auto-dodge options)
       - 1-click Crondis Water Container
       - Auto Zebak wave skip
       - Hotkey Yellow Keris Spec
-        (is NOT a full auto plugin, more like "semi-auto")
+      - and more! (Note: This is NOT a full auto plugin that will do the whole raid for you, more like "semi-auto")
 - Public Plugins: (Free with Source Code Open Sourced a.k.a plugins in this repository)
     - Gauntlet Extended (originally by xKyle, updated to work past recent update)
     - Lucid Cannon Reloader - Reloads your cannon for you. Customizable.
