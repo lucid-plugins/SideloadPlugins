@@ -15,7 +15,7 @@ Current Plugin List:
       the Hunllef fight nothing but having to dodge tornados and tiles. Makes getting combat achievements a piece of cake.
         - and more! (Note: This is NOT a full auto plugin, but does include some auto features)
     - Lucid ToA - All the benefits of ToA extended with tons of helper features added in:
-      - Auto-pray (All pray-able bosses have auto prayers)
+      - Auto-prayers (All pray-able bosses have auto prayers)
       - Auto-dodge (most dodge-able attacks have auto-dodge options)
       - 1-click Crondis Water Container
       - Auto Zebak wave skip
@@ -31,3 +31,4 @@ Current Plugin List:
     - Lucid Muspah (Still in Development, overlay is working) - Overlay for stepback method + auto-stepback
     - Lucid Spices - Auto-fights hellrat behemoths for spices and keeps your cat alive during the fight. Makes getting spices for
         stews painless without risking your cat dying (I totally have no experience with this happening, I swear)
+    - Lucid Discord Logger - Lets you send any received game, public, private, clan, or group messages to a Discord hook for easy logging. Has customizable override webhook URLs available for each type.

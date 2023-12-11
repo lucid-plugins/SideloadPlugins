@@ -1,25 +1,48 @@
 package com.lucidplugins.lucidcustomprayers;
 
-import com.example.EthanApiPlugin.Collections.Equipment;
 import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.InteractionApi.PrayerInteraction;
 import com.example.PacketUtils.PacketUtilsPlugin;
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Provides;
+import com.lucidplugins.api.item.SlottedItem;
+import com.lucidplugins.api.utils.CombatUtils;
+import com.lucidplugins.api.utils.EquipmentUtils;
+import com.lucidplugins.api.utils.MessageUtils;
 import net.runelite.api.*;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.input.KeyListener;
+import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import org.pf4j.Extension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static net.runelite.client.RuneLite.RUNELITE_DIR;
 
 @PluginDescriptor(
         name = "Lucid Custom Prayers",
@@ -29,7 +52,7 @@ import java.util.stream.Collectors;
 )
 @PluginDependency(EthanApiPlugin.class)
 @PluginDependency(PacketUtilsPlugin.class)
-public class LucidCustomPrayersPlugin extends Plugin
+public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 {
 
     @Inject
@@ -41,7 +64,14 @@ public class LucidCustomPrayersPlugin extends Plugin
     @Inject
     private LucidCustomPrayersConfig config;
 
+    @Inject ConfigManager configManager;
+
+    @Inject
+    private KeyManager keyManager;
+
     private Map<EventType, List<CustomPrayer>> eventMap = new HashMap<>();
+
+    private List<Projectile> validProjectiles = new ArrayList<>();
 
     private List<ScheduledPrayer> scheduledPrayers = new ArrayList<>();
 
@@ -53,7 +83,7 @@ public class LucidCustomPrayersPlugin extends Plugin
 
     private List<Integer> npcsChangedThisTick = new ArrayList<>();
 
-    private List<Integer> projectilesMovedThisTick = new ArrayList<>();
+    private List<Integer> projectilesSpawnedThisTick = new ArrayList<>();
 
     private List<Integer> graphicsCreatedThisTick = new ArrayList<>();
 
@@ -63,7 +93,17 @@ public class LucidCustomPrayersPlugin extends Plugin
 
     private List<Integer> npcsYouInteractedWithThisTick = new ArrayList<>();
 
-    private List<Item> equippedGearLastTick = new ArrayList<>();
+    private List<String> lastEquipmentList = new ArrayList<>();
+
+    public static final File PRESET_DIR = new File(RUNELITE_DIR, "lucid-custom-prayers");
+
+    public static final String FILENAME_SPECIAL_CHAR_REGEX = "[^a-zA-Z\\d:]";
+
+    public final GsonBuilder builder = new GsonBuilder()
+            .setPrettyPrinting();
+    public final Gson gson = builder.create();
+
+    public Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Provides
     LucidCustomPrayersConfig getConfig(final ConfigManager configManager)
@@ -74,13 +114,14 @@ public class LucidCustomPrayersPlugin extends Plugin
     @Override
     protected void startUp()
     {
+        keyManager.registerKeyListener(this);
         parsePrayers();
     }
 
     @Override
     protected void shutDown()
     {
-
+        keyManager.unregisterKeyListener(this);
     }
 
     @Subscribe
@@ -154,12 +195,18 @@ public class LucidCustomPrayersPlugin extends Plugin
     @Subscribe
     private void onProjectileMoved(final ProjectileMoved event)
     {
-        int projectileId = event.getProjectile().getId();
+        if (validProjectiles.contains(event.getProjectile()))
+        {
+            return;
+        }
 
-        if (!projectilesMovedThisTick.contains(projectileId))
+        validProjectiles.add(event.getProjectile());
+
+        int projectileId = event.getProjectile().getId();
+        if (!projectilesSpawnedThisTick.contains(projectileId))
         {
             eventFired(EventType.PROJECTILE_SPAWNED, projectileId);
-            projectilesMovedThisTick.add(projectileId);
+            projectilesSpawnedThisTick.add(projectileId);
         }
     }
 
@@ -200,21 +247,21 @@ public class LucidCustomPrayersPlugin extends Plugin
 
         if (interacting == client.getLocalPlayer() && !(source instanceof Player))
         {
-            NPC npc = (NPC) source;
-            if (!npcsInteractingWithYouThisTick.contains(npc.getId()))
+            NPC sourceNpc = (NPC) source;
+            if (!npcsInteractingWithYouThisTick.contains(sourceNpc.getId()))
             {
-                eventFired(EventType.OTHER_INTERACT_YOU, npc.getId());
-                npcsInteractingWithYouThisTick.add(npc.getId());
+                eventFired(EventType.OTHER_INTERACT_YOU, sourceNpc.getId());
+                npcsInteractingWithYouThisTick.add(sourceNpc.getId());
             }
         }
 
         if (source == client.getLocalPlayer() && !(interacting instanceof Player))
         {
-            NPC npc = (NPC) interacting;
-            if (!npcsYouInteractedWithThisTick.contains(npc.getId()))
+            NPC interactingNpc = (NPC) interacting;
+            if (!npcsYouInteractedWithThisTick.contains(interactingNpc.getId()))
             {
-                eventFired(EventType.YOU_INTERACT_OTHER, npc.getId());
-                npcsYouInteractedWithThisTick.add(npc.getId());
+                eventFired(EventType.YOU_INTERACT_OTHER, interactingNpc.getId());
+                npcsYouInteractedWithThisTick.add(interactingNpc.getId());
             }
         }
     }
@@ -234,13 +281,13 @@ public class LucidCustomPrayersPlugin extends Plugin
     private void onGameTick(final GameTick event)
     {
 
-        checkItemEquips();
+        getEquipmentChanges();
 
         for (ScheduledPrayer prayer : scheduledPrayers)
         {
             if (client.getTickCount() == prayer.getActivationTick())
             {
-                activatePrayer(prayer.getPrayer(), prayer.isToggle());
+                activatePrayer(client, prayer.getPrayer(), prayer.isToggle());
             }
         }
 
@@ -250,33 +297,40 @@ public class LucidCustomPrayersPlugin extends Plugin
         npcsSpawnedThisTick.clear();
         npcsDespawnedThisTick.clear();
         npcsChangedThisTick.clear();
-        projectilesMovedThisTick.clear();
+        projectilesSpawnedThisTick.clear();
         graphicsCreatedThisTick.clear();
         gameObjectsSpawnedThisTick.clear();
         npcsInteractingWithYouThisTick.clear();
         npcsYouInteractedWithThisTick.clear();
+
+        validProjectiles.removeIf(proj -> proj.getRemainingCycles() < 1);
     }
 
-    private void checkItemEquips()
+    private void getEquipmentChanges()
     {
-        final List<Item> equipment = Equipment.search().result().stream().map(equipmentItemWidget -> new Item(equipmentItemWidget.getItemId(), equipmentItemWidget.getItemQuantity())).collect(Collectors.toList());
-
-        for (Item item : equipment)
+        Widget bankWidget = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+        if (bankWidget != null && !bankWidget.isSelfHidden())
         {
-            if (item == null)
-            {
-                continue;
-            }
-
-            if (equippedGearLastTick.isEmpty() || !equippedGearLastTick.contains(item))
-            {
-                eventFired(EventType.ITEM_EQUIPPED, item.getId());
-            }
+            return;
         }
 
-        equippedGearLastTick = equipment;
-    }
+        final List<SlottedItem> equippedItems = EquipmentUtils.getAll();
+        final List<String> itemsMapped = equippedItems.stream().map(item -> client.getItemDefinition(item.getItem().getId()).getName()).collect(Collectors.toList());
 
+        if (!listsMatch(itemsMapped, lastEquipmentList))
+        {
+            for (SlottedItem slottedItem : equippedItems)
+            {
+                String name = client.getItemDefinition(slottedItem.getItem().getId()).getName();
+                if (!lastEquipmentList.contains(name))
+                {
+                    eventFired(EventType.ITEM_EQUIPPED, slottedItem.getItem().getId());
+                }
+            }
+            lastEquipmentList.clear();
+            lastEquipmentList.addAll(itemsMapped);
+        }
+    }
 
     private void parsePrayers()
     {
@@ -452,7 +506,7 @@ public class LucidCustomPrayersPlugin extends Plugin
         {
             if (client.getGameState() == GameState.LOGGED_IN)
             {
-                addMessage("If delays are specified, delays and ids list must be the same length!");
+                clientThread.invoke(() -> MessageUtils.addMessage(client, "If delays are specified, delays and ids list must be the same length!"));
             }
             delays.clear();
         }
@@ -479,26 +533,23 @@ public class LucidCustomPrayersPlugin extends Plugin
         eventMap.put(type, prayerList);
     }
 
-    private void activatePrayer(Prayer prayer, boolean toggle)
+    private static void activatePrayer(Client client, Prayer prayer, boolean toggle)
     {
-        if (client.getBoostedSkillLevel(Skill.PRAYER) == 0)
+        if (toggle)
         {
-            return;
+            CombatUtils.togglePrayer(client, prayer);
         }
-
-        if (client.isPrayerActive(prayer) && !toggle)
+        else
         {
-            return;
+            CombatUtils.activatePrayer(client, prayer);
         }
-
-        PrayerInteraction.togglePrayer(prayer);
     }
 
     private void eventFired(EventType type, int id)
     {
         if (config.debugMode() && isEventDebugged(type))
         {
-            addMessage("Event Type: " + type.name() + ",  ID: " + id + ", Tick: " + client.getTickCount());
+            MessageUtils.addMessage(client, "Event Type: " + type.name() + ",  ID: " + id + ", Tick: " + client.getTickCount());
         }
 
         List<CustomPrayer> prayers = eventMap.get(type);
@@ -514,6 +565,25 @@ public class LucidCustomPrayersPlugin extends Plugin
                 scheduledPrayers.add(new ScheduledPrayer(prayer.getPrayerToActivate(), client.getTickCount() + prayer.getTickDelay(), prayer.isToggle()));
             }
         }
+    }
+
+    public boolean listsMatch(List<String> list1, List<String> list2)
+    {
+        if (list1.size() != list2.size())
+        {
+            return false;
+        }
+
+        List<String> list2Copy = Lists.newArrayList(list2);
+        for (String element : list1)
+        {
+            if (!list2Copy.remove(element))
+            {
+                return false;
+            }
+        }
+
+        return list2Copy.isEmpty();
     }
 
     private boolean isEventDebugged(EventType type)
@@ -545,14 +615,111 @@ public class LucidCustomPrayersPlugin extends Plugin
         }
     }
 
-    private void addMessage(String message)
+    @Override
+    public void keyTyped(KeyEvent e)
     {
-        if (client == null || !client.isClientThread())
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e)
+    {
+        if (config.loadPresetHotkey().matches(e))
+        {
+            loadPreset();
+        }
+
+        if (config.savePresetHotkey().matches(e))
+        {
+            savePreset();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e)
+    {
+
+    }
+
+    private void savePreset()
+    {
+        String presetName = config.presetName();
+        String presetNameFormatted = presetName.replaceAll(FILENAME_SPECIAL_CHAR_REGEX, "").replaceAll(" ", "_").toLowerCase();
+
+        if (presetNameFormatted.isEmpty())
         {
             return;
         }
 
-        client.addChatMessage(ChatMessageType.ENGINE, "", message, "", false);
+        ExportableConfig exportableConfig = new ExportableConfig();
+
+        exportableConfig.setPrayer(0, config.activated1(), config.pray1Ids(), config.pray1delays(), config.pray1choice(), config.eventType1(), config.toggle1());
+        exportableConfig.setPrayer(1, config.activated2(), config.pray2Ids(), config.pray2delays(), config.pray2choice(), config.eventType2(), config.toggle2());
+        exportableConfig.setPrayer(2, config.activated3(), config.pray3Ids(), config.pray3delays(), config.pray3choice(), config.eventType3(), config.toggle3());
+        exportableConfig.setPrayer(3, config.activated4(), config.pray4Ids(), config.pray4delays(), config.pray4choice(), config.eventType4(), config.toggle4());
+        exportableConfig.setPrayer(4, config.activated5(), config.pray5Ids(), config.pray5delays(), config.pray5choice(), config.eventType5(), config.toggle5());
+        exportableConfig.setPrayer(5, config.activated6(), config.pray6Ids(), config.pray6delays(), config.pray6choice(), config.eventType6(), config.toggle6());
+        exportableConfig.setPrayer(6, config.activated7(), config.pray7Ids(), config.pray7delays(), config.pray7choice(), config.eventType7(), config.toggle7());
+        exportableConfig.setPrayer(7, config.activated8(), config.pray8Ids(), config.pray8delays(), config.pray8choice(), config.eventType8(), config.toggle8());
+        exportableConfig.setPrayer(8, config.activated9(), config.pray9Ids(), config.pray9delays(), config.pray9choice(), config.eventType9(), config.toggle9());
+        exportableConfig.setPrayer(9, config.activated10(), config.pray10Ids(), config.pray10delays(), config.pray10choice(), config.eventType10(), config.toggle10());
+
+        if (!PRESET_DIR.exists())
+        {
+            PRESET_DIR.mkdirs();
+        }
+
+        File saveFile = new File(PRESET_DIR, presetNameFormatted + ".json");
+        try (FileWriter fw = new FileWriter(saveFile))
+        {
+            fw.write(gson.toJson(exportableConfig));
+            fw.close();
+            JOptionPane.showMessageDialog(null, "Successfully saved preset '" + presetNameFormatted + "' at " + saveFile.getAbsolutePath(), "Preset Save Success", INFORMATION_MESSAGE);
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Save Preset Error", WARNING_MESSAGE);
+            log.error(e.getMessage());
+        }
+    }
+
+    private void loadPreset()
+    {
+        String presetName = config.presetName();
+        String presetNameFormatted = presetName.replaceAll(FILENAME_SPECIAL_CHAR_REGEX, "").replaceAll(" ", "_").toLowerCase();
+
+        if (presetNameFormatted.isEmpty())
+        {
+            return;
+        }
+
+        try
+        {
+            BufferedReader br = new BufferedReader(new FileReader(PRESET_DIR + "/" + presetNameFormatted + ".json"));
+            ExportableConfig loadedConfig = gson.fromJson(br, ExportableConfig.class);
+            br.close();
+            if (loadedConfig != null)
+            {
+                log.info("Loaded preset: " + presetNameFormatted);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                configManager.setConfiguration("lucid-custom-prayers", "activated" + (i + 1),  loadedConfig.getPrayerEnabled()[i]);
+                configManager.setConfiguration("lucid-custom-prayers", "pray" + (i + 1) + "Ids",  loadedConfig.getPrayerIds()[i]);
+                configManager.setConfiguration("lucid-custom-prayers", "pray" + (i + 1) + "delays", loadedConfig.getPrayerDelays()[i]);
+                configManager.setConfiguration("lucid-custom-prayers", "pray" + (i + 1) + "choice", loadedConfig.getPrayChoice()[i]);
+                configManager.setConfiguration("lucid-custom-prayers", "eventType" + (i + 1),  loadedConfig.getEventType()[i]);
+                configManager.setConfiguration("lucid-custom-prayers", "toggle" + (i + 1), loadedConfig.getToggle()[i]);
+            }
+
+            JOptionPane.showMessageDialog(null, "Successfully loaded preset '" + presetNameFormatted + "'", "Preset Load Success", INFORMATION_MESSAGE);
+        }
+        catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Preset Load Error", WARNING_MESSAGE);
+            log.error(e.getMessage());
+        }
 
     }
 }

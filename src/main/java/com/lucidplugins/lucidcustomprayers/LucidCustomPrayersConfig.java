@@ -1,10 +1,10 @@
 package com.lucidplugins.lucidcustomprayers;
 
 import net.runelite.api.Prayer;
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
-import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.*;
+
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 @ConfigGroup("lucid-custom-prayers")
 public interface LucidCustomPrayersConfig extends Config
@@ -15,6 +15,57 @@ public interface LucidCustomPrayersConfig extends Config
             position = 0
     )
     String generalSection = "General";
+
+    @ConfigSection(
+            name = "Preset Loading/Saving",
+            description = "Save/Load a custom preset",
+            position = 1
+    )
+    String presetSection = "Preset Loading/Saving";
+
+    @ConfigSection(
+            name = "Custom Prayer 1",
+            description = "Custom Prayer 1",
+            position = 2
+    )
+    String prayer1Section = "Custom Prayer 1";
+
+    @ConfigSection(
+            name = "Custom Prayer 2",
+            description = "Custom Prayer 2",
+            position = 3
+    )
+    String prayer2Section = "Custom Prayer 2";
+
+    @ConfigSection(
+            name = "Custom Prayer 3",
+            description = "Custom Prayer 3",
+            position = 4
+    )
+    String prayer3Section = "Custom Prayer 3";
+
+    @ConfigSection(
+            name = "Custom Prayer 4",
+            description = "Custom Prayer 4",
+            position = 5
+    )
+    String prayer4Section = "Custom Prayer 4";
+
+    @ConfigSection(
+            name = "Custom Prayer 5",
+            description = "Custom Prayer 5",
+            position = 6
+    )
+    String prayer5Section = "Custom Prayer 5";
+
+    @ConfigSection(
+            name = "Custom Prayer 6",
+            description = "Custom Prayer 6",
+            position = 7
+    )
+    String prayer6Section = "Custom Prayer 6";
+
+    // General Section
 
     @ConfigItem(
             name = "Toggle Debug Mode",
@@ -148,12 +199,45 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
-    @ConfigSection(
-            name = "Custom Prayer 1",
-            description = "Custom Prayer 1",
-            position = 1
+    // Preset Loading/Saving
+
+    @ConfigItem(
+            name = "Preset Name",
+            description = "Name of the preset (replaces all non-alphanumerical characters with a space)",
+            position = 0,
+            keyName = "presetName",
+            section = presetSection
     )
-    String prayer1Section = "Custom Prayer 1";
+    default String presetName()
+    {
+        return "";
+    }
+
+    @ConfigItem(
+            name = "Load Preset Hotkey",
+            description =  "Loads the preset with the saved preset in your runelite/lucid-custom-prayers/ folder",
+            position = 1,
+            keyName = "loadPresetHotkey",
+            section = presetSection
+    )
+    default Keybind loadPresetHotkey()
+    {
+        return new Keybind(KeyEvent.VK_F11, InputEvent.CTRL_DOWN_MASK);
+    }
+
+    @ConfigItem(
+            name = "Save Preset Hotkey",
+            description =  "Saves the preset as a JSON file to your runelite/lucid-custom-prayers/ folder",
+            position = 2,
+            keyName = "savePresetHotkey",
+            section = presetSection
+    )
+    default Keybind savePresetHotkey()
+    {
+        return new Keybind(KeyEvent.VK_F12, InputEvent.CTRL_DOWN_MASK);
+    }
+
+    // Custom Prayer 1
     @ConfigItem(
             name = "Enable This Preset?",
             description = "Toggle this off if you want to disable this custom prayer from doing anything",
@@ -222,12 +306,7 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
-    @ConfigSection(
-            name = "Custom Prayer 2",
-            description = "Custom Prayer 2",
-            position = 2
-    )
-    String prayer2Section = "Custom Prayer 2";
+    // Prayer 2
     @ConfigItem(
             name = "Enable This Preset?",
             description = "Toggle this off if you want to disable this custom prayer from doing anything",
@@ -297,12 +376,7 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
-    @ConfigSection(
-            name = "Custom Prayer 3",
-            description = "Custom Prayer 3",
-            position = 3
-    )
-    String prayer3Section = "Custom Prayer 3";
+    // Prayer 3
     @ConfigItem(
             name = "Enable This Preset?",
             description = "Toggle this off if you want to disable this custom prayer from doing anything",
@@ -371,12 +445,7 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
-    @ConfigSection(
-            name = "Custom Prayer 4",
-            description = "Custom Prayer 4",
-            position = 4
-    )
-    String prayer4Section = "Custom Prayer 4";
+    // Prayer 4
     @ConfigItem(
             name = "Enable This Preset?",
             description = "Toggle this off if you want to disable this custom prayer from doing anything",
@@ -445,12 +514,7 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
-    @ConfigSection(
-            name = "Custom Prayer 5",
-            description = "Custom Prayer 5",
-            position = 5
-    )
-    String prayer5Section = "Custom Prayer 5";
+    // Prayer 5
     @ConfigItem(
             name = "Enable This Preset?",
             description = "Toggle this off if you want to disable this custom prayer from doing anything",
@@ -519,12 +583,7 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
-    @ConfigSection(
-            name = "Custom Prayer 6",
-            description = "Custom Prayer 6",
-            position = 6
-    )
-    String prayer6Section = "Custom Prayer 6";
+    // Prayer 6
     @ConfigItem(
             name = "Enable This Preset?",
             description = "Toggle this off if you want to disable this custom prayer from doing anything",
