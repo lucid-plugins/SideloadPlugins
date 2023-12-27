@@ -16,4 +16,6 @@ public class CustomPrayer
     private int tickDelay;
 
     private boolean toggle;
+
+    private boolean ignoreNonTargetEvent;
 }
