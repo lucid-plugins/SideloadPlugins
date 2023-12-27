@@ -1,6 +1,5 @@
 package com.lucidplugins.lucidmuspah;
 
-import com.example.EthanApiPlugin.Collections.query.NPCQuery;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.PacketUtils.PacketUtilsPlugin;
 import com.google.inject.Provides;
