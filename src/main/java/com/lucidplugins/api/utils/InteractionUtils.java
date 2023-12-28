@@ -43,7 +43,7 @@ public class InteractionUtils
 
     public static WorldPoint getClosestSafeLocation(Client client, List<LocalPoint> list)
     {
-        List<Tile> safeTiles = getAll(client, tile -> approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 && EthanApiPlugin.reachableTiles().contains(tile.getWorldLocation()));
+        List<Tile> safeTiles = getAll(client, tile -> approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 && isWalkable(tile.getWorldLocation()));
         List<Tile> trueSafeTiles = new ArrayList<>();
         for (Tile t : safeTiles)
         {
@@ -132,7 +132,7 @@ public class InteractionUtils
         List<Tile> safeTiles = getAll(client, tile ->
                 !target.getWorldArea().contains(tile.getWorldLocation()) &&
                         approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
-                        !EthanApiPlugin.reachableTiles().contains(tile.getWorldLocation()));
+                        isWalkable(tile.getWorldLocation()));
         List<Tile> trueSafeTiles = new ArrayList<>();
         for (Tile t : safeTiles)
         {
@@ -175,7 +175,7 @@ public class InteractionUtils
                 approxDistanceTo(getCenterTileFromWorldArea(target.getWorldArea()), tile.getWorldLocation()) > (target.getWorldArea().getWidth() / 2) + 1 &&
                         !target.getWorldArea().contains(tile.getWorldLocation()) &&
                         approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
-                        !EthanApiPlugin.reachableTiles().contains(tile.getWorldLocation()));
+                        isWalkable(tile.getWorldLocation()));
 
         List<Tile> trueSafeTiles = new ArrayList<>();
         for (Tile t : safeTiles)
@@ -211,6 +211,50 @@ public class InteractionUtils
             }
         }
         return closestTile;
+    }
+
+    public static WorldPoint getClosestSafeLocationCustom(Client client, List<LocalPoint> list, Predicate<Tile> filter)
+    {
+        List<Tile> safeTiles = getAll(client, filter);
+        List<Tile> trueSafeTiles = new ArrayList<>();
+        for (Tile t : safeTiles)
+        {
+            boolean safe = true;
+            for (LocalPoint unsafeTile : list)
+            {
+                if (t.getWorldLocation().equals(WorldPoint.fromLocal(client, unsafeTile)))
+                {
+                    safe = false;
+                }
+            }
+            if (safe)
+            {
+                trueSafeTiles.add(t);
+            }
+        }
+
+        WorldPoint closestTile = null;
+
+        if (trueSafeTiles.size() > 0)
+        {
+            float closest = 999;
+            for (Tile closeTile : trueSafeTiles)
+            {
+                float testDistance = distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), closeTile.getWorldLocation());
+
+                if (testDistance < closest)
+                {
+                    closestTile = closeTile.getWorldLocation();
+                    closest = testDistance;
+                }
+            }
+        }
+        return closestTile;
+    }
+
+    public static boolean isWalkable(WorldPoint point)
+    {
+        return EthanApiPlugin.reachableTiles().contains(point);
     }
 
     public static int approxDistanceTo(WorldPoint point1, WorldPoint point2)

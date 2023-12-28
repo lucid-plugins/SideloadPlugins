@@ -211,7 +211,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         int projectileId = event.getProjectile().getId();
         if (!projectilesSpawnedThisTick.contains(projectileId))
         {
-            eventFired(EventType.PROJECTILE_SPAWNED, projectileId, event.getProjectile().getTarget() == client.getLocalPlayer().getLocalLocation());
+            eventFired(EventType.PROJECTILE_SPAWNED, projectileId, event.getProjectile().getTarget().equals(client.getLocalPlayer().getLocalLocation()));
             projectilesSpawnedThisTick.add(projectileId);
         }
     }
