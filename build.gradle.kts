@@ -50,5 +50,7 @@ tasks {
     }
     withType<ShadowJar> {
         baseName = "LucidPlugins"
+        exclude("com/lucidplugins/toa/**")
+        exclude("com/lucidplugins/leviprayers/**")
     }
 }

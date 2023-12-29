@@ -30,6 +30,12 @@ public class InventoryUtils
         return Inventory.search().nameContains(itemName).first().isPresent();
     }
 
+    public static boolean contains(int[] ids)
+    {
+        List<Integer> intIdList = Arrays.stream(ids).boxed().collect(Collectors.toList());
+        return !Inventory.search().idInList(intIdList).result().isEmpty();
+    }
+
     public static int getFreeSlots()
     {
         return Inventory.getEmptySlots();
@@ -79,6 +85,26 @@ public class InventoryUtils
         return new SlottedItem(id, amount, itemWidget.getIndex());
     }
 
+    public static SlottedItem getFirstItem(int[] ids)
+    {
+        List<Integer> intIdList = Arrays.stream(ids).boxed().collect(Collectors.toList());
+
+        Widget itemWidget = Inventory.search().idInList(intIdList).first().orElse(null);
+        int amount = -1;
+
+        if (itemWidget != null)
+        {
+            amount = itemWidget.getItemQuantity();
+        }
+
+        if (itemWidget.getItemId() == -1 || amount == -1)
+        {
+            return null;
+        }
+
+        return new SlottedItem(itemWidget.getItemId(), amount, itemWidget.getIndex());
+    }
+
     public static int getItemId(String name)
     {
         final Widget itemWidget = Inventory.search().filter(item -> item.getName().contains(name)).first().orElse(null);
@@ -95,5 +121,10 @@ public class InventoryUtils
             item = new Item(itemWidget.getItemId(), itemWidget.getItemQuantity());
         }
         return item;
+    }
+
+    public static void wieldItem(int id)
+    {
+
     }
 }

@@ -1,10 +1,13 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.Equipment;
+import com.example.Packets.MousePackets;
+import com.example.Packets.WidgetPackets;
 import com.lucidplugins.api.item.SlottedItem;
 import net.runelite.api.Item;
 import net.runelite.api.widgets.Widget;
 
+import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,8 +55,24 @@ public class EquipmentUtils
         {
             return null;
         }
-
         return new Item(id, amount);
     }
 
+    public static boolean contains(int[] ids)
+    {
+        List<Integer> intIdList = Arrays.stream(ids).boxed().collect(Collectors.toList());
+
+        return !Equipment.search().idInList(intIdList).result().isEmpty();
+    }
+
+    public static void removeWepSlotItem()
+    {
+        Widget itemWidget = Equipment.search().indexIs(3).first().orElse(null);
+
+        if (itemWidget != null)
+        {
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetAction(itemWidget, "Remove");
+        }
+    }
 }
