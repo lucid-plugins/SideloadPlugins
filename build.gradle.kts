@@ -51,13 +51,13 @@ tasks {
     withType<ShadowJar> {
         baseName = "LucidPlugins"
 
-        //exclude("com/lucidplugins/disablerendering/**")
+        exclude("com/lucidplugins/disablerendering/**")
         exclude("com/lucidplugins/leviprayers/**")
-        //exclude("com/lucidplugins/lucidcannonreloader/**")
-        //exclude("com/lucidplugins/lucidcustomprayers/**")
-        //exclude("com/lucidplugins/luciddiscordlogger/**")
-        //exclude("com/lucidplugins/lucidgearswapper/**")
-        //exclude("com/lucidplugins/lucidmuspah/**")
+        exclude("com/lucidplugins/lucidcannonreloader/**")
+        exclude("com/lucidplugins/lucidcustomprayers/**")
+        exclude("com/lucidplugins/luciddiscordlogger/**")
+        exclude("com/lucidplugins/lucidgearswapper/**")
+        exclude("com/lucidplugins/lucidmuspah/**")
         exclude("com/lucidplugins/toa/**")
         exclude("com/lucidplugins/tobprayers/**")
     }
