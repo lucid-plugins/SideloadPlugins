@@ -1,6 +1,7 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.Equipment;
+import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PrayerInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
@@ -89,7 +90,13 @@ public class CombatUtils
             InventoryUtils.itemInteract(keris.getId(), "Wield");
         }
 
+       toggleSpec();
+    }
+
+    public static void toggleSpec()
+    {
         MousePackets.queueClickPacket();
         WidgetPackets.queueWidgetActionPacket(1, 38862884, -1, -1);
     }
+
 }

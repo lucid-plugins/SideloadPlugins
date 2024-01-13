@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Provides;
 import com.lucidplugins.api.item.SlottedItem;
+import com.lucidplugins.api.utils.CombatUtils;
 import com.lucidplugins.api.utils.EquipmentUtils;
 import com.lucidplugins.api.utils.InventoryUtils;
 import com.lucidplugins.api.utils.MessageUtils;
@@ -168,6 +169,18 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
             lastItemsEquipped.clear();
         }
 
+        if (client.getTickCount() < 10)
+        {
+            gearSwapSelected = -1;
+            return;
+        }
+
+        if (gearSwapState == GearSwapState.FINISHED)
+        {
+            gearSwapSelected = -1;
+            gearSwapState = GearSwapState.TICK_1;
+        }
+
         if (gearSwapSelected != -1)
         {
             if (gearSwapState == GearSwapState.TICK_1)
@@ -182,17 +195,16 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
                     swap(gearSwapSelected, true);
                     gearSwapState = GearSwapState.TICK_2;
                 }
+
+                if (shouldActivateSpec())
+                {
+                    CombatUtils.toggleSpec();
+                }
             }
             else if (gearSwapState == GearSwapState.TICK_2)
             {
                 swap(gearSwapSelected, false);
                 gearSwapState = GearSwapState.FINISHED;
-            }
-
-            if (gearSwapState == GearSwapState.FINISHED)
-            {
-                gearSwapSelected = -1;
-                gearSwapState = GearSwapState.TICK_1;
             }
         }
     }
@@ -497,12 +509,12 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
 
         ExportableConfig exportableConfig = new ExportableConfig();
 
-        exportableConfig.setSwap(0, config.swap1Enabled(), config.swap1String(), config.swap1Hotkey(), config.equipFirstItem1());
-        exportableConfig.setSwap(1, config.swap2Enabled(), config.swap2String(), config.swap2Hotkey(), config.equipFirstItem2());
-        exportableConfig.setSwap(2, config.swap3Enabled(), config.swap3String(), config.swap3Hotkey(), config.equipFirstItem3());
-        exportableConfig.setSwap(3, config.swap4Enabled(), config.swap4String(), config.swap4Hotkey(), config.equipFirstItem4());
-        exportableConfig.setSwap(4, config.swap5Enabled(), config.swap5String(), config.swap5Hotkey(), config.equipFirstItem5());
-        exportableConfig.setSwap(5, config.swap6Enabled(), config.swap6String(), config.swap6Hotkey(), config.equipFirstItem6());
+        exportableConfig.setSwap(0, config.swap1Enabled(), config.swap1String(), config.swap1Hotkey(), config.equipFirstItem1(), config.activateSpec1(), config.specThreshold1());
+        exportableConfig.setSwap(1, config.swap2Enabled(), config.swap2String(), config.swap2Hotkey(), config.equipFirstItem2(), config.activateSpec2(), config.specThreshold2());
+        exportableConfig.setSwap(2, config.swap3Enabled(), config.swap3String(), config.swap3Hotkey(), config.equipFirstItem3(), config.activateSpec3(), config.specThreshold3());
+        exportableConfig.setSwap(3, config.swap4Enabled(), config.swap4String(), config.swap4Hotkey(), config.equipFirstItem4(), config.activateSpec4(), config.specThreshold4());
+        exportableConfig.setSwap(4, config.swap5Enabled(), config.swap5String(), config.swap5Hotkey(), config.equipFirstItem5(), config.activateSpec5(), config.specThreshold5());
+        exportableConfig.setSwap(5, config.swap6Enabled(), config.swap6String(), config.swap6Hotkey(), config.equipFirstItem6(), config.activateSpec6(), config.specThreshold6());
 
         if (!PRESET_DIR.exists())
         {
@@ -549,6 +561,9 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
                 configManager.setConfiguration(GROUP_NAME, "swap" + (i + 1) + "String", loadedConfig.getSwapString()[i]);
                 configManager.setConfiguration(GROUP_NAME, "swap" + (i + 1) + "Hotkey", loadedConfig.getSwapHotkey()[i]);
                 configManager.setConfiguration(GROUP_NAME, "equipFirstItem" + (i + 1), loadedConfig.getEquipFirstItem()[i]);
+                configManager.setConfiguration(GROUP_NAME, "activateSpec" + (i + 1), loadedConfig.getToggleSpecOnActivation()[i]);
+                configManager.setConfiguration(GROUP_NAME, "specThreshold" + (i + 1), loadedConfig.getSpecThreshold()[i]);
+
             }
 
             JOptionPane.showMessageDialog(null, "Successfully loaded preset '" + presetNameFormatted + "'", "Preset Load Success", INFORMATION_MESSAGE);
@@ -557,6 +572,27 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
         {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Preset Load Error", WARNING_MESSAGE);
             log.error(e.getMessage());
+        }
+    }
+
+    private boolean shouldActivateSpec()
+    {
+        switch (gearSwapSelected)
+        {
+            case 0:
+                return config.activateSpec1() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold1());
+            case 1:
+                return config.activateSpec2() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold2());
+            case 2:
+                return config.activateSpec3() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold3());
+            case 3:
+                return config.activateSpec4() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold4());
+            case 4:
+                return config.activateSpec5() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold5());
+            case 5:
+                return config.activateSpec6() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold6());
+            default:
+                return false;
         }
     }
 }
