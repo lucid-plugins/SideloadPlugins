@@ -1,6 +1,7 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.Equipment;
+import com.example.EthanApiPlugin.Collections.EquipmentItemWidget;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
 import com.lucidplugins.api.item.SlottedItem;
@@ -25,37 +26,23 @@ public class EquipmentUtils
         return Equipment.search().result().stream().map(equipmentItemWidget -> new SlottedItem(equipmentItemWidget.getEquipmentItemId(), equipmentItemWidget.getItemQuantity(), equipmentItemWidget.getEquipmentIndex())).filter(filter).collect(Collectors.toList());
     }
 
-    public static int getWepSlotItemId()
-    {
-        Widget itemWidget = Equipment.search().indexIs(3).first().orElse(null);
-        int id = -1;
-        int amount = -1;
-
-        if (itemWidget != null)
-        {
-            id = itemWidget.getItemId();
-        }
-
-        return id;
-    }
-
     public static Item getWepSlotItem()
     {
-        Widget itemWidget = Equipment.search().indexIs(3).first().orElse(null);
-        int id = -1;
-        int amount = -1;
-
-        if (itemWidget != null)
+        Item item = null;
+        List<EquipmentItemWidget> equips = Equipment.search().result();
+        if (!equips.isEmpty())
         {
-            id = itemWidget.getItemId();
-            amount = itemWidget.getItemQuantity();
+            for (EquipmentItemWidget equip : equips)
+            {
+                if (equip.getEquipmentIndex() == 3)
+                {
+                    item = new Item(equip.getEquipmentItemId(), equip.getItemQuantity());
+                    break;
+                }
+            }
         }
 
-        if (id == -1 || amount == -1)
-        {
-            return null;
-        }
-        return new Item(id, amount);
+        return item;
     }
 
     public static boolean contains(int[] ids)

@@ -262,11 +262,19 @@ public class LucidCannonReloaderPlugin extends Plugin
 
     private GameObject getCannon()
     {
+        if (cannonLocation == null)
+        {
+            return null;
+        }
         return (GameObject) TileObjects.search().nameContains("Dwarf multicannon").atLocation(cannonLocation.dx(1).dy(1)).first().orElse(null);
     }
 
     private GameObject getBrokenCannon()
     {
+        if (cannonLocation == null)
+        {
+            return null;
+        }
         return (GameObject) TileObjects.search().nameContains("Broken multicannon").atLocation(cannonLocation.dx(1).dy(1)).first().orElse(null);
     }
 

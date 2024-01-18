@@ -80,6 +80,57 @@ public class InteractionUtils
         return closestTile;
     }
 
+    public static WorldPoint getClosestSafeLocationP3Enrage(Client client, List<LocalPoint> list)
+    {
+        List<Tile> safeTiles = getAll(client, tile ->
+                approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6
+                && isWalkable(tile.getWorldLocation())
+                && within2RowsWardens(tile.getWorldLocation())
+        );
+        List<Tile> trueSafeTiles = new ArrayList<>();
+        for (Tile t : safeTiles)
+        {
+            boolean safe = true;
+            for (LocalPoint unsafeTile : list)
+            {
+                if (t.getWorldLocation().equals(WorldPoint.fromLocal(client, unsafeTile)))
+                {
+                    safe = false;
+                }
+            }
+            if (safe)
+            {
+                trueSafeTiles.add(t);
+            }
+        }
+
+        WorldPoint closestTile = null;
+
+        if (trueSafeTiles.size() > 0)
+        {
+            float closest = 999;
+            for (Tile closeTile : trueSafeTiles)
+            {
+                float testDistance = distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), closeTile.getWorldLocation());
+
+                if (testDistance < closest)
+                {
+                    closestTile = closeTile.getWorldLocation();
+                    closest = testDistance;
+                }
+            }
+        }
+        return closestTile;
+    }
+
+    private static boolean within2RowsWardens(WorldPoint point)
+    {
+        int x = point.getRegionX();
+        int y = point.getRegionY();
+
+        return y == 37 && x > 27 && x < 37;
+    }
+
     public static List<Tile> getAll(Client client, Predicate<Tile> filter)
     {
         List<Tile> out = new ArrayList<>();
@@ -262,11 +313,13 @@ public class InteractionUtils
         return Math.max(Math.abs(point1.getX() - point2.getX()), Math.abs(point1.getY() - point2.getY()));
     }
 
-    public static float distanceTo2DHypotenuse(WorldPoint main, WorldPoint other) {
+    public static float distanceTo2DHypotenuse(WorldPoint main, WorldPoint other)
+    {
         return (float)Math.hypot((double)(main.getX() - other.getX()), (double)(main.getY() - other.getY()));
     }
 
-    public static WorldPoint getCenterTileFromWorldArea(WorldArea area) {
+    public static WorldPoint getCenterTileFromWorldArea(WorldArea area)
+    {
         return new WorldPoint(area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2, area.getPlane());
     }
 }

@@ -125,6 +125,6 @@ public class InventoryUtils
 
     public static void wieldItem(int id)
     {
-
+        itemInteract(id, "Wield");
     }
 }
