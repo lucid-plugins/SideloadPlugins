@@ -11,6 +11,12 @@ import java.util.stream.Collectors;
 
 public class NpcUtils
 {
+
+    public static List<NPC> getAll(Predicate<NPC> filter)
+    {
+        return NPCs.search().filter(filter).result();
+    }
+
     public static NPC getNearestNpc(Predicate<NPC> filter)
     {
         return NPCs.search().filter(filter).nearestToPlayer().orElse(null);
@@ -19,6 +25,11 @@ public class NpcUtils
     public static NPC getNearestNpc(String name)
     {
         return NPCs.search().nameContains(name).nearestToPlayer().orElse(null);
+    }
+
+    public static NPC getNearestNpc(int id)
+    {
+        return NPCs.search().withId(id).nearestToPlayer().orElse(null);
     }
 
     public static List<NPC> getAllNpcs(int... ids)
@@ -34,5 +45,15 @@ public class NpcUtils
         }
 
         NPCInteraction.interact(npc, "Attack");
+    }
+
+    public static void interact(NPC npc, String action)
+    {
+        if (npc == null)
+        {
+            return;
+        }
+
+        NPCInteraction.interact(npc, action);
     }
 }

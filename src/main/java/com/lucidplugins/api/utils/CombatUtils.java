@@ -12,6 +12,19 @@ import net.runelite.api.Skill;
 
 public class CombatUtils
 {
+    public static Prayer prayerForName(String name)
+    {
+        String p = name.toUpperCase().replaceAll(" ", "_");
+        for (Prayer prayer : Prayer.values())
+        {
+            if (prayer.name().equals(p))
+            {
+                return prayer;
+            }
+        }
+        return null;
+    }
+
     public static void activatePrayer(Client client, Prayer prayer)
     {
         if (client.getBoostedSkillLevel(Skill.PRAYER) == 0)

@@ -1,8 +1,12 @@
 package com.lucidplugins.api.utils;
 
+import com.example.EthanApiPlugin.Collections.ETileItem;
+import com.example.EthanApiPlugin.Collections.TileItems;
 import com.example.EthanApiPlugin.EthanApiPlugin;
+import com.example.InteractionApi.TileObjectInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.MovementPackets;
+import com.example.Packets.TileItemPackets;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
@@ -321,5 +325,35 @@ public class InteractionUtils
     public static WorldPoint getCenterTileFromWorldArea(WorldArea area)
     {
         return new WorldPoint(area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2, area.getPlane());
+    }
+
+    public static boolean tileItemNameExistsWithinDistance(String name, int distance)
+    {
+        ETileItem item = TileItems.search().nameContains(name).withinDistance(distance).result().stream().findFirst().orElse(null);
+        return item != null;
+    }
+
+    public static boolean tileItemIdExistsWithinDistance(int itemId, int distance)
+    {
+        ETileItem item = TileItems.search().withId(itemId).withinDistance(distance).result().stream().findFirst().orElse(null);
+        return item != null;
+    }
+
+    public static void interactWithTileItem(int itemId, String action)
+    {
+        ETileItem item = TileItems.search().withId(itemId).nearestToPlayer().orElse(null);
+
+        TileItemPackets.queueTileItemAction(item, false);
+    }
+
+    public static void interactWithTileItem(String name, String action)
+    {
+        ETileItem item = TileItems.search().nameContains(name).nearestToPlayer().orElse(null);
+
+
+        if (item != null)
+        {
+            TileItemPackets.queueTileItemAction(item, false);
+        }
     }
 }

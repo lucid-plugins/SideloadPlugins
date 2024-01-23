@@ -1,9 +1,11 @@
 package com.lucidplugins.api.utils;
 
+import com.example.EthanApiPlugin.Collections.TileObjects;
 import com.example.InteractionApi.TileObjectInteraction;
 import net.runelite.api.*;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class GameObjectUtils
 {
@@ -42,5 +44,15 @@ public class GameObjectUtils
         }
 
         return Arrays.stream(composition.getActions()).anyMatch(s -> s != null && s.equalsIgnoreCase(action));
+    }
+
+    public static TileObject nearest(String name)
+    {
+        return TileObjects.search().nameContains(name).nearestToPlayer().orElse(null);
+    }
+
+    public static TileObject nearest(int id)
+    {
+        return TileObjects.search().withId(id).nearestToPlayer().orElse(null);
     }
 }

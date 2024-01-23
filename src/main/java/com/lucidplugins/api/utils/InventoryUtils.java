@@ -2,10 +2,12 @@ package com.lucidplugins.api.utils;
 
 
 import com.example.EthanApiPlugin.Collections.Inventory;
+import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.InventoryInteraction;
 import com.lucidplugins.api.item.SlottedItem;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import java.util.Arrays;
@@ -17,12 +19,12 @@ public class InventoryUtils
 {
     public static List<SlottedItem> getAll()
     {
-        return Inventory.search().result().stream().map(item -> new SlottedItem(item.getId(), item.getItemQuantity(), item.getIndex())).collect(Collectors.toList());
+        return Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).collect(Collectors.toList());
     }
 
     public static List<SlottedItem> getAll(Predicate<SlottedItem> filter)
     {
-        return Inventory.search().result().stream().map(item -> new SlottedItem(item.getId(), item.getItemQuantity(), item.getIndex())).filter(filter).collect(Collectors.toList());
+        return Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).filter(filter).collect(Collectors.toList());
     }
 
     public static boolean contains(String itemName)
@@ -126,5 +128,44 @@ public class InventoryUtils
     public static void wieldItem(int id)
     {
         itemInteract(id, "Wield");
+    }
+
+    public static int count(String name)
+    {
+        List<SlottedItem> itemsToCount = InventoryUtils.getAll(item -> {
+            final ItemComposition itemDef = EthanApiPlugin.getClient().getItemDefinition(item.getItem().getId());
+            return itemDef != null && itemDef.getName() != null && itemDef.getName().toLowerCase().contains(name.toLowerCase());
+        });
+        int count = 0;
+        for (SlottedItem i : itemsToCount)
+        {
+            if (i != null)
+            {
+                count += i.getItem().getQuantity();
+            }
+        }
+        MessageUtils.addMessage(EthanApiPlugin.getClient(), "Count: " + count);
+        return count;
+    }
+
+    public static int count(int id)
+    {
+        List<SlottedItem> itemsToCount = InventoryUtils.getAll(item -> item.getItem().getId() == id);
+
+        int count = 0;
+        for (SlottedItem i : itemsToCount)
+        {
+            if (i != null)
+            {
+                count += i.getItem().getQuantity();
+            }
+        }
+
+        return count;
+    }
+
+    public static void interactSlot(int slot, String action)
+    {
+        InventoryInteraction.useItemIndex(slot, action);
     }
 }
