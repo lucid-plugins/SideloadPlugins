@@ -552,13 +552,36 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
     private static void activatePrayer(Client client, Prayer prayer, boolean toggle)
     {
+        boolean useQuickPrayers = false;
+
+        if (prayer == Prayer.THICK_SKIN)
+        {
+            useQuickPrayers = true;
+        }
+
+
         if (toggle)
         {
-            CombatUtils.togglePrayer(client, prayer);
+            if (useQuickPrayers)
+            {
+                CombatUtils.toggleQuickPrayers(client);
+            }
+            else
+            {
+                CombatUtils.togglePrayer(client, prayer);
+            }
+
         }
         else
         {
-            CombatUtils.activatePrayer(client, prayer);
+            if (useQuickPrayers)
+            {
+                CombatUtils.activateQuickPrayers(client);
+            }
+            else
+            {
+                CombatUtils.activatePrayer(client, prayer);
+            }
         }
     }
 

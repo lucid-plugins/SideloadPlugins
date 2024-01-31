@@ -1,14 +1,11 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.Equipment;
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PrayerInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
-import net.runelite.api.Client;
-import net.runelite.api.Item;
-import net.runelite.api.Prayer;
-import net.runelite.api.Skill;
+import net.runelite.api.*;
+import net.runelite.api.widgets.WidgetInfo;
 
 public class CombatUtils
 {
@@ -77,6 +74,36 @@ public class CombatUtils
         }
 
         PrayerInteraction.togglePrayer(prayer);
+    }
+
+    public static void toggleQuickPrayers(Client client)
+    {
+        if (client == null || (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled(client)))
+        {
+            return;
+        }
+
+        MousePackets.queueClickPacket();
+        WidgetPackets.queueWidgetActionPacket(1, WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+    }
+
+    public static void activateQuickPrayers(Client client)
+    {
+        if (client == null || (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled(client)))
+        {
+            return;
+        }
+
+        if (!isQuickPrayersEnabled(client))
+        {
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetActionPacket(1, WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
+        }
+    }
+
+    public static boolean isQuickPrayersEnabled(Client client)
+    {
+        return client.getVarbitValue(Varbits.QUICK_PRAYER) == 1;
     }
 
     public static int getSpecEnergy(Client client)

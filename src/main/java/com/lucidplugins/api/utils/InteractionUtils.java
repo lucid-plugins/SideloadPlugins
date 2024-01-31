@@ -3,7 +3,6 @@ package com.lucidplugins.api.utils;
 import com.example.EthanApiPlugin.Collections.ETileItem;
 import com.example.EthanApiPlugin.Collections.TileItems;
 import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.InteractionApi.TileObjectInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.MovementPackets;
 import com.example.Packets.TileItemPackets;
@@ -228,6 +227,51 @@ public class InteractionUtils
     {
         List<Tile> safeTiles = getAll(client, tile ->
                 approxDistanceTo(getCenterTileFromWorldArea(target.getWorldArea()), tile.getWorldLocation()) > (target.getWorldArea().getWidth() / 2) + 1 &&
+                        !target.getWorldArea().contains(tile.getWorldLocation()) &&
+                        approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
+                        isWalkable(tile.getWorldLocation()));
+
+        List<Tile> trueSafeTiles = new ArrayList<>();
+        for (Tile t : safeTiles)
+        {
+            boolean safe = true;
+            for (LocalPoint unsafeTile : list)
+            {
+                if (t.getWorldLocation().equals(WorldPoint.fromLocal(client, unsafeTile)))
+                {
+                    safe = false;
+                }
+            }
+            if (safe)
+            {
+                trueSafeTiles.add(t);
+            }
+        }
+
+        WorldPoint closestTile = null;
+
+        if (trueSafeTiles.size() > 0)
+        {
+            float closest = 999;
+            for (Tile closeTile : trueSafeTiles)
+            {
+                float testDistance = distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), closeTile.getWorldLocation());
+
+                if (testDistance < closest)
+                {
+                    closestTile = closeTile.getWorldLocation();
+                    closest = testDistance;
+                }
+            }
+        }
+        return closestTile;
+    }
+
+    public static WorldPoint getClosestSafeLocationInNPCMeleeDistance(Client client, List<LocalPoint> list, NPC target)
+    {
+        List<Tile> safeTiles = getAll(client, tile ->
+                distanceTo2DHypotenuse(getCenterTileFromWorldArea(target.getWorldArea()), tile.getWorldLocation()) >= Math.floor((double)target.getWorldArea().getWidth() / 2) + 1 &&
+                        distanceTo2DHypotenuse(getCenterTileFromWorldArea(target.getWorldArea()), tile.getWorldLocation()) <= Math.floor((double)target.getWorldArea().getWidth() / 2) + 1.5 &&
                         !target.getWorldArea().contains(tile.getWorldLocation()) &&
                         approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
                         isWalkable(tile.getWorldLocation()));
