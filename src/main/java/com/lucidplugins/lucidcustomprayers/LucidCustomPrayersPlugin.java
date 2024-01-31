@@ -723,6 +723,15 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
     @Override
     public void keyPressed(KeyEvent e)
     {
+        if (config.toggle1tickQuickPrayersHotkey().matches(e))
+        {
+            oneTickFlicking = !oneTickFlicking;
+            if (!oneTickFlicking)
+            {
+                disableQuickPrayers = true;
+            }
+        }
+
         if (config.loadPresetHotkey().matches(e))
         {
             loadPreset();

@@ -12,65 +12,85 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "General",
             description = "Settings that don't belong to a specific preset",
-            position = 0
+            position = 0,
+            closedByDefault = true
     )
     String generalSection = "General";
 
     @ConfigSection(
             name = "Preset Loading/Saving",
             description = "Save/Load a custom preset",
-            position = 1
+            position = 1,
+            closedByDefault = true
     )
     String presetSection = "Preset Loading/Saving";
 
     @ConfigSection(
             name = "Custom Prayer 1",
             description = "Custom Prayer 1",
-            position = 2
+            position = 2,
+            closedByDefault = true
     )
     String prayer1Section = "Custom Prayer 1";
 
     @ConfigSection(
             name = "Custom Prayer 2",
             description = "Custom Prayer 2",
-            position = 3
+            position = 3,
+            closedByDefault = true
     )
     String prayer2Section = "Custom Prayer 2";
 
     @ConfigSection(
             name = "Custom Prayer 3",
             description = "Custom Prayer 3",
-            position = 4
+            position = 4,
+            closedByDefault = true
     )
     String prayer3Section = "Custom Prayer 3";
 
     @ConfigSection(
             name = "Custom Prayer 4",
             description = "Custom Prayer 4",
-            position = 5
+            position = 5,
+            closedByDefault = true
     )
     String prayer4Section = "Custom Prayer 4";
 
     @ConfigSection(
             name = "Custom Prayer 5",
             description = "Custom Prayer 5",
-            position = 6
+            position = 6,
+            closedByDefault = true
     )
     String prayer5Section = "Custom Prayer 5";
 
     @ConfigSection(
             name = "Custom Prayer 6",
             description = "Custom Prayer 6",
-            position = 7
+            position = 7,
+            closedByDefault = true
     )
     String prayer6Section = "Custom Prayer 6";
 
     // General Section
 
     @ConfigItem(
+            name = "1-Tick Quick Prayer Toggle Hotkey",
+            description = "Toggles 1-tick flicking your quick prayers on/off",
+            position = 0,
+            keyName = "toggle1tickQuickPrayersHotkey",
+            section = generalSection
+    )
+    default Keybind toggle1tickQuickPrayersHotkey()
+    {
+        return new Keybind(KeyEvent.VK_F12, InputEvent.CTRL_DOWN_MASK);
+    }
+
+    @ConfigItem(
             name = "Toggle Debug Mode",
             description = "Toggle Debug Mode on to see events being fired in your chatbox",
-            position = 0,
+            position = 1,
             keyName = "debugMode",
             section = generalSection
     )
@@ -82,7 +102,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Ignore non-target events",
             description = "Don't debug events if you're not the target",
-            position = 1,
+            position = 2,
             keyName = "hideNonTargetEventsDebug",
             section = generalSection
     )
@@ -94,7 +114,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug Animation Changed",
             description = "Toggle Debug Output for Animation Changed Event",
-            position = 2,
+            position = 3,
             keyName = "debugAnimationChanged",
             section = generalSection
     )
@@ -106,7 +126,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug NPC Spawned",
             description = "Toggle Debug Output for NPC Spawned Event",
-            position = 3,
+            position = 4,
             keyName = "debugNpcSpawned",
             section = generalSection
     )
@@ -118,7 +138,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug NPC Despawned",
             description = "Toggle Debug Output for NPC Despawned Event",
-            position = 4,
+            position = 5,
             keyName = "debugNpcDespawned",
             section = generalSection
     )
@@ -130,7 +150,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug NPC Changed",
             description = "Toggle Debug Output for NPC Changed Event",
-            position = 5,
+            position = 6,
             keyName = "debugNpcChanged",
             section = generalSection
     )
@@ -142,7 +162,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug Projectile Spawned",
             description = "Toggle Debug Output for Projectile Spawned Event",
-            position = 6,
+            position = 7,
             keyName = "debugProjectileSpawned",
             section = generalSection
     )
@@ -154,7 +174,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug Graphics Created",
             description = "Toggle Debug Output for Graphics Created Event",
-            position = 7,
+            position = 8,
             keyName = "debugGraphicsCreated",
             section = generalSection
     )
@@ -166,7 +186,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug GameObject Spawned",
             description = "Toggle Debug Output for GameObject Spawned Event",
-            position = 8,
+            position = 9,
             keyName = "debugGameObjectSpawned",
             section = generalSection
     )
@@ -178,7 +198,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug Other Interact You",
             description = "Toggle Debug Output for Other Interact You Event",
-            position = 9,
+            position = 10,
             keyName = "debugOtherInteractYou",
             section = generalSection
     )
@@ -190,7 +210,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug You Interact Other",
             description = "Toggle Debug Output for You Interact Other Event",
-            position = 10,
+            position = 11,
             keyName = "debugYouInteractOther",
             section = generalSection
     )
@@ -202,7 +222,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Debug Item Equipped",
             description = "Toggle Debug Output for Item Equipped Event",
-            position = 11,
+            position = 12,
             keyName = "debugItemEquipped",
             section = generalSection
     )
@@ -747,7 +767,8 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 7",
             description = "Custom Prayer 7",
-            position = 7
+            position = 7,
+            closedByDefault = true
     )
     String prayer7Section = "Custom Prayer 7";
 
@@ -837,7 +858,8 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 8",
             description = "Custom Prayer 8",
-            position = 8
+            position = 8,
+            closedByDefault = true
     )
     String prayer8Section = "Custom Prayer 8";
     @ConfigItem(
@@ -926,7 +948,8 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 9",
             description = "Custom Prayer 9",
-            position = 9
+            position = 9,
+            closedByDefault = true
     )
     String prayer9Section = "Custom Prayer 9";
     @ConfigItem(
@@ -1016,7 +1039,8 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 10",
             description = "Custom Prayer 10",
-            position = 10
+            position = 10,
+            closedByDefault = true
     )
     String prayer10Section = "Custom Prayer 10";
     @ConfigItem(
