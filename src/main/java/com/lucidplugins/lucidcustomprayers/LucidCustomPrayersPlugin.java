@@ -101,6 +101,10 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
     public Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
+    private static boolean oneTickFlicking = false;
+
+    private static boolean disableQuickPrayers = false;
+
     @Provides
     LucidCustomPrayersConfig getConfig(final ConfigManager configManager)
     {
@@ -288,6 +292,27 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
     {
 
         getEquipmentChanges();
+
+        if (oneTickFlicking)
+        {
+            if (CombatUtils.isQuickPrayersEnabled(client))
+            {
+                CombatUtils.toggleQuickPrayers(client);
+                CombatUtils.toggleQuickPrayers(client);
+            }
+            else
+            {
+                CombatUtils.toggleQuickPrayers(client);
+            }
+        }
+        else
+        {
+            if (disableQuickPrayers && CombatUtils.isQuickPrayersEnabled(client))
+            {
+                CombatUtils.toggleQuickPrayers(client);
+                disableQuickPrayers = false;
+            }
+        }
 
         for (ScheduledPrayer prayer : scheduledPrayers)
         {
@@ -559,6 +584,29 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
             useQuickPrayers = true;
         }
 
+        if (prayer == Prayer.BURST_OF_STRENGTH)
+        {
+            if (toggle)
+            {
+                oneTickFlicking = !oneTickFlicking;
+                if (!oneTickFlicking)
+                {
+                    disableQuickPrayers = true;
+                }
+            }
+            else
+            {
+                oneTickFlicking = true;
+            }
+            return;
+        }
+
+        if (prayer == Prayer.CLARITY_OF_THOUGHT)
+        {
+            oneTickFlicking = false;
+            disableQuickPrayers = true;
+            return;
+        }
 
         if (toggle)
         {
