@@ -53,6 +53,12 @@ public class LucidCombatOverlay extends OverlayPanel
                 .right(plugin.getSecondaryStatus())
                 .build());
 
+        panelComponent.getChildren().add(LineComponent.builder()
+                .left("Inactive Ticks:")
+                .leftColor(Color.WHITE)
+                .right(plugin.getInactiveTicks() + "")
+                .build());
+
         return super.render(graphics2D);
     }
 }

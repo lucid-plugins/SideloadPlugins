@@ -150,6 +150,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return;
         }
 
+        clientThread.invoke(() -> lastTickActive = client.getTickCount());
+
         nextHpToRestoreAt = Math.max(1, config.minHp() + (config.minHpBuffer() > 0 ? random.nextInt(config.minHpBuffer() + 1) : 0));
         nextPrayerLevelToRestoreAt = Math.max(1, config.prayerPointsMin() + (config.prayerRestoreBuffer() > 0 ? random.nextInt(config.prayerRestoreBuffer() + 1) : 0));
     }
@@ -172,7 +174,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     @Subscribe
     private void onChatMessage(ChatMessage event)
     {
-        if (event.getType() == ChatMessageType.ENGINE && event.getMessage().contains("return to a Slayer master"))
+        if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("return to a Slayer master"))
         {
             if (config.stopOnTaskCompletion() && autoCombatRunning)
             {
@@ -207,8 +209,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         boolean actionTakenThisTick = restorePrimaries();
 
         // Stop other upkeep besides HP if we haven't animated in the last minute
-        if (client.getTickCount() - lastTickActive > 100)
+        if (getInactiveTicks() > 200)
         {
+            secondaryStatus = "Idle for > 2 min";
             return;
         }
 
@@ -253,11 +256,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
             if (lastTarget != null)
             {
-                if (lastTarget instanceof Player)
+                if (lastTarget instanceof Player && (lastTarget.getInteracting() == client.getLocalPlayer() && client.getLocalPlayer().getInteracting() != lastTarget))
                 {
                     PlayerUtils.interactPlayer(lastTarget.getName(), "Attack");
                 }
-                else if (lastTarget instanceof NPC)
+                else if (lastTarget instanceof NPC && (lastTarget.getInteracting() == client.getLocalPlayer() && client.getLocalPlayer().getInteracting() != lastTarget))
                 {
                     NpcUtils.interact((NPC)lastTarget, "Attack");
                 }
@@ -380,6 +383,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 NpcUtils.interact(target, "Attack");
                 nextReactionTick = client.getTickCount() + getReaction();
                 secondaryStatus = "Attacking " + target.getName();
+
+                if (getInactiveTicks() > 2)
+                {
+                    lastTickActive = client.getTickCount();
+                }
+
                 return true;
             }
             else
@@ -387,6 +396,21 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 secondaryStatus = "Nothing to murder";
                 nextReactionTick = client.getTickCount() + getReaction();
                 return false;
+            }
+        }
+        else
+        {
+            if (getNPCInteractingWithUs() != null && client.getLocalPlayer().getInteracting() == null)
+            {
+                NpcUtils.interact(getNPCInteractingWithUs(), "Attack");
+                nextReactionTick = client.getTickCount() + getReaction();
+                secondaryStatus = "Re-attacking " + getNPCInteractingWithUs().getName();
+
+                if (getInactiveTicks() > 2)
+                {
+                    lastTickActive = client.getTickCount();
+                }
+                return true;
             }
         }
 
@@ -426,6 +450,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         return delay;
     }
+
+
 
     public PlayStyle randomStyle()
     {
@@ -467,21 +493,32 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 }
             }
 
-            int ratio = npc.getHealthRatio();
-            int scale = npc.getHealthScale();
-
-            double targetHpPercent = Math.floor((double) ratio  / (double) scale * 100);
-            return nameContains && ((npc.getInteracting() == null || npc.getInteracting() == client.getLocalPlayer()) && ratio != 0) &&
+            return nameContains && (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
+                    (npc.getInteracting() == null && noPlayerFightingNpc(npc))) &&
+                            InteractionUtils.isWalkable(npc.getWorldLocation());
+           /* return nameContains && ((npc.getInteracting() == null || npc.getInteracting() == client.getLocalPlayer()) && npc.getHealthRatio() != 0) &&
                     Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
-                    InteractionUtils.isWalkable(npc.getWorldLocation());
+                    InteractionUtils.isWalkable(npc.getWorldLocation()) && noPlayerFightingNpc(npc);*/
         });
+    }
+
+    private boolean noPlayerFightingNpc(NPC npc)
+    {
+        return PlayerUtils.getNearest(player -> player != client.getLocalPlayer() && player.getInteracting() == npc || npc.getInteracting() == player) == null;
     }
 
     private boolean targetDeadOrNoTarget()
     {
-        if (client.getLocalPlayer().getInteracting() == null)
+        NPC interactingWithUs = getNPCInteractingWithUs();
+
+        if (client.getLocalPlayer().getInteracting() == null && interactingWithUs == null)
         {
             return true;
+        }
+
+        if (interactingWithUs != null)
+        {
+            return false;
         }
 
         if (client.getLocalPlayer().getInteracting() instanceof NPC)
@@ -495,6 +532,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         return false;
+    }
+    private NPC getNPCInteractingWithUs()
+    {
+        return NpcUtils.getNearestNpc(npc -> npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0);
     }
 
     private void updatePluginVars()
@@ -1028,6 +1069,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         return null;
     }
 
+    public int getInactiveTicks()
+    {
+        return client.getTickCount() - lastTickActive;
+    }
+
+
     @Override
     public void keyTyped(KeyEvent e)
     {
@@ -1039,7 +1086,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         if (config.autocombatHotkey().matches(e))
         {
-            autoCombatRunning = !autoCombatRunning;
+            clientThread.invoke(() -> {
+                lastTickActive = client.getTickCount();
+                autoCombatRunning = !autoCombatRunning;
+            });
         }
     }
 
