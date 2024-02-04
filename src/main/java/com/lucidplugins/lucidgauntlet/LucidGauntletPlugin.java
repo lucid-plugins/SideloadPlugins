@@ -3,16 +3,15 @@ package com.lucidplugins.lucidgauntlet;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.google.inject.Provides;
 import com.lucidplugins.api.item.SlottedItem;
-import com.lucidplugins.api.utils.CombatUtils;
-import com.lucidplugins.api.utils.EquipmentUtils;
-import com.lucidplugins.api.utils.InventoryUtils;
-import com.lucidplugins.api.utils.NpcUtils;
+import com.lucidplugins.api.utils.*;
 import com.lucidplugins.lucidgauntlet.entity.*;
 import com.lucidplugins.lucidgauntlet.overlay.*;
 import com.lucidplugins.lucidgauntlet.resource.ResourceManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.*;
+import net.runelite.api.coords.WorldArea;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.client.callback.ClientThread;
@@ -31,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @Extension
 @PluginDescriptor(
@@ -219,6 +219,12 @@ public class LucidGauntletPlugin extends Plugin
 
     private int lastAttackTick = 0;
 
+    private int lastDodgeTick = -1;
+
+    private WorldPoint lastSafeTile;
+
+    private WorldPoint secondLastSafeTile;
+
     @Provides
 
     LucidGauntletConfig getConfig(final ConfigManager configManager)
@@ -373,6 +379,8 @@ public class LucidGauntletPlugin extends Plugin
             EquipmentUtils.removeWepSlotItem();
         }
 
+        boolean attacked = false;
+
         if (client.getTickCount() - lastSwitchTick == 1)
         {
             final Item wep = EquipmentUtils.getWepSlotItem();
@@ -380,11 +388,12 @@ public class LucidGauntletPlugin extends Plugin
             if (wep != null)
             {
                 ItemComposition composition = client.getItemDefinition(wep.getId());
-                if (composition != null && composition.getName() != null && (composition.getName().contains("bow") || composition.getName().contains("staff")))
+                if (composition.getName() != null && (composition.getName().contains("bow") || composition.getName().contains("staff")))
                 {
                     if (config.autoAttack())
                     {
                         attackHunllef();
+                        attacked = true;
                     }
                 }
                 else
@@ -392,6 +401,7 @@ public class LucidGauntletPlugin extends Plugin
                     if (config.autoAttackMelee())
                     {
                         attackHunllef();
+                        attacked = true;
                     }
                 }
             }
@@ -400,9 +410,256 @@ public class LucidGauntletPlugin extends Plugin
                 if (config.autoAttackMelee())
                 {
                     attackHunllef();
+                    attacked = true;
                 }
             }
         }
+
+        // WorldPoint safeTile = getToSafeTile();
+        // TODO: Finish
+    }
+
+    private WorldPoint getToSafeTile()
+    {
+        WorldPoint safeTile = getClosestSafeTile();
+
+        if (tileUnderUsUnsafe(false))
+        {
+            if (ticksSinceLastDodge() > 1 && safeTile != null && !safeTile.equals(client.getLocalPlayer().getWorldLocation()))
+            {
+                InteractionUtils.walk(safeTile);
+                secondLastSafeTile = lastSafeTile;
+                lastSafeTile = safeTile;
+                lastDodgeTick = client.getTickCount();
+                return safeTile;
+            }
+        }
+        else if (tileUnderUsUnsafe(true))
+        {
+            if (ticksSinceLastDodge() > 1 || tooCloseToTornado(client.getLocalPlayer().getWorldLocation(), 3))
+            {
+                if (safeTile != null && !safeTile.equals(client.getLocalPlayer().getWorldLocation()))
+                {
+                    InteractionUtils.walk(safeTile);
+                    secondLastSafeTile = lastSafeTile;
+                    lastSafeTile = safeTile;
+                    lastDodgeTick = client.getTickCount();
+                    return safeTile;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean tileUnderUsUnsafe(boolean checkTornados)
+    {
+        WorldArea biggerArea = fromSwToNe(hunllef.getNpc().getWorldLocation().dx(-2).dy(-2), hunllef.getNpc().getWorldLocation().dx(6).dy(6));
+        Predicate<TileObject> safeTileFilter = (groundObject) -> (groundObject.getId() == 36047 || groundObject.getId() == 36048) &&
+                groundObject.getWorldLocation().equals(client.getLocalPlayer().getWorldLocation());
+
+        boolean isTileSafe = GameObjectUtils.nearest(safeTileFilter) == null;
+
+        boolean underHunllef = isTileSafe ? biggerArea.contains(client.getLocalPlayer().getWorldLocation()) : hunllef.getNpc().getWorldArea().contains(client.getLocalPlayer().getWorldLocation());
+
+        boolean tooCloseToTornados = tooCloseToTornado(client.getLocalPlayer().getWorldLocation(), 3);
+
+        if (!isTileSafe)
+        {
+            MessageUtils.addMessage(client, "Need to move from unsafe tile!");
+        }
+
+        if (underHunllef)
+        {
+            MessageUtils.addMessage(client, "Need to get out from under the beast!");
+        }
+
+        if (tooCloseToTornados)
+        {
+            MessageUtils.addMessage(client,"There's a tornado about to fuck us up");
+        }
+
+        return !isTileSafe || underHunllef || (checkTornados && tooCloseToTornados);
+    }
+
+    public WorldArea fromSwToNe(WorldPoint swLocation, WorldPoint neLocation)
+    {
+        return new WorldArea(swLocation.getX(), swLocation.getY(), neLocation.getX() - swLocation.getX() + 1, neLocation.getY() - swLocation.getY() + 1, swLocation.getPlane());
+    }
+
+    private boolean tooCloseToTornado(WorldPoint point, int range)
+    {
+        if (tornadoes.size() == 0)
+        {
+            return false;
+        }
+
+        for (Tornado t : tornadoes)
+        {
+            NPC tornado = t.getNpc();
+            if (tornado.getWorldLocation().distanceTo2D(point) < range)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private WorldPoint getClosestSafeTile()
+    {
+        WorldArea biggerArea = fromSwToNe(hunllef.getNpc().getWorldLocation().dx(-2).dy(-2), hunllef.getNpc().getWorldLocation().dx(6).dy(6));
+
+        Predicate<TileObject> filter1 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation()) &&
+                !tooCloseToTornado(groundObject.getWorldLocation(), 5) &&
+                groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1 &&
+                (groundObject.getWorldLocation().getX() == client.getLocalPlayer().getWorldLocation().getX() || groundObject.getWorldLocation().getY() == client.getLocalPlayer().getWorldLocation().getY()) &&
+                isInsideArena(groundObject.getWorldLocation()) &&
+                (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1 || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1) &&
+                groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+        Predicate<TileObject> filter2 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation()) &&
+                !tooCloseToTornado(groundObject.getWorldLocation(), 4) &&
+                groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1 &&
+                (groundObject.getWorldLocation().getX() == client.getLocalPlayer().getWorldLocation().getX() || groundObject.getWorldLocation().getY() == client.getLocalPlayer().getWorldLocation().getY()) &&
+                isInsideArena(groundObject.getWorldLocation()) &&
+                (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1 || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1) &&
+                groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+
+        Predicate<TileObject> filter3 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation()) &&
+                !tooCloseToTornado(groundObject.getWorldLocation(), 3) &&
+                groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1 &&
+                (groundObject.getWorldLocation().getX() == client.getLocalPlayer().getWorldLocation().getX() || groundObject.getWorldLocation().getY() == client.getLocalPlayer().getWorldLocation().getY()) &&
+                isInsideArena(groundObject.getWorldLocation()) &&
+                (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1 || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1) &&
+                groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+        Predicate<TileObject> filter4 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 2)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && (groundObject.getWorldLocation().getX() == client.getLocalPlayer().getWorldLocation().getX() || groundObject.getWorldLocation().getY() == client.getLocalPlayer().getWorldLocation().getY())
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+
+        Predicate<TileObject> filter5 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 5)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+        Predicate<TileObject> filter6 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 4)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+        Predicate<TileObject> filter7 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 3)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+        Predicate<TileObject> filter8 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !biggerArea.contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 2)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
+
+        Predicate<TileObject> filter9 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 5)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1);
+
+        Predicate<TileObject> filter10 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 4)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1);
+
+        Predicate<TileObject> filter11 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 3)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1);
+
+        Predicate<TileObject> filter12 = groundObject ->
+                groundObject.getId() == 36046 &&
+                !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
+                && !tooCloseToTornado(groundObject.getWorldLocation(), 2)
+                && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
+                && isInsideArena(groundObject.getWorldLocation())
+                && (lastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1
+                || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1);
+
+        List<Predicate<TileObject>> filters = List.of(filter1, filter2, filter3, filter4, filter5, filter6, filter7, filter8, filter9, filter10, filter11, filter12);
+
+        int i = 1;
+        for (Predicate<TileObject> filter : filters)
+        {
+            TileObject nearest = GameObjectUtils.nearest(filter);
+
+            if (nearest != null)
+            {
+                MessageUtils.addMessage(client, "Filter " + i + " used to dodge.");
+                return nearest.getWorldLocation();
+            }
+
+            i++;
+        }
+
+        return null;
+    }
+
+    private int ticksSinceLastDodge()
+    {
+        return client.getTickCount() - lastDodgeTick;
+    }
+
+    private boolean isInsideArena(WorldPoint point)
+    {
+        /*final int hunllefBaseX = instanceGrid.getRoom(3, 3).getBaseX();
+        final int hunllefBaseY = instanceGrid.getRoom(3, 3).getBaseY();
+        final WorldPoint arenaSouthWest = new WorldPoint(hunllefBaseX + 2, hunllefBaseY - 13, client.getLocalPlayer().getPlane());
+        final WorldPoint arenaNorthEast = new WorldPoint(hunllefBaseX + 13, hunllefBaseY - 2, client.getLocalPlayer().getPlane());
+
+        return new WorldArea(arenaSouthWest, arenaNorthEast).contains(point);*/
+        return true;
     }
 
     @Subscribe

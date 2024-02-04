@@ -1,18 +1,19 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.ETileItem;
+import com.example.EthanApiPlugin.Collections.Inventory;
 import com.example.EthanApiPlugin.Collections.TileItems;
 import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.Packets.MousePackets;
-import com.example.Packets.MovementPackets;
-import com.example.Packets.TileItemPackets;
+import com.example.Packets.*;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.Widget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class InteractionUtils
@@ -35,6 +36,23 @@ public class InteractionUtils
             {
                 return false;
             }
+        }
+    }
+
+    public static void useItemOnNPC(int id, NPC npc)
+    {
+        Optional<Widget> widget = Inventory.search().filter(i -> i.getItemId() == id).first();
+
+        widget.ifPresent(value -> useWidgetOnNPC(value, npc));
+
+    }
+
+
+    public static void useWidgetOnNPC(Widget widget, NPC npc)
+    {
+        if (widget != null && npc != null)
+        {
+            NPCPackets.queueWidgetOnNPC(npc, widget);
         }
     }
 

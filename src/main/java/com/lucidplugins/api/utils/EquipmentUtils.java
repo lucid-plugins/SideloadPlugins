@@ -52,6 +52,11 @@ public class EquipmentUtils
         return !Equipment.search().idInList(intIdList).result().isEmpty();
     }
 
+    public static boolean contains(String name)
+    {
+        return !Equipment.search().nameContains(name).result().isEmpty();
+    }
+
     public static void removeWepSlotItem()
     {
         Widget itemWidget = Equipment.search().indexIs(3).first().orElse(null);

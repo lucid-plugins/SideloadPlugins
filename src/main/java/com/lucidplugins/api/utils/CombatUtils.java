@@ -1,6 +1,7 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.Equipment;
+import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PrayerInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
@@ -137,6 +138,10 @@ public class CombatUtils
     {
         MousePackets.queueClickPacket();
         WidgetPackets.queueWidgetActionPacket(1, 38862884, -1, -1);
+    }
+
+    public static boolean isSpecEnabled() {
+        return EthanApiPlugin.getClient().getVarpValue(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1;
     }
 
 }

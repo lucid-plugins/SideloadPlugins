@@ -6,6 +6,7 @@ import net.runelite.api.*;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class GameObjectUtils
 {
@@ -54,5 +55,10 @@ public class GameObjectUtils
     public static TileObject nearest(int id)
     {
         return TileObjects.search().withId(id).nearestToPlayer().orElse(null);
+    }
+
+    public static TileObject nearest(Predicate<TileObject> filter)
+    {
+        return TileObjects.search().filter(filter).nearestToPlayer().orElse(null);
     }
 }
