@@ -152,6 +152,7 @@ public class InteractionUtils
         return y == 37 && x > 27 && x < 37;
     }
 
+
     public static List<Tile> getAll(Client client, Predicate<Tile> filter)
     {
         List<Tile> out = new ArrayList<>();
@@ -170,6 +171,8 @@ public class InteractionUtils
 
         return out;
     }
+
+
 
     public static WorldPoint getSafeLocationNorthSouth(Client client, List<LocalPoint> list)
     {
@@ -387,6 +390,16 @@ public class InteractionUtils
     public static WorldPoint getCenterTileFromWorldArea(WorldArea area)
     {
         return new WorldPoint(area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2, area.getPlane());
+    }
+
+    public static List<ETileItem> getAllTileItems(Predicate<ETileItem> filter)
+    {
+        return null;
+    }
+
+    public static Optional<ETileItem> nearestTileItem(Predicate<ETileItem> filter)
+    {
+        return TileItems.search().filter(filter).nearestToPlayer();
     }
 
     public static boolean tileItemNameExistsWithinDistance(String name, int distance)

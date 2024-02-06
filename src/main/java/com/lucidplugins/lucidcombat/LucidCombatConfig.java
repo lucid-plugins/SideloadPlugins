@@ -15,53 +15,123 @@ public interface LucidCombatConfig extends Config
         return true;
     }
 
-    @ConfigItem(name = "Toggle Hotkey", description = "This hotkey will toggle the auto-combat on/off", position = 1, keyName = "autocombatHotkey", section = autoCombatSection)
+    @ConfigItem(name = "Highlight Starting Tile", description = "Shows an tile overlay over your starting tile", position = 1, keyName = "highlightStartTile", section = autoCombatSection)
+    default boolean highlightStartTile()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Highlight Max Range Tiles", description = "Shows an tile overlay around the circumfurence of your max range", position = 2, keyName = "highlightMaxRangeTiles", section = autoCombatSection)
+    default boolean highlightMaxRangeTiles()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Toggle Hotkey", description = "This hotkey will toggle the auto-combat on/off", position = 3, keyName = "autocombatHotkey", section = autoCombatSection)
     default Keybind autocombatHotkey()
     {
         return Keybind.NOT_SET;
     }
 
-    @ConfigItem(name = "NPC(s) To Fight", description = "The names of the monsters to fight, separated by commas. E.g: Cow, Abyssal demon, Zulrah", position = 2, keyName = "npcToFight", section = autoCombatSection)
+    @ConfigItem(name = "NPC(s) To Fight", description = "The names of the monsters to fight, separated by commas. E.g: Cow, Abyssal demon, Zulrah", position = 4, keyName = "npcToFight", section = autoCombatSection)
     default String npcToFight()
     {
         return "";
     }
 
-    @ConfigItem(name = "Auto-Combat Play-Style", description = "The plugin will imitate a certain type of playstyle to suit your needs. Normal by default.", position = 3, keyName = "autocombatStyle", section = autoCombatSection)
+    @ConfigItem(name = "Max Range From Start", description = "The plugin will ignore any monsters AND loot that are more than x tiles away from starting tile", position = 5, keyName = "maxRange", section = autoCombatSection)
+    default int maxRange()
+    {
+        return 5;
+    }
+
+    @ConfigItem(name = "Anti-Lure Protection", description = "Will loot not loot any items outside of the max range + 3", position = 6, keyName = "antilureProtection", section = autoCombatSection)
+    default boolean antilureProtection()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Auto-Combat Play-Style", description = "The plugin will imitate a certain type of playstyle to suit your needs. Normal by default.", position = 7, keyName = "autocombatStyle", section = autoCombatSection)
     default PlayStyle autocombatStyle()
     {
         return PlayStyle.NORMAL;
     }
 
-    @ConfigItem(name = "Reaction Anti-Pattern", description = "The plugin will make random micro-adjustments to reaction times over time in an attempt to create anti-patterns. Will make the reaction times change over time.", position = 4, keyName = "reactionAntiPattern", section = autoCombatSection)
+    @ConfigItem(name = "Reaction Anti-Pattern", description = "The plugin will make random micro-adjustments to reaction times over time in an attempt to create anti-patterns. Will make the reaction times change over time.", position = 8, keyName = "reactionAntiPattern", section = autoCombatSection)
     default boolean reactionAntiPattern()
     {
         return false;
     }
 
+    @ConfigSection(name = "Loot Settings", description = "Control loot settings for auto-combat", position = 1, closedByDefault = true)
+    String lootSection = "Loot Settings";
+
+    @ConfigItem(name = "Enable Looting", description = "Will loot nearby items during auto-combat", position = 0, keyName = "enableLooting", section = lootSection)
+    default boolean enableLooting()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Loot Names", description = "Names of items to loot, separated by commas", position = 1, keyName = "lootNames", section = lootSection)
+    default String lootNames()
+    {
+        return "";
+    }
+
+    @ConfigItem(name = "Max Range From Player", description = "How far away from the player can an item be for us to pick it up? Plugin still respects max range.", position = 2, keyName = "lootRange", section = lootSection)
+    default int lootRange()
+    {
+        return 5;
+    }
+
+    @ConfigItem(name = "Stackable Only", description = "Will only loot the item if it is stackable in your inventory <br>"
+            + "(excludes bones/ashes which can still be picked up normally)", position = 4, keyName = "stackableOnly", section = lootSection)
+    default boolean stackableOnly()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Bury Bones/Scatter Ashes", description = "Will auto-bury or scatter any bones or ashes that get picked up", position = 5, keyName = "buryScatter", section = lootSection)
+    default boolean buryScatter()
+    {
+        return false;
+    }
+
     // Slayer Settings
-    @ConfigSection(name = "Slayer Settings", description = "Control settings for slayer features", position = 1, closedByDefault = true)
+    @ConfigSection(name = "Slayer Settings", description = "Control settings for slayer features", position = 2, closedByDefault = true)
     String slayerSection = "Slayer Settings";
 
-    @ConfigItem(name = "Stop On Task Completion", description = "Will turn off the auto-combat once your slayer task is finished", position = 0, keyName = "stopOnTaskCompletion", section = slayerSection)
+    @ConfigItem(name = "Stop Fighting On Task Complete", description = "Will turn off the auto-combat once your slayer task is finished", position = 0, keyName = "stopOnTaskCompletion", section = slayerSection)
     default boolean stopOnTaskCompletion()
     {
         return false;
     }
 
-    @ConfigItem(name = "Slayer NPC Finishing Item", description = "Will auto use the defined item on your target when they get below % health to finish them off. Works regardless of auto-combat state if enabled", position = 1, keyName = "autoSlayerFinisher", section = slayerSection)
+    @ConfigItem(name = "Pause Upkeep On Task Complete", description = "Forces the plugin to go idle upon slayer task completion to prevent upkeep from continuing (will re-activate if you take damage)", position = 1, keyName = "stopUpkeepOnTaskCompletion", section = slayerSection)
+    default boolean stopUpkeepOnTaskCompletion()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Use Teletab On Task Complete", description = "Will use any teletab available in your inventory when the slayer task is done", position = 2, keyName = "teletabOnCompletion", section = slayerSection)
+    default boolean teletabOnCompletion()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Slayer NPC Finishing Item", description = "Will auto use the defined item on your target when they get below % health to finish them off. Works regardless of auto-combat state if enabled", position = 3, keyName = "autoSlayerFinisher", section = slayerSection)
     default boolean autoSlayerFinisher()
     {
         return false;
     }
 
-    @ConfigItem(name = "Finishing Item", description = "This is the item you need to use to full-kill your slayer target.", position = 2, keyName = "slayerFinisherItem", section = slayerSection)
+    @ConfigItem(name = "Finishing Item", description = "This is the item you need to use to full-kill your slayer target.", position = 4, keyName = "slayerFinisherItem", section = slayerSection)
     default SlayerFinisher slayerFinisherItem()
     {
         return SlayerFinisher.NONE;
     }
 
-    @ConfigItem(name = "Finish Below HP %", description = "Will auto-use the slayer finisher when your target is less than this % of health remaining", position = 3, keyName = "slayerFinisherHpPercent", section = slayerSection)
+    @ConfigItem(name = "Finish Below HP %", description = "Will auto-use the slayer finisher when your target is less than this % of health remaining", position = 5, keyName = "slayerFinisherHpPercent", section = slayerSection)
     default int slayerFinisherHpPercent()
     {
         return 10;
@@ -69,7 +139,7 @@ public interface LucidCombatConfig extends Config
 
 
     // Prayer upkeep
-    @ConfigSection(name = "Prayer Upkeep", description = "Control settings for prayer upkeep", position = 2, closedByDefault = true)
+    @ConfigSection(name = "Prayer Upkeep", description = "Control settings for prayer upkeep", position = 3, closedByDefault = true)
     String prayerUpkeepSection = "Prayer Upkeep";
 
     @ConfigItem(name = "Enable Prayer Restore", description = "Enables auto prayer upkeep. Auto-detects prayer restore items in inventory", position = 0, keyName = "enablePrayerRestore", section = prayerUpkeepSection)
@@ -103,7 +173,7 @@ public interface LucidCombatConfig extends Config
     }
 
     // HP upkeep
-    @ConfigSection(name = "HP Upkeep", description = "Control settings for HP upkeep", position = 3, closedByDefault = true)
+    @ConfigSection(name = "HP Upkeep", description = "Control settings for HP upkeep", position = 4, closedByDefault = true)
     String hpUpkeepSection = "HP Upkeep";
 
     @ConfigItem(name = "Enable HP Restore", description = "Enables auto HP upkeep. Auto-detects any food not on the blacklist", position = 0, keyName = "enableHpRestore", section = hpUpkeepSection)
@@ -155,7 +225,7 @@ public interface LucidCombatConfig extends Config
     }
 
     // Boost Upkeep
-    @ConfigSection(name = "Boost Upkeep", description = "Control settings for HP upkeep", position = 4, closedByDefault = true)
+    @ConfigSection(name = "Boost Upkeep", description = "Control settings for HP upkeep", position = 5, closedByDefault = true)
     String boostUpkeepSection = "Boost Upkeep";
 
     @ConfigItem(name = "Melee Boost Upkeep", description = "Enables auto Melee boost upkeep. Auto-detects potions", position = 0, keyName = "enableMeleeUpkeep", section = boostUpkeepSection)
@@ -196,7 +266,7 @@ public interface LucidCombatConfig extends Config
 
 
     // Auto-spec
-    @ConfigSection(name = "Auto-Spec Settings", description = "Control settings for Auto-Spec", position = 5, closedByDefault = true)
+    @ConfigSection(name = "Auto-Spec Settings", description = "Control settings for Auto-Spec", position = 6, closedByDefault = true)
     String autoSpecSection = "Auto-Spec Settings";
 
     @ConfigItem(name = "Enable Auto-Spec", description = "Enables auto-spec", position = 0, keyName = "enableAutoSpec", section = autoSpecSection)
@@ -229,7 +299,8 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
-    enum SlayerFinisher {
+    enum SlayerFinisher
+    {
         BAG_OF_SALT("Bag of salt"), ICE_COOLER("Ice cooler"), FUNGICIDE_SPRAY("Fungicide spray"), ROCK_HAMMER("Rock hammer"), ROCK_THROWNHAMMER("Rock thrownhammer"), NONE("n/a");
 
         @Getter
