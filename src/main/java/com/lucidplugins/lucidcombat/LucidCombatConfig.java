@@ -63,6 +63,12 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
+    @ConfigItem(name = "Use Safepot", description = "Uses the starting tile as your safespot and will return to it if not looting", position = 9, keyName = "useSafespot", section = autoCombatSection)
+    default boolean useSafespot()
+    {
+        return false;
+    }
+
     @ConfigSection(name = "Loot Settings", description = "Control loot settings for auto-combat", position = 1, closedByDefault = true)
     String lootSection = "Loot Settings";
 

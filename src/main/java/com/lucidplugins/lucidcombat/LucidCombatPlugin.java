@@ -244,6 +244,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         {
             expectedLootLocations.keySet().removeIf(tile -> tile.equals(lastLootedTile));
         }
+
+        if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("can't reach that"))
+        {
+            lastTarget = null;
+            lastLootedTile = null;
+            lastTickActive = client.getTickCount();
+            nextReactionTick = client.getTickCount() + 1;
+        }
     }
 
     @Subscribe
@@ -670,6 +678,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         if (!autoCombatRunning)
         {
+            return false;
+        }
+
+        if (config.useSafespot() && !startLocation.equals(client.getLocalPlayer().getWorldLocation()) && !isMoving())
+        {
+            InteractionUtils.walk(startLocation);
+            nextReactionTick = client.getTickCount() + getReaction();
             return false;
         }
 
