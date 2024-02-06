@@ -78,7 +78,13 @@ public interface LucidCombatConfig extends Config
         return "";
     }
 
-    @ConfigItem(name = "Max Range From Player", description = "How far away from the player can an item be for us to pick it up? Plugin still respects max range.", position = 2, keyName = "lootRange", section = lootSection)
+    @ConfigItem(name = "Blacklist Items", description = "Names of items to to avoid specifically (for removing unwanted items from partial name matching)", position = 2, keyName = "lootBlacklist", section = lootSection)
+    default String lootBlacklist()
+    {
+        return "";
+    }
+
+    @ConfigItem(name = "Max Range From Player", description = "How far away from the player can an item be for us to pick it up? Plugin still respects max range.", position = 3, keyName = "lootRange", section = lootSection)
     default int lootRange()
     {
         return 5;
@@ -95,6 +101,18 @@ public interface LucidCombatConfig extends Config
     default boolean buryScatter()
     {
         return false;
+    }
+
+    @ConfigItem(name = "Only Loot No/Dead Target", description = "Will only grab loot if you don't have a target or they are dead or it's been more than max loot ticks since the last time you looted something", position = 6, keyName = "onlyLootWithNoTarget", section = lootSection)
+    default boolean onlyLootWithNoTarget()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Max Ticks Between Loot Attempts", description = "If you are only looting with no/dead target it will attempt to loot if its been x amount of ticks since you last looted", position = 7, keyName = "maxTicksBetweenLooting", section = lootSection)
+    default int maxTicksBetweenLooting()
+    {
+        return 115;
     }
 
     // Slayer Settings
@@ -182,43 +200,49 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
-    @ConfigItem(name = "Food Blacklist", description = "Will not attempt to eat any of these item named when looking for food. Multiple values should be separated by commas. Uses names only, no IDs", position = 1, keyName = "foodBlacklist", section = hpUpkeepSection)
+    @ConfigItem(name = "Stop If Out Of Food", description = "Stops the auto-combat if you run out of food", position = 1, keyName = "stopIfNoFood", section = hpUpkeepSection)
+    default boolean stopIfNoFood()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Food Blacklist", description = "Will not attempt to eat any of these item named when looking for food. Multiple values should be separated by commas. Uses names only, no IDs", position = 2, keyName = "foodBlacklist", section = hpUpkeepSection)
     default String foodBlacklist()
     {
         return "";
     }
 
-    @ConfigItem(name = "Enable Double Eat", description = "Enables 1-tick double-eating with main food item + karambwan if applicable", position = 2, keyName = "enableDoubleEat", section = hpUpkeepSection)
+    @ConfigItem(name = "Enable Double Eat", description = "Enables 1-tick double-eating with main food item + karambwan if applicable", position = 3, keyName = "enableDoubleEat", section = hpUpkeepSection)
     default boolean enableDoubleEat()
     {
         return false;
     }
 
-    @ConfigItem(name = "Enable Triple Eat", description = "Enables 1-tick triple-eating with main food item + brew + karambwan if applicable", position = 3, keyName = "enableTripleEat", section = hpUpkeepSection)
+    @ConfigItem(name = "Enable Triple Eat", description = "Enables 1-tick triple-eating with main food item + brew + karambwan if applicable", position = 4, keyName = "enableTripleEat", section = hpUpkeepSection)
     default boolean enableTripleEat()
     {
         return false;
     }
 
-    @ConfigItem(name = "Minimum HP", description = "Will eat once your HP goes below this level", position = 4, keyName = "minHp", section = hpUpkeepSection)
+    @ConfigItem(name = "Minimum HP", description = "Will eat once your HP goes below this level", position = 5, keyName = "minHp", section = hpUpkeepSection)
     default int minHp()
     {
         return 30;
     }
 
-    @ConfigItem(name = "Min Restore Buffer", description = "Will add this random buffer range onto the minimum HP needed before restore to make the restoration a bit more random", position = 5, keyName = "minHpBuffer", section = hpUpkeepSection)
+    @ConfigItem(name = "Min Restore Buffer", description = "Will add this random buffer range onto the minimum HP needed before restore to make the restoration a bit more random", position = 6, keyName = "minHpBuffer", section = hpUpkeepSection)
     default int minHpBuffer()
     {
         return 4;
     }
 
-    @ConfigItem(name = "Restore To Max", description = "Will keep eating until Max HP minus the buffer amount", position = 6, keyName = "restoreHpToMax", section = hpUpkeepSection)
+    @ConfigItem(name = "Restore To Max", description = "Will keep eating until Max HP minus the buffer amount", position = 7, keyName = "restoreHpToMax", section = hpUpkeepSection)
     default boolean restoreHpToMax()
     {
         return false;
     }
 
-    @ConfigItem(name = "Max Buffer", description = "Adds a buffer to check if your HP is within range of max minus this amount. E.g. Your HP is 99 and the buffer is 5, it will consider 94+ HP 'max'", position = 7, keyName = "maxHpBuffer", section = hpUpkeepSection)
+    @ConfigItem(name = "Max Buffer", description = "Adds a buffer to check if your HP is within range of max minus this amount. E.g. Your HP is 99 and the buffer is 5, it will consider 94+ HP 'max'", position = 8, keyName = "maxHpBuffer", section = hpUpkeepSection)
     default int maxHpBuffer()
     {
         return 0;
