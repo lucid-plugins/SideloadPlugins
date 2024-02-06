@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @PluginDescriptor(
-        name = "Lucid Disable Rendering",
+        name = "<html><font color=\"#32CD32\">Lucid </font>Disable Rendering</html>",
         description = "Disabled rendering graphics on the client while plugin is enabled.",
         enabledByDefault = false,
         tags = {"rendering", "performance", "disable", "freeze"}

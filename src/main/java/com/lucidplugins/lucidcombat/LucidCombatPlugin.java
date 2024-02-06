@@ -1,10 +1,8 @@
 package com.lucidplugins.lucidcombat;
 
 import com.example.EthanApiPlugin.Collections.ETileItem;
-import com.example.EthanApiPlugin.Collections.Players;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.PacketUtils.PacketUtilsPlugin;
-import com.example.Packets.PlayerPackets;
 import com.google.inject.Provides;
 import com.lucidplugins.api.item.SlottedItem;
 import com.lucidplugins.api.utils.*;
@@ -38,7 +36,7 @@ import java.util.function.Predicate;
 
 
 @Extension
-@PluginDescriptor(name = "Lucid Combat", description = "Helps with Combat related stuff", enabledByDefault = false)
+@PluginDescriptor(name = "<html><font color=\"#32CD32\">Lucid </font>Combat</html>", description = "Helps with Combat related stuff", enabledByDefault = false)
 @PluginDependency(EthanApiPlugin.class)
 @PluginDependency(PacketUtilsPlugin.class)
 public class LucidCombatPlugin extends Plugin implements KeyListener

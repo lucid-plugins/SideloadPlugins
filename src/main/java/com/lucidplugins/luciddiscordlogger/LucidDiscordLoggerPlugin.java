@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 
 @PluginDescriptor(
-        name = "Lucid Discord Logger",
+        name = "<html><font color=\"#32CD32\">Lucid </font>Discord Logger</html>",
         description = "A plugin that sends various messages to a specified Discord webhook URL",
         enabledByDefault = false,
         tags = {"discord", "webhook", "chat"}

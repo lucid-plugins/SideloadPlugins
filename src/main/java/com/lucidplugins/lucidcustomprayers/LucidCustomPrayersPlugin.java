@@ -43,7 +43,7 @@ import static net.runelite.client.RuneLite.RUNELITE_DIR;
 
 @Extension
 @PluginDescriptor(
-        name = "Lucid Custom Prayers",
+        name = "<html><font color=\"#32CD32\">Lucid </font>Custom Prayers</html>",
         description = "Set up auto prayers based on various event IDs",
         enabledByDefault = false,
         tags = {"prayer", "swap"}

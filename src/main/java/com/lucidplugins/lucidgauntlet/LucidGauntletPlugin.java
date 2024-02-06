@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 
 @Extension
 @PluginDescriptor(
-        name = "<html><font color=\"#32CD32\">Lucid Gauntlet</font></html>",
+        name = "<html><font color=\"#32CD32\">Lucid </font>Gauntlet</html>",
         enabledByDefault = false,
         description = "Gauntlet Extended by xKylee updated with auto-features for Hunllef added in.",
         tags = {"gauntlet"}
