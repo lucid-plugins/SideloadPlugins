@@ -394,7 +394,7 @@ public class InteractionUtils
 
     public static List<ETileItem> getAllTileItems(Predicate<ETileItem> filter)
     {
-        return null;
+        return TileItems.search().filter(filter).result();
     }
 
     public static Optional<ETileItem> nearestTileItem(Predicate<ETileItem> filter)
