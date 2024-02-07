@@ -11,10 +11,7 @@ import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -178,6 +175,70 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     LucidCombatConfig getConfig(ConfigManager configManager)
     {
         return configManager.getConfig(LucidCombatConfig.class);
+    }
+
+    @Subscribe
+    private void onMenuOpened(MenuOpened event)
+    {
+        if (!config.rightClickMenu())
+        {
+            return;
+        }
+
+        final Optional<MenuEntry> attackEntry = Arrays.stream(event.getMenuEntries()).filter(menu -> menu.getOption().equals("Attack") && menu.getNpc() != null && menu.getNpc().getName() != null).findFirst();
+
+        if (attackEntry.isEmpty())
+        {
+            return;
+        }
+
+        if (!autoCombatRunning)
+        {
+            client.createMenuEntry(1)
+            .setOption("Start Killing")
+            .setTarget("<col=ffff00>" + attackEntry.get().getNpc().getName() + "</col>")
+            .setType(MenuAction.RUNELITE)
+            .onClick((entry) -> {
+                clientThread.invoke(() -> configManager.setConfiguration("lucid-combat", "npcToFight", attackEntry.get().getNpc().getName()));
+                lastTickActive = client.getTickCount();
+                lastAlchTick = client.getTickCount();
+                expectedLootLocations.clear();
+                npcsKilled.clear();
+                startLocation = client.getLocalPlayer().getWorldLocation();
+                autoCombatRunning = true;
+            });
+        }
+        else
+        {
+            boolean nameContains = false;
+            for (String npcName : config.npcToFight().split(","))
+            {
+                npcName = npcName.trim();
+
+                if (attackEntry.get().getNpc().getName().contains(npcName))
+                {
+                    nameContains = true;
+                    break;
+                }
+            }
+
+            if (nameContains)
+            {
+                client.createMenuEntry(1)
+                .setOption("Stop Killing")
+                .setTarget("<col=ffff00>" + attackEntry.get().getNpc().getName() + "</col>")
+                .setType(MenuAction.RUNELITE)
+                .onClick((entry) -> {
+                    autoCombatRunning = false;
+                    lastTickActive = client.getTickCount();
+                    lastTarget = null;
+                    lastLootedTile = null;
+                    expectedLootLocations.clear();
+                    npcsKilled.clear();
+                    startLocation = null;
+                });
+            }
+        }
     }
 
     @Subscribe

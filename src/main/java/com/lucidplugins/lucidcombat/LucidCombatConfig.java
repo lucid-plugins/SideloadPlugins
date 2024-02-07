@@ -39,25 +39,31 @@ public interface LucidCombatConfig extends Config
         return "";
     }
 
-    @ConfigItem(name = "Max Range From Start", description = "The plugin will ignore any monsters AND loot that are more than x tiles away from starting tile", position = 5, keyName = "maxRange", section = autoCombatSection)
+    @ConfigItem(name = "Right Click Entry", description = "Shows a menu entry on NPC's to be able to start the plugin that way.", position = 5, keyName = "rightClickMenu", section = autoCombatSection)
+    default boolean rightClickMenu()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Max Range From Start", description = "The plugin will ignore any monsters AND loot that are more than x tiles away from starting tile", position = 6, keyName = "maxRange", section = autoCombatSection)
     default int maxRange()
     {
         return 5;
     }
 
-    @ConfigItem(name = "Anti-Lure Protection", description = "Will loot not loot any items outside of the max range + 3", position = 6, keyName = "antilureProtection", section = autoCombatSection)
+    @ConfigItem(name = "Anti-Lure Protection", description = "Will loot not loot any items outside of the max range + 3", position = 7, keyName = "antilureProtection", section = autoCombatSection)
     default boolean antilureProtection()
     {
         return false;
     }
 
-    @ConfigItem(name = "Auto-Combat Play-Style", description = "The plugin will imitate a certain type of playstyle to suit your needs. Normal by default.", position = 7, keyName = "autocombatStyle", section = autoCombatSection)
+    @ConfigItem(name = "Auto-Combat Play-Style", description = "The plugin will imitate a certain type of playstyle to suit your needs. Normal by default.", position = 8, keyName = "autocombatStyle", section = autoCombatSection)
     default PlayStyle autocombatStyle()
     {
         return PlayStyle.NORMAL;
     }
 
-    @ConfigItem(name = "Reaction Anti-Pattern", description = "The plugin will make random micro-adjustments to reaction times over time in an attempt to create anti-patterns. Will make the reaction times change over time.", position = 8, keyName = "reactionAntiPattern", section = autoCombatSection)
+    @ConfigItem(name = "Reaction Anti-Pattern", description = "The plugin will make random micro-adjustments to reaction times over time in an attempt to create anti-patterns. Will make the reaction times change over time.", position = 9, keyName = "reactionAntiPattern", section = autoCombatSection)
     default boolean reactionAntiPattern()
     {
         return false;
