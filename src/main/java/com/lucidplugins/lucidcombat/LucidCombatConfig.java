@@ -121,6 +121,12 @@ public interface LucidCombatConfig extends Config
         return 115;
     }
 
+    @ConfigItem(name = "Loot Goblin", description = "Will grab any valid loot, even if it's not yours", position = 8, keyName = "lootGoblin", section = lootSection)
+    default boolean lootGoblin()
+    {
+        return false;
+    }
+
     // Slayer Settings
     @ConfigSection(name = "Slayer Settings", description = "Control settings for slayer features", position = 2, closedByDefault = true)
     String slayerSection = "Slayer Settings";

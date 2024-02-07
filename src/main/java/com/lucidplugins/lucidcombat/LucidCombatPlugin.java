@@ -512,51 +512,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
-        List<ETileItem> lootableItems = InteractionUtils.getAllTileItems(tileItem -> {
-            ItemComposition composition = client.getItemDefinition(tileItem.getTileItem().getId());
-            boolean nameContains = false;
-            for (String itemName : config.lootNames().split(","))
-            {
-                itemName = itemName.trim();
-
-                if (composition.getName() != null && composition.getName().contains(itemName))
-                {
-                    nameContains = true;
-                    break;
-                }
-            }
-
-            boolean inBlacklist = false;
-            if (!config.lootBlacklist().trim().isEmpty())
-            {
-                for (String itemName : config.lootBlacklist().split(","))
-                {
-                    itemName = itemName.trim();
-
-                    if (itemName.length() < 2)
-                    {
-                        continue;
-                    }
-
-                    if (composition.getName() != null && composition.getName().contains(itemName))
-                    {
-                        inBlacklist = true;
-                        break;
-                    }
-                }
-            }
-
-            boolean antiLureActivated = false;
-
-            if (config.antilureProtection())
-            {
-                antiLureActivated = InteractionUtils.distanceTo2DHypotenuse(tileItem.getLocation(), startLocation) > (config.maxRange() + 3);
-            }
-
-            return (!inBlacklist && nameContains) && expectedLootLocations.containsKey(LocalPoint.fromWorld(client, tileItem.getLocation())) &&
-                    InteractionUtils.distanceTo2DHypotenuse(tileItem.getLocation(), client.getLocalPlayer().getWorldLocation()) <= config.lootRange() &&
-                    !antiLureActivated;
-        });
+        List<ETileItem> lootableItems = getLootableItems();
 
         if (config.stackableOnly())
         {
@@ -657,6 +613,57 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         return false;
+    }
+
+    private List<ETileItem> getLootableItems()
+    {
+        return InteractionUtils.getAllTileItems(tileItem -> {
+            ItemComposition composition = client.getItemDefinition(tileItem.getTileItem().getId());
+            boolean nameContains = false;
+            for (String itemName : config.lootNames().split(","))
+            {
+                itemName = itemName.trim();
+
+                if (composition.getName() != null && composition.getName().contains(itemName))
+                {
+                    nameContains = true;
+                    break;
+                }
+            }
+
+            boolean inBlacklist = false;
+            if (!config.lootBlacklist().trim().isEmpty())
+            {
+                for (String itemName : config.lootBlacklist().split(","))
+                {
+                    itemName = itemName.trim();
+
+                    if (itemName.length() < 2)
+                    {
+                        continue;
+                    }
+
+                    if (composition.getName() != null && composition.getName().contains(itemName))
+                    {
+                        inBlacklist = true;
+                        break;
+                    }
+                }
+            }
+
+            boolean antiLureActivated = false;
+
+            if (config.antilureProtection())
+            {
+                antiLureActivated = InteractionUtils.distanceTo2DHypotenuse(tileItem.getLocation(), startLocation) > (config.maxRange() + 3);
+            }
+
+            boolean inAnExpectedLocation = config.lootGoblin() || expectedLootLocations.containsKey(LocalPoint.fromWorld(client, tileItem.getLocation()));
+
+            return (!inBlacklist && nameContains) && inAnExpectedLocation &&
+                    InteractionUtils.distanceTo2DHypotenuse(tileItem.getLocation(), client.getLocalPlayer().getWorldLocation()) <= config.lootRange() &&
+                    !antiLureActivated;
+        });
     }
 
     private ETileItem nearestTileItem(List<ETileItem> items)
