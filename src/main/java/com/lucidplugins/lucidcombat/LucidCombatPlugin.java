@@ -115,6 +115,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private final List<String> prayerRestoreNames = List.of("Prayer potion", "Super restore", "Sanfew serum", "Blighted super restore");
 
+
+    private int lastAlchTick = 0;
+
     private final Predicate<SlottedItem> foodFilterNoBlacklistItems = (item) -> {
         final ItemComposition itemComposition = client.getItemDefinition(item.getItem().getId());
         return itemComposition.getName() != null &&
@@ -367,6 +370,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean handleReAttack()
     {
+        if (config.alchStuff() && !getAlchableItems().isEmpty())
+        {
+            return false;
+        }
+
         if (lastTarget != null && !isMoving())
         {
             if (lastTarget instanceof Player && (lastTarget.getInteracting() == client.getLocalPlayer() && client.getLocalPlayer().getInteracting() != lastTarget))
@@ -669,11 +677,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         return nearest;
     }
 
-    private boolean lootableItems()
-    {
-        return false;
-    }
-
     private boolean handleAutoCombat()
     {
         if (!autoCombatRunning)
@@ -696,6 +699,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         if (ticksUntilNextLootAttempt() > 0)
         {
             return false;
+        }
+
+        if (config.alchStuff())
+        {
+            if (handleAlching())
+            {
+                return false;
+            }
         }
 
         secondaryStatus = "Combat";
@@ -745,6 +756,207 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         secondaryStatus = "Idle";
         nextReactionTick = client.getTickCount() + getReaction();
         return false;
+    }
+
+
+    private boolean handleAlching()
+    {
+        if (lastAlchTick == 0)
+        {
+            lastAlchTick = client.getTickCount() + 5;
+        }
+
+        if (client.getTickCount() - lastAlchTick < 5)
+        {
+            return false;
+        }
+
+        List<SlottedItem> alchableItems = getAlchableItems();
+
+        if (alchableItems.isEmpty())
+        {
+            return false;
+        }
+
+        SlottedItem itemToAlch = alchableItems.get(0);
+        if (isHighAlching())
+        {
+            if (hasAlchRunes(true))
+            {
+                if (client.getLocalPlayer().getInteracting() != null)
+                {
+                    lastTarget = client.getLocalPlayer().getInteracting();
+                }
+
+                InventoryUtils.castAlchemyOnItem(itemToAlch.getItem().getId(), true);
+                lastAlchTick = client.getTickCount();
+                secondaryStatus = "Alching";
+                return true;
+            }
+        }
+        else
+        {
+            if (hasAlchRunes(false))
+            {
+                if (client.getLocalPlayer().getInteracting() != null)
+                {
+                    lastTarget = client.getLocalPlayer().getInteracting();
+                }
+
+                InventoryUtils.castAlchemyOnItem(itemToAlch.getItem().getId(), false);
+                lastAlchTick = client.getTickCount();
+                secondaryStatus = "Alching";
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int totalCount(int itemId, int runeIndex)
+    {
+        int count = InventoryUtils.count(itemId);
+
+        if (!hasRunePouchInInventory())
+        {
+            return count;
+        }
+
+        if (idInRunePouch1() == runeIndex)
+        {
+            count += amountInRunePouch1();
+        }
+
+        if (idInRunePouch2() == runeIndex)
+        {
+            count += amountInRunePouch2();
+        }
+
+        if (idInRunePouch3() == runeIndex)
+        {
+            count += amountInRunePouch3();
+        }
+
+        if (idInRunePouch4() == runeIndex)
+        {
+            count += amountInRunePouch4();
+        }
+
+        return count;
+    }
+
+    private boolean isHighAlching()
+    {
+        return client.getBoostedSkillLevel(Skill.MAGIC) >= 55;
+    }
+
+    private int idInRunePouch1()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_RUNE1);
+    }
+
+    private int amountInRunePouch1()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_AMOUNT1);
+    }
+
+    private int idInRunePouch2()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_RUNE2);
+    }
+
+    private int amountInRunePouch2()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_AMOUNT2);
+    }
+
+    private int idInRunePouch3()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_RUNE3);
+    }
+
+    private int amountInRunePouch3()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_AMOUNT3);
+    }
+
+    private int idInRunePouch4()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_RUNE4);
+    }
+
+    private int amountInRunePouch4()
+    {
+        return client.getVarbitValue(Varbits.RUNE_POUCH_AMOUNT4);
+    }
+
+    private boolean hasAlchRunes(boolean highAlch)
+    {
+        int natCount = totalCount(ItemID.NATURE_RUNE, 10);
+
+        int fireRunes = totalCount(ItemID.FIRE_RUNE, 4);
+        int lavaRunes = totalCount(ItemID.LAVA_RUNE, 18);
+        int steamRunes = totalCount(ItemID.STEAM_RUNE, 19);
+        int smokeRunes = totalCount(ItemID.SMOKE_RUNE, 20);
+        int total = (fireRunes + lavaRunes + smokeRunes + steamRunes);
+
+        boolean hasFireRunes = total >= (highAlch ? 5 : 3);
+        boolean hasNatures = natCount >= 1;
+        boolean hasTome = EquipmentUtils.contains(ItemID.TOME_OF_FIRE);
+
+        return hasNatures && (hasFireRunes || hasTome);
+    }
+
+    private boolean hasRunePouchInInventory()
+    {
+        return InventoryUtils.contains("Rune pouch") || InventoryUtils.contains("Divine rune pouch");
+    }
+
+
+    private List<SlottedItem> getAlchableItems()
+    {
+        if (config.alchNames().trim().isEmpty())
+        {
+            return List.of();
+        }
+
+        return InventoryUtils.getAll(item ->
+        {
+            ItemComposition composition = client.getItemDefinition(item.getItem().getId());
+            boolean nameContains = false;
+            for (String itemName : config.alchNames().split(","))
+            {
+                itemName = itemName.trim();
+
+                if (composition.getName() != null && composition.getName().contains(itemName))
+                {
+                    nameContains = true;
+                    break;
+                }
+            }
+
+            boolean inBlacklist = false;
+            if (!config.lootBlacklist().trim().isEmpty())
+            {
+                for (String itemName : config.alchBlacklist().split(","))
+                {
+                    itemName = itemName.trim();
+
+                    if (itemName.length() < 2)
+                    {
+                        continue;
+                    }
+
+                    if (composition.getName() != null && composition.getName().contains(itemName))
+                    {
+                        inBlacklist = true;
+                        break;
+                    }
+                }
+            }
+
+            return nameContains && !inBlacklist;
+        });
     }
 
     public int getReaction()

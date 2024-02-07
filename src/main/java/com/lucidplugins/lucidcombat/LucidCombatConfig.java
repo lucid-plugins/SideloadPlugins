@@ -84,7 +84,7 @@ public interface LucidCombatConfig extends Config
         return "";
     }
 
-    @ConfigItem(name = "Blacklist Items", description = "Names of items to to avoid specifically (for removing unwanted items from partial name matching)", position = 2, keyName = "lootBlacklist", section = lootSection)
+    @ConfigItem(name = "Blacklist Items", description = "Names of items to to avoid specifically (for excluding unwanted items from partial name matching)", position = 2, keyName = "lootBlacklist", section = lootSection)
     default String lootBlacklist()
     {
         return "";
@@ -327,6 +327,28 @@ public interface LucidCombatConfig extends Config
     default boolean specIfEquipped()
     {
         return false;
+    }
+
+    // Alching
+    @ConfigSection(name = "Alchemy Settings", description = "Control settings for Low/High Alchemy", position = 7, closedByDefault = true)
+    String alchemySection = "Alchemy Settings";
+
+    @ConfigItem(name = "Enable Alchemy", description = "Looks at your magic level to see which level alchemy to use and uses it on the named items", position = 0, keyName = "alchStuff", section = alchemySection)
+    default boolean alchStuff()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Alch Names", description = "Names of items to alch, separated by commas. partial matches DO work. case sensitive.", position = 1, keyName = "alchNames", section = alchemySection)
+    default String alchNames()
+    {
+        return "";
+    }
+
+    @ConfigItem(name = "Blacklist Alchs", description = "Names of items to to explicitly NOT alch (for excluding unwanted items from partial name matching)", position = 2, keyName = "alchBlacklist", section = alchemySection)
+    default String alchBlacklist()
+    {
+        return "";
     }
 
     enum SlayerFinisher

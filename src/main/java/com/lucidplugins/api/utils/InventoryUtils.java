@@ -4,6 +4,8 @@ package com.lucidplugins.api.utils;
 import com.example.EthanApiPlugin.Collections.Inventory;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.InventoryInteraction;
+import com.example.Packets.MousePackets;
+import com.example.Packets.WidgetPackets;
 import com.lucidplugins.api.item.SlottedItem;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
@@ -12,6 +14,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -51,6 +54,22 @@ public class InventoryUtils
     public static void itemInteract(int itemId, String action)
     {
         InventoryInteraction.useItem(itemId, action);
+    }
+
+    public static void castAlchemyOnItem(int id, boolean highAlchemy)
+    {
+        Optional<Widget> itemWidget = Inventory.search().withId(id).first();
+        final int alchemyWidgetId = highAlchemy ? 14286888 : 14286867;
+        Widget alchemyWidget = EthanApiPlugin.getClient().getWidget(alchemyWidgetId);
+
+        if (alchemyWidget != null)
+        {
+            itemWidget.ifPresent(widget -> {
+                MousePackets.queueClickPacket();
+                MousePackets.queueClickPacket();
+                WidgetPackets.queueWidgetOnWidget(alchemyWidget, widget);
+            });
+        }
     }
 
     public static int calculateWidgetId(Client client, Item item)

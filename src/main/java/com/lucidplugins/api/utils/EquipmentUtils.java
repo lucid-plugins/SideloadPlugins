@@ -45,6 +45,11 @@ public class EquipmentUtils
         return item;
     }
 
+    public static boolean contains(int id)
+    {
+        return !Equipment.search().withId(id).result().isEmpty();
+    }
+
     public static boolean contains(int[] ids)
     {
         List<Integer> intIdList = Arrays.stream(ids).boxed().collect(Collectors.toList());
