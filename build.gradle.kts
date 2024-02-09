@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
 }
 
-val runeLiteVersion = "1.10.16.1"
+val runeLiteVersion = "1.10.22"
 
 dependencies {
 
@@ -30,7 +30,7 @@ dependencies {
 }
 
 group = "com.lucidplugins"
-version = "5.6.2"
+version = "5.6.3"
 
 val javaMajorVersion = JavaVersion.VERSION_11.majorVersion
 
@@ -61,6 +61,7 @@ tasks {
         //exclude("com/lucidplugins/lucidhotkeys/**")
         //exclude("com/lucidplugins/lucidmuspah/**")
         //exclude("com/lucidplugins/lucidscurriushelper/**")
+        //exclude("com/lucidplugins/lucidwhispererhelper/**")
         //exclude("com/lucidplugins/api/**")
         exclude("com/lucidplugins/toa/**")
     }
