@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PluginDescriptor(
-        name = "Lucid Levi Helper",
+        name = "<html><font color=\"#32CD32\">Lucid </font>Levi Helper</html>",
         description = "Auto-prays against leviathan and more",
         enabledByDefault = false,
         tags = {"leviathan", "dt2", "lucid"}
