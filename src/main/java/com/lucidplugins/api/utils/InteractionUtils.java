@@ -19,6 +19,12 @@ import java.util.function.Predicate;
 public class InteractionUtils
 {
 
+    public static void useItemOnWallObject(Item item, TileObject object)
+    {
+        Optional<Widget> itemWidget = Inventory.search().withId(item.getId()).first();
+        itemWidget.ifPresent((iw) -> ObjectPackets.queueWidgetOnTileObject(iw, object));
+    }
+
     public static boolean sleep(Client client, long ms)
     {
         if (client.isClientThread())

@@ -1,5 +1,8 @@
 package com.lucidplugins.api.utils;
 
+import com.example.EthanApiPlugin.EthanApiPlugin;
+import com.example.Packets.MousePackets;
+import com.example.Packets.WidgetPackets;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 
@@ -11,26 +14,22 @@ import java.util.function.Predicate;
 
 public class DialogUtils
 {
-    public static boolean hasOption(Client client, String option)
+    public static void queueResumePauseDialog(int widgetId, int childId)
     {
-        return hasOption(client, s -> s.equalsIgnoreCase(option));
+        MousePackets.queueClickPacket();
+        WidgetPackets.queueResumePause(widgetId, childId);
     }
 
-    public static boolean hasOption(Client client, Predicate<String> option)
+    public static List<String> getOptions()
     {
-        return getOptions(client).stream().map(Widget::getText).filter(Objects::nonNull).anyMatch(option);
-    }
-
-    public static List<Widget> getOptions(Client client)
-    {
-        Widget widget = client.getWidget(219, 1);
+        Widget widget = EthanApiPlugin.getClient().getWidget(219, 1);
         if (widget == null || widget.isSelfHidden())
         {
             return Collections.emptyList();
         }
         else
         {
-            List<Widget> out = new ArrayList();
+            List<String> out = new ArrayList();
             Widget[] children = widget.getChildren();
             if (children == null)
             {
@@ -40,14 +39,33 @@ public class DialogUtils
             {
                 for (int i = 1; i < children.length; ++i)
                 {
-                    if (!children[i].getText().isBlank())
+                    if (children[i] != null && !children[i].getText().isBlank())
                     {
-                        out.add(children[i]);
+                        out.add(children[i].getText());
                     }
                 }
 
                 return out;
             }
         }
+    }
+
+    public static int getOptionIndex(String option)
+    {
+        if (getOptions().isEmpty())
+        {
+            return -1;
+        }
+
+        List<String> options = getOptions();
+        for (int index = 0; index < options.size(); index++)
+        {
+            if (options.get(index).contains(option))
+            {
+                return index + 1;
+            }
+        }
+
+        return -1;
     }
 }
