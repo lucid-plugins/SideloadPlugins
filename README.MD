@@ -37,6 +37,9 @@ Current Plugin List:
   - Overlay for stepback method + auto-prayers (auto-smite not included in auto-prayers)
 - **Lucid Scurrius Helper**
   - Does everything at Scurrius besides bank for you, all features are toggle-able.
+- **Lucid Spices**
+  - Can auto-fight hellrat behemoths for spices and/or keeps your cat alive during the fight. Makes getting spices for
+    stews painless without risking your cat dying (I totally have no experience with this happening, I swear)
 - **Lucid ToB Prayers**
   - Activates prayers when appropriate at ToB. Can also tick eat the Sote bomb for you, too. Each boss is separately toggle-able
 - **Lucid Whisperer Helper**
