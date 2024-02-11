@@ -9,7 +9,6 @@ import com.lucidplugins.api.utils.*;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.callback.ClientThread;
@@ -210,19 +209,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
         else
         {
-            boolean nameContains = false;
-            for (String npcName : config.npcToFight().split(","))
+            if (attackEntry.get().getNpc() == null || attackEntry.get().getNpc().getName() == null)
             {
-                npcName = npcName.trim();
-
-                if (attackEntry.get().getNpc().getName().contains(npcName))
-                {
-                    nameContains = true;
-                    break;
-                }
+                return;
             }
 
-            if (nameContains)
+            if (isNameInNpcsToFight(attackEntry.get().getNpc().getName()))
             {
                 client.createMenuEntry(1)
                 .setOption("Stop Killing")
@@ -239,6 +231,26 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 });
             }
         }
+    }
+
+    private boolean isNameInNpcsToFight(String name)
+    {
+        if (config.npcToFight().trim().isEmpty())
+        {
+            return false;
+        }
+
+        for (String npcName : config.npcToFight().split(","))
+        {
+            npcName = npcName.trim();
+
+            if (name.contains(npcName))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Subscribe
@@ -269,7 +281,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 nonSpecWeaponId = EquipmentUtils.getWepSlotItem().getId();
             }
         }
-
     }
 
     @Subscribe
@@ -323,12 +334,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().getHealthRatio() == 0)
         {
-            if (client.getLocalPlayer().getInteracting() instanceof NPC)
+            if (client.getLocalPlayer().getInteracting() instanceof NPC && !npcsKilled.contains((NPC)client.getLocalPlayer().getInteracting()))
             {
-                if (!npcsKilled.contains((NPC)client.getLocalPlayer().getInteracting()))
-                {
-                    npcsKilled.add((NPC)client.getLocalPlayer().getInteracting());
-                }
+                npcsKilled.add((NPC)client.getLocalPlayer().getInteracting());
             }
         }
     }
@@ -436,28 +444,36 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
-        if (lastTarget != null && !isMoving())
+        if (lastTarget == null || isMoving())
         {
-            if (lastTarget instanceof Player && (lastTarget.getInteracting() == client.getLocalPlayer() && client.getLocalPlayer().getInteracting() != lastTarget))
-            {
-                if (isPlayerEligible((Player)lastTarget))
-                {
-                    PlayerUtils.interactPlayer(lastTarget.getName(), "Attack");
-                    lastTarget = null;
-                    secondaryStatus = "Re-attacking previous target";
-                    return true;
-                }
-            }
-            else if (lastTarget instanceof NPC && (lastTarget.getInteracting() == client.getLocalPlayer() && client.getLocalPlayer().getInteracting() != lastTarget))
-            {
-                if (isNpcEligible((NPC)lastTarget))
-                {
-                    NpcUtils.interact((NPC)lastTarget, "Attack");
-                    lastTarget = null;
-                    secondaryStatus = "Re-attacking previous target";
-                    return true;
-                }
-            }
+            return false;
+        }
+
+        if (client.getLocalPlayer().getInteracting() == lastTarget)
+        {
+            lastTarget = null;
+            return false;
+        }
+
+        if (lastTarget.getInteracting() != client.getLocalPlayer())
+        {
+            lastTarget = null;
+            return false;
+        }
+
+        if (lastTarget instanceof Player && isPlayerEligible((Player)lastTarget))
+        {
+            PlayerUtils.interactPlayer(lastTarget.getName(), "Attack");
+            lastTarget = null;
+            secondaryStatus = "Re-attacking previous target";
+            return true;
+        }
+        else if (lastTarget instanceof NPC && isNpcEligible((NPC)lastTarget))
+        {
+            NpcUtils.interact((NPC)lastTarget, "Attack");
+            lastTarget = null;
+            secondaryStatus = "Re-attacking previous target";
+            return true;
         }
 
         return false;
@@ -466,23 +482,25 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     private boolean handleSlayerFinisher()
     {
         Actor target = client.getLocalPlayer().getInteracting();
-        if (target instanceof NPC)
+        if (!(target instanceof NPC))
         {
-            NPC npcTarget = (NPC) target;
-            int ratio = npcTarget.getHealthRatio();
-            int scale = npcTarget.getHealthScale();
+            return false;
+        }
 
-            double targetHpPercent = Math.floor((double) ratio  / (double) scale * 100);
-            if (targetHpPercent < config.slayerFinisherHpPercent() && targetHpPercent >= 0)
+        NPC npcTarget = (NPC) target;
+        int ratio = npcTarget.getHealthRatio();
+        int scale = npcTarget.getHealthScale();
+
+        double targetHpPercent = Math.floor((double) ratio  / (double) scale * 100);
+        if (targetHpPercent < config.slayerFinisherHpPercent() && targetHpPercent >= 0)
+        {
+            Item slayerFinisher = InventoryUtils.getFirstItem(config.slayerFinisherItem().getItemName());
+            if (config.autoSlayerFinisher() && slayerFinisher != null &&
+                    client.getTickCount() - lastFinisherAttempt > 5)
             {
-                Item slayerFinisher = InventoryUtils.getFirstItem(config.slayerFinisherItem().getItemName());
-                if (config.autoSlayerFinisher() && slayerFinisher != null &&
-                        client.getTickCount() - lastFinisherAttempt > 5)
-                {
-                    InteractionUtils.useItemOnNPC(slayerFinisher.getId(), npcTarget);
-                    lastFinisherAttempt = client.getTickCount();
-                    return true;
-                }
+                InteractionUtils.useItemOnNPC(slayerFinisher.getId(), npcTarget);
+                lastFinisherAttempt = client.getTickCount();
+                return true;
             }
         }
         return false;
@@ -680,37 +698,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         return InteractionUtils.getAllTileItems(tileItem -> {
             ItemComposition composition = client.getItemDefinition(tileItem.getTileItem().getId());
-            boolean nameContains = false;
-            for (String itemName : config.lootNames().split(","))
+
+            if (composition.getName() == null)
             {
-                itemName = itemName.trim();
-
-                if (composition.getName() != null && composition.getName().contains(itemName))
-                {
-                    nameContains = true;
-                    break;
-                }
+                return false;
             }
-
-            boolean inBlacklist = false;
-            if (!config.lootBlacklist().trim().isEmpty())
-            {
-                for (String itemName : config.lootBlacklist().split(","))
-                {
-                    itemName = itemName.trim();
-
-                    if (itemName.length() < 2)
-                    {
-                        continue;
-                    }
-
-                    if (composition.getName() != null && composition.getName().contains(itemName))
-                    {
-                        inBlacklist = true;
-                        break;
-                    }
-                }
-            }
+            boolean inWhitelist = nameInLootWhiteList(composition.getName());
+            boolean inBlacklist = nameInLootBlackList(composition.getName());
 
             boolean antiLureActivated = false;
 
@@ -721,10 +715,50 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
             boolean inAnExpectedLocation = config.lootGoblin() || expectedLootLocations.containsKey(LocalPoint.fromWorld(client, tileItem.getLocation()));
 
-            return (!inBlacklist && nameContains) && inAnExpectedLocation &&
+            return (!inBlacklist && inWhitelist) && inAnExpectedLocation &&
                     InteractionUtils.distanceTo2DHypotenuse(tileItem.getLocation(), client.getLocalPlayer().getWorldLocation()) <= config.lootRange() &&
                     !antiLureActivated;
         });
+    }
+
+    private boolean nameInLootWhiteList(String name)
+    {
+        if (config.lootBlacklist().trim().isEmpty())
+        {
+            return true;
+        }
+
+        for (String itemName : config.lootNames().split(","))
+        {
+            itemName = itemName.trim();
+
+            if (name.length() > 0 && name.contains(itemName))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean nameInLootBlackList(String name)
+    {
+        if (config.lootBlacklist().trim().isEmpty())
+        {
+            return false;
+        }
+
+        for (String itemName : config.lootBlacklist().split(","))
+        {
+            itemName = itemName.trim();
+
+            if (name.length() > 0 && name.contains(itemName))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private ETileItem nearestTileItem(List<ETileItem> items)
@@ -846,39 +880,23 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
+        boolean hasRunes = (isHighAlching() && hasAlchRunes(true)) || (!isHighAlching() && hasAlchRunes(false));
+        if (!hasRunes)
+        {
+            return false;
+        }
+
         SlottedItem itemToAlch = alchableItems.get(0);
-        if (isHighAlching())
-        {
-            if (hasAlchRunes(true))
-            {
-                if (client.getLocalPlayer().getInteracting() != null)
-                {
-                    lastTarget = client.getLocalPlayer().getInteracting();
-                }
 
-                InventoryUtils.castAlchemyOnItem(itemToAlch.getItem().getId(), true);
-                lastAlchTick = client.getTickCount();
-                secondaryStatus = "Alching";
-                return true;
-            }
-        }
-        else
+        if (client.getLocalPlayer().getInteracting() != null)
         {
-            if (hasAlchRunes(false))
-            {
-                if (client.getLocalPlayer().getInteracting() != null)
-                {
-                    lastTarget = client.getLocalPlayer().getInteracting();
-                }
-
-                InventoryUtils.castAlchemyOnItem(itemToAlch.getItem().getId(), false);
-                lastAlchTick = client.getTickCount();
-                secondaryStatus = "Alching";
-                return true;
-            }
+            lastTarget = client.getLocalPlayer().getInteracting();
         }
 
-        return false;
+        InventoryUtils.castAlchemyOnItem(itemToAlch.getItem().getId(), isHighAlching());
+        lastAlchTick = client.getTickCount();
+        secondaryStatus = "Alching";
+        return true;
     }
 
     private int totalCount(int itemId, int runeIndex)
@@ -960,17 +978,17 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean hasAlchRunes(boolean highAlch)
     {
-        int natCount = totalCount(ItemID.NATURE_RUNE, 10);
+        final int natCount = totalCount(ItemID.NATURE_RUNE, 10);
 
-        int fireRunes = totalCount(ItemID.FIRE_RUNE, 4);
-        int lavaRunes = totalCount(ItemID.LAVA_RUNE, 18);
-        int steamRunes = totalCount(ItemID.STEAM_RUNE, 19);
-        int smokeRunes = totalCount(ItemID.SMOKE_RUNE, 20);
-        int total = (fireRunes + lavaRunes + smokeRunes + steamRunes);
+        final int fireRunes = totalCount(ItemID.FIRE_RUNE, 4);
+        final int lavaRunes = totalCount(ItemID.LAVA_RUNE, 18);
+        final int steamRunes = totalCount(ItemID.STEAM_RUNE, 19);
+        final int smokeRunes = totalCount(ItemID.SMOKE_RUNE, 20);
+        final int total = (fireRunes + lavaRunes + smokeRunes + steamRunes);
 
-        boolean hasFireRunes = total >= (highAlch ? 5 : 3);
-        boolean hasNatures = natCount >= 1;
-        boolean hasTome = EquipmentUtils.contains(ItemID.TOME_OF_FIRE);
+        final boolean hasFireRunes = total >= (highAlch ? 5 : 3);
+        final boolean hasNatures = natCount >= 1;
+        final boolean hasTome = EquipmentUtils.contains(ItemID.TOME_OF_FIRE);
 
         return hasNatures && (hasFireRunes || hasTome);
     }
@@ -979,7 +997,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         return InventoryUtils.contains("Rune pouch") || InventoryUtils.contains("Divine rune pouch");
     }
-
 
     private List<SlottedItem> getAlchableItems()
     {
@@ -1088,29 +1105,16 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return null;
         }
 
-        return NpcUtils.getNearestNpc(npc -> {
-            boolean nameContains = false;
-            for (String npcName : config.npcToFight().split(","))
-            {
-                npcName = npcName.trim();
+        return NpcUtils.getNearestNpc(npc ->
+            (npc.getName() != null && isNameInNpcsToFight(npc.getName())) &&
+            (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
+            (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
+            (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
 
-                if (npc.getName() != null && npc.getName().contains(npcName))
-                {
-                    nameContains = true;
-                    break;
-                }
-            }
-
-            return nameContains &&
-
-                    (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
-                            (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
-                            (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
-
-                    Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
-                    InteractionUtils.isWalkable(npc.getWorldLocation()) &&
-                    InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();
-        });
+            Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
+            InteractionUtils.isWalkable(npc.getWorldLocation()) &&
+            InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange()
+        );
     }
 
     private boolean isNpcEligible(NPC npc)
@@ -1120,23 +1124,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
-        boolean nameContains = false;
-        for (String npcName : config.npcToFight().split(","))
-        {
-            npcName = npcName.trim();
 
-            if (npc.getName() != null && npc.getName().contains(npcName))
-            {
-                nameContains = true;
-                break;
-            }
-        }
-
-        return nameContains &&
+        return (npc.getName() != null && isNameInNpcsToFight(npc.getName())) &&
 
                 (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
-                        (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
-                        (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
+                (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
+                (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
 
                 Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
                 InteractionUtils.isWalkable(npc.getWorldLocation()) &&
@@ -1200,25 +1193,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     private NPC getEligibleNpcInteractingWithUs()
     {
         return NpcUtils.getNearestNpc((npc) ->
-        {
-            boolean nameContains = false;
-            for (String npcName : config.npcToFight().split(","))
-            {
-                npcName = npcName.trim();
-
-                if (npc.getName() != null && npc.getName().contains(npcName))
-                {
-                    nameContains = true;
-                    break;
-                }
-            }
-
-            return nameContains &&
-                    (npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0) &&
-                    Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
-                    InteractionUtils.isWalkable(npc.getWorldLocation()) &&
-                    InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();
-        });
+            (npc.getName() != null && isNameInNpcsToFight(npc.getName())) &&
+            (npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0) &&
+            Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
+            InteractionUtils.isWalkable(npc.getWorldLocation()) &&
+            InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange()
+        );
     }
 
     @Subscribe
@@ -1273,16 +1253,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         {
             nextPrayerLevelToRestoreAt = Math.max(1, config.prayerPointsMin() + (config.prayerRestoreBuffer() > 0 ? random.nextInt(config.prayerRestoreBuffer() + 1) : 0));
         }
-    }
-
-    public WorldPoint getCenter(WorldArea area)
-    {
-        if (area.getWidth() < 3)
-        {
-            return new WorldPoint(area.getX(), area.getY(), area.getPlane());
-        }
-
-        return new WorldPoint(area.getX() + area.getWidth() / 2, area.getY() + area.getHeight() / 2, area.getPlane());
     }
 
     private boolean restorePrimaries()
