@@ -723,7 +723,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean nameInLootWhiteList(String name)
     {
-        if (config.lootBlacklist().trim().isEmpty())
+        if (config.lootNames().trim().isEmpty())
         {
             return true;
         }
