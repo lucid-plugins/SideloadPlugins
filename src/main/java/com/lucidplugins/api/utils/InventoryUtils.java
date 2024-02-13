@@ -20,6 +20,19 @@ import java.util.stream.Collectors;
 
 public class InventoryUtils
 {
+    public static void itemOnItem(Item item1, Item item2)
+    {
+        Optional<Widget> itemToUse = Inventory.search().withId(item1.getId()).first();
+        Optional<Widget> itemToUseOn = Inventory.search().withId(item2.getId()).first();
+
+        if (itemToUse.isPresent() && itemToUseOn.isPresent())
+        {
+            MousePackets.queueClickPacket();
+            MousePackets.queueClickPacket();
+            WidgetPackets.queueWidgetOnWidget(itemToUse.get(), itemToUseOn.get());
+        }
+    }
+
     public static List<SlottedItem> getAll()
     {
         return Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).collect(Collectors.toList());
@@ -163,7 +176,6 @@ public class InventoryUtils
                 count += i.getItem().getQuantity();
             }
         }
-        MessageUtils.addMessage(EthanApiPlugin.getClient(), "Count: " + count);
         return count;
     }
 

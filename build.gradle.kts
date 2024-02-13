@@ -30,7 +30,7 @@ dependencies {
 }
 
 group = "com.lucidplugins"
-version = "5.6.9"
+version = "5.7.0"
 
 val javaMajorVersion = JavaVersion.VERSION_11.majorVersion
 
@@ -56,6 +56,7 @@ tasks {
         //exclude("com/lucidplugins/lucidcombat/**")
         //exclude("com/lucidplugins/lucidcustomprayers/**")
         //exclude("com/lucidplugins/luciddiscordlogger/**")
+        //exclude("com/lucidplugins/luciddukehelper/**")
         //exclude("com/lucidplugins/lucidgauntlet/**")
         //exclude("com/lucidplugins/lucidgearswapper/**")
         //exclude("com/lucidplugins/lucidhotkeys/**")
