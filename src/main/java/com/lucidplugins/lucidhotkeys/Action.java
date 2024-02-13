@@ -55,6 +55,11 @@ public enum Action
     REMOVE_ALL_NPC_MARKERS(43, 1),
     REMOVE_ALL_PLAYER_MARKERS(44, 1),
     WALK_REGION_LOCATION(45, 4),
+
+    NAMED_ITEM_ON_ITEM(46, 3),
+    ID_ITEM_ON_ITEM(47, 3),
+    NAMED_ITEM_ON_NPC(48, 3),
+    ID_ITEM_ON_NPC(49, 3)
     ;
 
     int id;

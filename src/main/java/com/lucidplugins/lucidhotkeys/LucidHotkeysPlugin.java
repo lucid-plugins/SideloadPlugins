@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Provides;
+import com.lucidplugins.api.item.SlottedItem;
 import com.lucidplugins.api.utils.*;
 import com.lucidplugins.lucidhotkeys.overlay.TileMarkersOverlay;
 import lombok.Getter;
@@ -1580,6 +1581,26 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 WorldPoint wp = WorldPoint.fromRegion(param1Int, param2Int, param3Int, client.getLocalPlayer().getWorldLocation().getPlane());
                 Collection<WorldPoint> localInstanceWp = WorldPoint.toLocalInstance(client, wp);
                 localInstanceWp.stream().findFirst().ifPresent(InteractionUtils::walk);
+                break;
+            case NAMED_ITEM_ON_ITEM:
+                Item first = InventoryUtils.getFirstItem(actionParams[1]);
+                Item second = InventoryUtils.getFirstItem(actionParams[2]);
+                InventoryUtils.itemOnItem(first, second);
+                break;
+            case ID_ITEM_ON_ITEM:
+                SlottedItem firstId = InventoryUtils.getFirstItem(param1Int);
+                SlottedItem secondId = InventoryUtils.getFirstItem(param2Int);
+                InventoryUtils.itemOnItem(firstId.getItem(), secondId.getItem());
+                break;
+            case NAMED_ITEM_ON_NPC:
+                Item firstNamedItem = InventoryUtils.getFirstItem(actionParams[1]);
+                NPC firstNamedNpc = NpcUtils.getNearestNpc(actionParams[2]);
+                InteractionUtils.useItemOnNPC(firstNamedItem.getId(), firstNamedNpc);
+                break;
+            case ID_ITEM_ON_NPC:
+                SlottedItem firstIdItem = InventoryUtils.getFirstItem(param1Int);
+                NPC firstIDNpc = NpcUtils.getNearestNpc(param2Int);
+                InteractionUtils.useItemOnNPC(firstIdItem.getItem().getId(), firstIDNpc);
                 break;
         }
     }
