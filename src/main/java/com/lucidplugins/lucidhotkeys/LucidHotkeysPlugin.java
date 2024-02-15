@@ -509,6 +509,14 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             }
         }
 
+        if (config.useAsBot())
+        {
+            for (int i = 1; i < 16; i++)
+            {
+                handleHotkey(i);
+            }
+        }
+
         validProjectiles.removeIf(projectile -> projectile.getRemainingCycles() <= 0);
     }
 

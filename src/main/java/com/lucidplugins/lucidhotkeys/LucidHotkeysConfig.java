@@ -84,6 +84,11 @@ public interface LucidHotkeysConfig extends Config
         return "i=1 /";
     }
 
+    @ConfigItem(name = "Use As Bot", description = "Ignores hotkeys and evaluates all preset slot preconditions each game tick and will execute the actions that its able to", position = 1, keyName = "useAsBot", section = customVariablesSection)
+    default boolean useAsBot()
+    {
+        return false;
+    }
 
     // Custom hotkey 1
 
