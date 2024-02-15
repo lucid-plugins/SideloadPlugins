@@ -121,4 +121,28 @@ public interface WhispererHelperConfig extends Config
     {
         return false;
     }
+
+    @ConfigItem(
+            name = "Show Unsafe Tiles",
+            description = "Shows the tiles that will be hit by tentacles. Don't stand on them",
+            position = 10,
+            keyName = "showUnsafeTiles",
+            section = generalSection
+    )
+    default boolean showUnsafeTiles()
+    {
+        return false;
+    }
+
+    @ConfigItem(
+            name = "Weapon Max Tile Range",
+            description = "The plugin uses this distance to make sure you stay in attack range while dodging",
+            position = 11,
+            keyName = "maxWeaponRange",
+            section = generalSection
+    )
+    default int maxWeaponRange()
+    {
+        return 8;
+    }
 }

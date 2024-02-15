@@ -9,6 +9,7 @@ import net.runelite.api.Item;
 import net.runelite.api.widgets.Widget;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,23 +27,21 @@ public class EquipmentUtils
         return Equipment.search().result().stream().map(equipmentItemWidget -> new SlottedItem(equipmentItemWidget.getEquipmentItemId(), equipmentItemWidget.getItemQuantity(), equipmentItemWidget.getEquipmentIndex())).filter(filter).collect(Collectors.toList());
     }
 
+    public static Optional<EquipmentItemWidget> getItemInSlot() {
+        return Equipment.search().filter(item -> {
+            EquipmentItemWidget iw = (EquipmentItemWidget) item;
+            return iw.getEquipmentIndex() == 3;
+        }).first();
+    }
+
     public static Item getWepSlotItem()
     {
-        Item item = null;
-        List<EquipmentItemWidget> equips = Equipment.search().result();
-        if (!equips.isEmpty())
-        {
-            for (EquipmentItemWidget equip : equips)
-            {
-                if (equip.getEquipmentIndex() == 3)
-                {
-                    item = new Item(equip.getEquipmentItemId(), equip.getItemQuantity());
-                    break;
-                }
-            }
-        }
+        Optional<EquipmentItemWidget> weaponWidget = Equipment.search().filter(item -> {
+            EquipmentItemWidget iw = (EquipmentItemWidget) item;
+            return iw.getEquipmentIndex() == 3;
+        }).first();
 
-        return item;
+        return weaponWidget.map(equipmentItemWidget -> new Item(equipmentItemWidget.getEquipmentItemId(), equipmentItemWidget.getItemQuantity())).orElse(null);
     }
 
     public static boolean contains(int id)
