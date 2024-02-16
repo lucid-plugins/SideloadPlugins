@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
@@ -1324,7 +1325,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 String varValue = getVarValue(actionParams[2].replaceAll("%", ""));
                 if (varValue != null)
                 {
-                    if (isNumeric(varValue))
+                    if (isNumeric(varValue) && !varValue.contains("|"))
                     {
                         param2Int = Integer.parseInt(varValue);
                     }
@@ -1728,7 +1729,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         }
         else
         {
-            String varValue = userVariables.getOrDefault(varName, "");
+            String varValue = getVarCheckCoords(varName);
             if (varValue.startsWith("*"))
             {
                 return varValue.substring(1);
@@ -1740,6 +1741,35 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         }
     }
 
+    private String getVarCheckCoords(String varName)
+    {
+        String varValue = "";
+        if (varName.contains(".x") || varName.contains(".y")|| varName.contains(".z"))
+        {
+            final String newVarName = varName.substring(0, varName.length() - 2);
+            varValue = userVariables.getOrDefault(newVarName, "");
+            String[] coords = varValue.split(Pattern.quote("|"));
+            MessageUtils.addMessage(client, "Var '" + newVarName + "' = " + varValue + ", split length = " + coords.length);
+            if (varName.contains(".x"))
+            {
+                return coords.length > 0 ? coords[0] : "-1";
+            }
+            else if (varName.contains(".y"))
+            {
+                return coords.length > 1 ? coords[1] : "-1";
+            }
+            else if (varName.contains(".z"))
+            {
+                return coords.length > 2 ? coords[2] : "-1";
+            }
+        }
+        else
+        {
+            varValue = userVariables.getOrDefault(varName, "");
+        }
+        return varValue;
+    }
+
     private boolean isReservedVar(String varName)
     {
         final List<String> reservedVars = List.of(
@@ -1749,8 +1779,6 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 "lastPlayerAnimationId",
                 "lpWorldX",
                 "lpWorldY",
-                "lpLocalX",
-                "lpLocalY",
                 "lpRegionX",
                 "lpRegionY",
                 "lpSceneX",
@@ -1762,7 +1790,10 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 "lastPlayerNameYouTargeted",
                 "lastNpcNameTargetedYou",
                 "lastPlayerNameTargetedYou",
-                "regionId"
+                "regionId",
+                "worldPosF",
+                "regionPosF",
+                "lpPlane"
         );
 
         return reservedVars.contains(varName);
@@ -1770,20 +1801,32 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
     public String reservedVarValue(String varName)
     {
+        final WorldPoint worldLocation = client.getLocalPlayer().getWorldLocation();
+        final int worldX = worldLocation.getX();
+        final int worldY = worldLocation.getY();
+        final int plane = client.getLocalPlayer().getWorldLocation().getPlane();
+
+        final LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
+        int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
+        final int sceneX = localLocation.getSceneX();
+        final int sceneY = localLocation.getSceneY();
+
+        int regionX = worldLocation.getRegionX();
+        int regionY = worldLocation.getRegionY();
+
+        if (client.isInInstancedRegion())
+        {
+            final WorldPoint fromInstance = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
+            regionX = fromInstance.getRegionX();
+            regionY = fromInstance.getRegionY();
+            regionId = fromInstance.getRegionID();
+        }
+
         switch (varName)
         {
             case "mypos":
-                final WorldPoint worldLocation = client.getLocalPlayer().getWorldLocation();
-                final int worldX = worldLocation.getX();
-                final int worldY = worldLocation.getY();
-                final int plane = client.getLocalPlayer().getWorldLocation().getPlane();
-
-                final LocalPoint localLocation = client.getLocalPlayer().getLocalLocation();
-                final int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
-                final int localX = localLocation.getSceneX();
-                final int localY = localLocation.getSceneY();
                 return "Location - World(" + worldX + ", " + worldY + ", " + plane + ") "
-                        + "LocalScene(" + localX + ", " + localY + ") Region: " + regionId;
+                        + "Region(" + regionX + ", " + regionY + ") Region: " + regionId;
             case "lastPlayerAnimationTick":
                 return String.valueOf(lastPlayerAnimationTick);
             case "ticksSinceLastAnimation":
@@ -1791,37 +1834,17 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             case "lastPlayerAnimationId":
                 return String.valueOf(lastPlayerAnimationId);
             case "lpWorldX":
-                return String.valueOf(client.getLocalPlayer().getWorldLocation().getX());
+                return String.valueOf(worldX);
             case "lpWorldY":
-                return String.valueOf(client.getLocalPlayer().getWorldLocation().getY());
-            case "lpLocalX":
-                return String.valueOf(client.getLocalPlayer().getLocalLocation().getX());
-            case "lpLocalY":
-                return String.valueOf(client.getLocalPlayer().getLocalLocation().getY());
+                return String.valueOf(worldY);
             case "lpRegionX":
-                if (client.isInInstancedRegion())
-                {
-                    WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
-                    return String.valueOf(worldPoint.getRegionX());
-                }
-                else
-                {
-                    return String.valueOf(client.getLocalPlayer().getWorldLocation().getRegionX());
-                }
+                return String.valueOf(regionX);
             case "lpRegionY":
-                if (client.isInInstancedRegion())
-                {
-                    WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
-                    return String.valueOf(worldPoint.getRegionY());
-                }
-                else
-                {
-                    return String.valueOf(client.getLocalPlayer().getWorldLocation().getRegionY());
-                }
+                return String.valueOf(regionY);
             case "lpSceneX":
-                return String.valueOf(client.getLocalPlayer().getLocalLocation().getSceneX());
+                return String.valueOf(sceneX);
             case "lpSceneY":
-                return String.valueOf(client.getLocalPlayer().getLocalLocation().getSceneY());
+                return String.valueOf(sceneY);
             case "tickCount":
                 return String.valueOf(client.getTickCount());
             case "metronomeCount":
@@ -1846,6 +1869,12 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 {
                     return String.valueOf(client.getLocalPlayer().getWorldLocation().getRegionID());
                 }
+            case "worldPosF":
+                return worldX + "|" + worldY + "|" + plane;
+            case "regionPosF":
+                return regionX + "|" + regionY;
+            case "lpPlane":
+                return String.valueOf(plane);
             default:
                 return "";
         }

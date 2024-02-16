@@ -270,7 +270,7 @@ public class InteractionUtils
             boolean safe = true;
             for (LocalPoint unsafeTile : list)
             {
-                if (t.getWorldLocation().equals(WorldPoint.fromLocal(client, unsafeTile)))
+                if (t.getLocalLocation().equals(unsafeTile))
                 {
                     safe = false;
                 }
