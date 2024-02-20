@@ -1277,6 +1277,10 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 return client.getLocalPlayer().getWorldLocation().getRegionID() == param1Int;
             case LOCAL_PLAYER_REGION_ID_NOT_EQUALS:
                 return client.getLocalPlayer().getWorldLocation().getRegionID() != param1Int;
+            case LOCAL_PLAYER_IS_MOVING:
+                return InteractionUtils.isMoving();
+            case LOCAL_PLAYER_IS_NOT_MOVING:
+                return !InteractionUtils.isMoving();
         }
     }
 
@@ -1759,7 +1763,6 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             final String newVarName = varName.substring(0, varName.length() - 2);
             varValue = userVariables.getOrDefault(newVarName, "");
             String[] coords = varValue.split(Pattern.quote("|"));
-            MessageUtils.addMessage(client, "Var '" + newVarName + "' = " + varValue + ", split length = " + coords.length);
             if (varName.contains(".x"))
             {
                 return coords.length > 0 ? coords[0] : "-1";

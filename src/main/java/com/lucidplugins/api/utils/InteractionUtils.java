@@ -66,6 +66,11 @@ public class InteractionUtils
         }
     }
 
+    public static boolean isMoving()
+    {
+        return EthanApiPlugin.getClient().getLocalPlayer().getPoseAnimation() != EthanApiPlugin.getClient().getLocalPlayer().getIdlePoseAnimation();
+    }
+
     public static void walk(WorldPoint point)
     {
         MousePackets.queueClickPacket();
