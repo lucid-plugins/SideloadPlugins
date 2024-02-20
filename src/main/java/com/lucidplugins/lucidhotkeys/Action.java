@@ -59,7 +59,10 @@ public enum Action
     NAMED_ITEM_ON_ITEM(46, 3),
     ID_ITEM_ON_ITEM(47, 3),
     NAMED_ITEM_ON_NPC(48, 3),
-    ID_ITEM_ON_NPC(49, 3)
+    ID_ITEM_ON_NPC(49, 3),
+
+    NAMED_ITEM_ON_OBJECT(50, 3),
+    ID_ITEM_ON_OBJECT(51, 3)
     ;
 
     int id;

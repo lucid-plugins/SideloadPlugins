@@ -22,7 +22,10 @@ public class InteractionUtils
     public static void useItemOnWallObject(Item item, TileObject object)
     {
         Optional<Widget> itemWidget = Inventory.search().withId(item.getId()).first();
-        itemWidget.ifPresent((iw) -> ObjectPackets.queueWidgetOnTileObject(iw, object));
+        itemWidget.ifPresent((iw) -> {
+            MousePackets.queueClickPacket();
+            ObjectPackets.queueWidgetOnTileObject(iw, object);
+        });
     }
 
     public static boolean sleep(Client client, long ms)
@@ -58,6 +61,7 @@ public class InteractionUtils
     {
         if (widget != null && npc != null)
         {
+            MousePackets.queueClickPacket();
             NPCPackets.queueWidgetOnNPC(npc, widget);
         }
     }
