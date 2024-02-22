@@ -66,10 +66,19 @@ public class LucidLeviHelperPlugin extends Plugin
     @Subscribe
     private void onProjectileMoved(final ProjectileMoved event)
     {
-        if (!containsProjectile(event.getProjectile()))
+        final Projectile projectile = event.getProjectile();
+
+        if (projectile.getId() != MAGE_PROJ && projectile.getId() != RANGED_PROJ && projectile.getId() != MELEE_PROJ)
         {
-            attackProjectiles.add(event.getProjectile());
+            return;
         }
+
+        if (projectile.getRemainingCycles() != (projectile.getEndCycle() - projectile.getStartCycle()))
+        {
+            return;
+        }
+
+        attackProjectiles.add(event.getProjectile());
     }
 
     private Prayer getPrayer(int id)
@@ -84,17 +93,5 @@ public class LucidLeviHelperPlugin extends Plugin
                 return Prayer.PROTECT_FROM_MELEE;
         }
         return null;
-    }
-
-    private boolean containsProjectile(Projectile projectile)
-    {
-        for (Projectile proj : attackProjectiles)
-        {
-            if (proj.getId() == projectile.getId() && proj.getRemainingCycles() == projectile.getRemainingCycles())
-            {
-                return true;
-            }
-        }
-        return false;
     }
 }
