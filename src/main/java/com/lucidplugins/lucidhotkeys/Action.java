@@ -62,7 +62,11 @@ public enum Action
     ID_ITEM_ON_NPC(49, 3),
 
     NAMED_ITEM_ON_OBJECT(50, 3),
-    ID_ITEM_ON_OBJECT(51, 3)
+    ID_ITEM_ON_OBJECT(51, 3),
+
+    WIDGET_ACTION(52, 4),
+    WIDGET_SUBCHILD_ACTION(53, 5),
+    WIDGET_RESUME_PAUSE(54, 4),
     ;
 
     int id;

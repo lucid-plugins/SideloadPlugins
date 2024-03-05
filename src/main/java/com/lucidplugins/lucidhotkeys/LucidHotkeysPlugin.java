@@ -1281,6 +1281,14 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 return InteractionUtils.isMoving();
             case LOCAL_PLAYER_IS_NOT_MOVING:
                 return !InteractionUtils.isMoving();
+            case WIDGET_IS_HIDDEN:
+                return InteractionUtils.isWidgetHidden(param1Int, param2Int);
+            case WIDGET_IS_SHOWING:
+                return !InteractionUtils.isWidgetHidden(param1Int, param2Int);
+            case WIDGET_SUB_IS_HIDDEN:
+                return InteractionUtils.isWidgetHidden(param1Int, param2Int, param3Int);
+            case WIDGET_SUB_IS_SHOWING:
+                return !InteractionUtils.isWidgetHidden(param1Int, param2Int, param3Int);
         }
     }
 
@@ -1624,6 +1632,15 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 SlottedItem firstIdItem1 = InventoryUtils.getFirstItem(param1Int);
                 TileObject idObject = GameObjectUtils.nearest(param2Int);
                 InteractionUtils.useItemOnWallObject(firstIdItem1.getItem(), idObject);
+                break;
+            case WIDGET_ACTION:
+                InteractionUtils.widgetInteract(param1Int, param2Int, actionParams[3]);
+                break;
+            case WIDGET_SUBCHILD_ACTION:
+                InteractionUtils.widgetInteract(param1Int, param2Int, param3Int, actionParams[4]);
+                break;
+            case WIDGET_RESUME_PAUSE:
+                InteractionUtils.queueResumePause(param1Int, param2Int);
                 break;
         }
     }
