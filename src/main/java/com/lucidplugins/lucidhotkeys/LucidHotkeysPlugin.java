@@ -1640,7 +1640,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 InteractionUtils.widgetInteract(param1Int, param2Int, param3Int, actionParams[4]);
                 break;
             case WIDGET_RESUME_PAUSE:
-                InteractionUtils.queueResumePause(param1Int, param2Int);
+                InteractionUtils.queueResumePause(param1Int, param2Int, param3Int);
                 break;
         }
     }

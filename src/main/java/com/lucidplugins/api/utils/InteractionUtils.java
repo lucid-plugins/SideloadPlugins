@@ -69,9 +69,9 @@ public class InteractionUtils
         widgetInteract(parentId, childId, -1, action);
     }
 
-    public static void queueResumePause(int parentId, int childId)
+    public static void queueResumePause(int parentId, int childId, int subchildId)
     {
-        WidgetPackets.queueResumePause(parentId, childId);
+        WidgetPackets.queueResumePause(parentId << 16 | childId, subchildId);
     }
 
     public static void useItemOnWallObject(Item item, TileObject object)
