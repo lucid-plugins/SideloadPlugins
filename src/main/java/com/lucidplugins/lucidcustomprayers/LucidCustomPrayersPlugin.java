@@ -135,7 +135,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
         int animId = event.getActor().getAnimation();
 
-        if (!animationsThisTick.contains(animId))
+        if (!animationsThisTick.contains(animId) || config.allowDuplicateAnimationEvents())
         {
             if (event.getActor() instanceof NPC)
             {
@@ -144,7 +144,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
             }
             else
             {
-                eventFired(EventType.ANIMATION_CHANGED, animId, false);
+                eventFired(EventType.ANIMATION_CHANGED, animId, event.getActor() == client.getLocalPlayer());
             }
 
             animationsThisTick.add(animId);
@@ -213,7 +213,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         validProjectiles.add(event.getProjectile());
 
         int projectileId = event.getProjectile().getId();
-        if (!projectilesSpawnedThisTick.contains(projectileId))
+        if (!projectilesSpawnedThisTick.contains(projectileId) || config.allowDuplicateProjectileEvents())
         {
             eventFired(EventType.PROJECTILE_SPAWNED, projectileId, event.getProjectile().getTarget().equals(client.getLocalPlayer().getLocalLocation()) || event.getProjectile().getInteracting() == client.getLocalPlayer());
             projectilesSpawnedThisTick.add(projectileId);
@@ -225,9 +225,9 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
     {
         int graphicsId = event.getGraphicsObject().getId();
 
-        if (!graphicsCreatedThisTick.contains(graphicsId))
+        if (!graphicsCreatedThisTick.contains(graphicsId) || config.allowDuplicateGraphicsEvents())
         {
-            eventFired(EventType.GRAPHICS_CREATED, graphicsId, false);
+            eventFired(EventType.GRAPHICS_CREATED, graphicsId, event.getGraphicsObject().getLocation().equals(client.getLocalPlayer().getLocalLocation()));
             graphicsCreatedThisTick.add(graphicsId);
         }
     }

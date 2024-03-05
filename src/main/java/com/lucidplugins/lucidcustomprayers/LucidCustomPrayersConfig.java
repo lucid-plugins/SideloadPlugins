@@ -2,7 +2,6 @@ package com.lucidplugins.lucidcustomprayers;
 
 import net.runelite.api.Prayer;
 import net.runelite.client.config.*;
-
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
@@ -18,9 +17,17 @@ public interface LucidCustomPrayersConfig extends Config
     String generalSection = "General";
 
     @ConfigSection(
+            name = "Debug",
+            description = "Debug settings",
+            position = 1,
+            closedByDefault = true
+    )
+    String debugSection = "Debug";
+
+    @ConfigSection(
             name = "Preset Loading/Saving",
             description = "Save/Load a custom preset",
-            position = 1,
+            position = 2,
             closedByDefault = true
     )
     String presetSection = "Preset Loading/Saving";
@@ -28,7 +35,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 1",
             description = "Custom Prayer 1",
-            position = 2,
+            position = 3,
             closedByDefault = true
     )
     String prayer1Section = "Custom Prayer 1";
@@ -36,7 +43,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 2",
             description = "Custom Prayer 2",
-            position = 3,
+            position = 4,
             closedByDefault = true
     )
     String prayer2Section = "Custom Prayer 2";
@@ -44,7 +51,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 3",
             description = "Custom Prayer 3",
-            position = 4,
+            position = 5,
             closedByDefault = true
     )
     String prayer3Section = "Custom Prayer 3";
@@ -52,7 +59,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 4",
             description = "Custom Prayer 4",
-            position = 5,
+            position = 6,
             closedByDefault = true
     )
     String prayer4Section = "Custom Prayer 4";
@@ -60,7 +67,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 5",
             description = "Custom Prayer 5",
-            position = 6,
+            position = 7,
             closedByDefault = true
     )
     String prayer5Section = "Custom Prayer 5";
@@ -68,7 +75,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 6",
             description = "Custom Prayer 6",
-            position = 7,
+            position = 8,
             closedByDefault = true
     )
     String prayer6Section = "Custom Prayer 6";
@@ -88,11 +95,49 @@ public interface LucidCustomPrayersConfig extends Config
     }
 
     @ConfigItem(
+            name = "Allow Duplicate Animation Events",
+            description = "The plugin will not filter out duplicate animation changed events that happen on the same tick.",
+            position = 1,
+            keyName = "allowDuplicateAnimationEvents",
+            section = generalSection
+    )
+    default boolean allowDuplicateAnimationEvents()
+    {
+        return false;
+    }
+
+    @ConfigItem(
+            name = "Allow Duplicate Projectile Events",
+            description = "The plugin will not filter out duplicate projectile spawned events that happen on the same tick.",
+            position = 2,
+            keyName = "allowDuplicateProjectileEvents",
+            section = generalSection
+    )
+    default boolean allowDuplicateProjectileEvents()
+    {
+        return false;
+    }
+
+    @ConfigItem(
+            name = "Allow Duplicate Graphics Events",
+            description = "The plugin will not filter out duplicate graphics spawned events that happen on the same tick.",
+            position = 3,
+            keyName = "allowDuplicateGraphicsEvents",
+            section = generalSection
+    )
+    default boolean allowDuplicateGraphicsEvents()
+    {
+        return false;
+    }
+
+    // Debug Section
+
+    @ConfigItem(
             name = "Toggle Debug Mode",
             description = "Toggle Debug Mode on to see events being fired in your chatbox",
             position = 1,
             keyName = "debugMode",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugMode()
     {
@@ -104,7 +149,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Don't debug events if you're not the target",
             position = 2,
             keyName = "hideNonTargetEventsDebug",
-            section = generalSection
+            section = debugSection
     )
     default boolean hideNonTargetEventsDebug()
     {
@@ -116,7 +161,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for Animation Changed Event",
             position = 3,
             keyName = "debugAnimationChanged",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugAnimationChanged()
     {
@@ -128,7 +173,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for NPC Spawned Event",
             position = 4,
             keyName = "debugNpcSpawned",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugNpcSpawned()
     {
@@ -140,7 +185,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for NPC Despawned Event",
             position = 5,
             keyName = "debugNpcDespawned",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugNpcDespawned()
     {
@@ -152,7 +197,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for NPC Changed Event",
             position = 6,
             keyName = "debugNpcChanged",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugNpcChanged()
     {
@@ -164,7 +209,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for Projectile Spawned Event",
             position = 7,
             keyName = "debugProjectileSpawned",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugProjectileSpawned()
     {
@@ -176,7 +221,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for Graphics Created Event",
             position = 8,
             keyName = "debugGraphicsCreated",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugGraphicsCreated()
     {
@@ -188,7 +233,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for GameObject Spawned Event",
             position = 9,
             keyName = "debugGameObjectSpawned",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugGameObjectSpawned()
     {
@@ -200,7 +245,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for Other Interact You Event",
             position = 10,
             keyName = "debugOtherInteractYou",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugOtherInteractYou()
     {
@@ -212,7 +257,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for You Interact Other Event",
             position = 11,
             keyName = "debugYouInteractOther",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugYouInteractOther()
     {
@@ -224,7 +269,7 @@ public interface LucidCustomPrayersConfig extends Config
             description = "Toggle Debug Output for Item Equipped Event",
             position = 12,
             keyName = "debugItemEquipped",
-            section = generalSection
+            section = debugSection
     )
     default boolean debugItemEquipped()
     {
@@ -295,7 +340,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Tick delays",
             description = "How many ticks after the event to activate the prayer, separate multiple values by comma."
-            + "One delay per ID required or leaving this completely blank will default to instant activation.",
+                    + "One delay per ID required or leaving this completely blank will default to instant activation.",
             position = 2,
             keyName = "pray1delays",
             section = prayer1Section
@@ -341,7 +386,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Ignore non-target NPC events?",
             description = "Having this on will ignore certain incoming events if youre not being targeted by the npc performing the action.<br>"
-            + "Having it disabled will not ignore any events at all.",
+                    + "Having it disabled will not ignore any events at all.",
             position = 6,
             keyName = "ignoreNonTargetEvents1",
             section = prayer1Section
