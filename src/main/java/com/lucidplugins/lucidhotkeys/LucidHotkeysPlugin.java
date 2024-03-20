@@ -15,6 +15,7 @@ import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ProjectileMoved;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -1705,6 +1706,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         {
             MessageUtils.addMessage(client, "Var " + userVar + " doesn't exist.");
         }
+
     }
 
     private boolean isNumeric(String str)
@@ -1826,11 +1828,176 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 "lpPlane"
         );
 
-        return reservedVars.contains(varName);
+        return reservedVars.contains(varName) || isDynamicReservedVar(varName);
+    }
+
+    private boolean isDynamicReservedVar(String varName)
+    {
+        final List<String> dynamicVars = List.of(
+                "nbi ",
+                "ibi ",
+                "nii ",
+                "iii ",
+                "nsi ",
+                "isi ",
+                "nnnwl ",
+                "ninwl ",
+                "nnnrl ",
+                "ninrl "
+        );
+
+        for (String var : dynamicVars)
+        {
+            if (varName.startsWith(var))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private String getDynamicReservedVarValue(String varName)
+    {
+        if (varName.startsWith("nbi "))
+        {
+            String namedBankItem = varName.substring(4).replaceAll("_", " ");
+            return String.valueOf(getNamedItemIndex(namedBankItem, 12, 13));
+        }
+
+        if (varName.startsWith("ibi "))
+        {
+            int itemId = Integer.parseInt(varName.substring(4));
+            return String.valueOf(getIdItemIndex(itemId, 12, 13));
+        }
+
+        if (varName.startsWith("nii "))
+        {
+            String namedBankItem = varName.substring(4).replaceAll("_", " ");
+            return String.valueOf(getNamedItemIndex(namedBankItem, 149, 0));
+        }
+
+        if (varName.startsWith("iii "))
+        {
+            int itemId = Integer.parseInt(varName.substring(4));
+            return String.valueOf(getIdItemIndex(itemId, 149, 0));
+        }
+
+        if (varName.startsWith("nsi "))
+        {
+            String namedBankItem = varName.substring(4).replaceAll("_", " ");
+            return String.valueOf(getNamedItemIndex(namedBankItem, 300, 2));
+        }
+
+        if (varName.startsWith("isi "))
+        {
+            int itemId = Integer.parseInt(varName.substring(4));
+            return String.valueOf(getIdItemIndex(itemId, 300, 2));
+        }
+
+        if (varName.startsWith("nnnwl ") || varName.startsWith("ninwl ") ||
+                varName.startsWith("nnnrl ") || varName.startsWith("ninrl "))
+        {
+            NPC nearestNpc = null;
+            boolean varNameHasCoords = varName.endsWith(".x") || varName.endsWith(".y") || varName.endsWith(".z");
+            String varNameNoCoords = varName.substring(6, varNameHasCoords ? varName.length() - 2 : varName.length());
+
+            if (varName.startsWith("nnnwl ") || varName.startsWith("nnnrl "))
+            {
+                nearestNpc = NpcUtils.getNearestNpc(varNameNoCoords.replaceAll("_", " "));
+            }
+            else
+            {
+                nearestNpc = NpcUtils.getNearestNpc(Integer.parseInt(varNameNoCoords));
+            }
+
+            if (nearestNpc != null)
+            {
+                final WorldPoint nnwp = nearestNpc.getWorldLocation();
+                if (varName.endsWith(".x"))
+                {
+                    return varName.contains("wl ") ? String.valueOf(nnwp.getX()) : String.valueOf(nnwp.getRegionX());
+                }
+                else if (varName.endsWith(".y"))
+                {
+                    return varName.contains("wl ") ? String.valueOf(nnwp.getY()) : String.valueOf(nnwp.getRegionY());
+                }
+                else if (varName.endsWith(".z"))
+                {
+                    return String.valueOf(nnwp.getPlane());
+                }
+                else
+                {
+                    return varName.contains("wl ") ?  (nnwp.getX() + "|" + nnwp.getY() + "|" + nnwp.getPlane()) : (nnwp.getRegionX() + "|" + nnwp.getRegionY() + "|" + nnwp.getPlane());
+                }
+            }
+
+        }
+        return "undefined";
+    }
+
+    public int getNamedItemIndex(String name, int parentId, int childId)
+    {
+        Widget inventoryWidget = client.getWidget(parentId, childId);
+        if (inventoryWidget == null || inventoryWidget.isSelfHidden())
+        {
+            return -1;
+        }
+
+        Widget[] inventoryItems = inventoryWidget.getDynamicChildren();
+        int itemIndex = -1;
+        if (inventoryItems != null && inventoryItems.length > 0)
+        {
+            for (int i = 0; i < inventoryItems.length; i++)
+            {
+                if (inventoryItems[i] != null)
+                {
+                    ItemComposition comp = client.getItemDefinition(inventoryItems[i].getItemId());
+                    if (comp.getName() != null && comp.getName().contains(name))
+                    {
+                        itemIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return itemIndex;
+    }
+
+    public int getIdItemIndex(int id, int parentId, int childId)
+    {
+        Widget inventoryWidget = client.getWidget(parentId, childId);
+        if (inventoryWidget == null || inventoryWidget.isSelfHidden())
+        {
+            return -1;
+        }
+
+        Widget[] inventoryItems = inventoryWidget.getDynamicChildren();
+        if (inventoryItems != null && inventoryItems.length > 0)
+        {
+            for (int i = 0; i < inventoryItems.length; i++)
+            {
+                if (inventoryItems[i] != null)
+                {
+                    if (inventoryItems[i].getItemId() == id)
+                    {
+                        return i;
+                    }
+                }
+            }
+        }
+
+        return -1;
     }
 
     public String reservedVarValue(String varName)
     {
+        if (isDynamicReservedVar(varName))
+        {
+            return getDynamicReservedVarValue(varName);
+        }
+
         final WorldPoint worldLocation = client.getLocalPlayer().getWorldLocation();
         final int worldX = worldLocation.getX();
         final int worldY = worldLocation.getY();

@@ -1,7 +1,5 @@
 package com.lucidplugins.api.utils;
 
-import com.example.EthanApiPlugin.Collections.Equipment;
-import com.example.EthanApiPlugin.Collections.EquipmentItemWidget;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
 import com.lucidplugins.api.item.SlottedItem;
