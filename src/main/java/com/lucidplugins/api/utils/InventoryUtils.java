@@ -72,7 +72,7 @@ public class InventoryUtils
     public static void castAlchemyOnItem(int id, boolean highAlchemy)
     {
         Optional<Widget> itemWidget = Inventory.search().withId(id).first();
-        final int alchemyWidgetId = highAlchemy ? 14286888 : 14286867;
+        final int alchemyWidgetId = highAlchemy ? 14286892 : 14286869;
         Widget alchemyWidget = EthanApiPlugin.getClient().getWidget(alchemyWidgetId);
 
         if (alchemyWidget != null)

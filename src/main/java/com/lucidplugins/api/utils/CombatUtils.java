@@ -137,7 +137,7 @@ public class CombatUtils
     public static void toggleSpec()
     {
         MousePackets.queueClickPacket();
-        WidgetPackets.queueWidgetActionPacket(1, 38862884, -1, -1);
+        WidgetPackets.queueWidgetActionPacket(1, 10485795, -1, -1);
     }
 
     public static boolean isSpecEnabled() {
