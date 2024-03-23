@@ -19,7 +19,11 @@ repositories {
 val runeLiteVersion = "1.10.22"
 
 dependencies {
-
+    implementation(group = "net.runelite", name = "jshell", version = "1.9.9")
+    implementation(group = "net.runelite", name = "flatlaf", version = "3.2.5-rl4")
+    implementation(group = "net.runelite", name = "flatlaf-extras", version = "3.2.5-rl4")
+    implementation("com.fifesoft:autocomplete:2.6.1")
+    implementation("com.fifesoft:rsyntaxtextarea:3.1.1")
     compileOnly(group = "com.example", name = "example", version = "5.4")
     compileOnly("org.projectlombok:lombok:1.18.20")
     implementation("com.google.inject.extensions:guice-multibindings:4.1.0")
@@ -30,7 +34,7 @@ dependencies {
 }
 
 group = "com.lucidplugins"
-version = "5.8.2"
+version = "5.8.3"
 
 val javaMajorVersion = JavaVersion.VERSION_11.majorVersion
 
