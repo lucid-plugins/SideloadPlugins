@@ -26,7 +26,6 @@ dependencies {
     implementation("com.fifesoft:rsyntaxtextarea:3.1.1")
     compileOnly(group = "com.example", name = "example", version = "5.4")
     compileOnly("org.projectlombok:lombok:1.18.20")
-    implementation("com.google.inject.extensions:guice-multibindings:4.1.0")
     compileOnly("net.runelite:client:$runeLiteVersion+")
     compileOnly("org.pf4j:pf4j:3.6.0")
     annotationProcessor("org.projectlombok:lombok:1.18.20")
