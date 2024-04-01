@@ -25,8 +25,6 @@ import java.util.List;
         tags = {"leviathan", "dt2", "lucid"}
 )
 @Singleton
-@PluginDependency(EthanApiPlugin.class)
-@PluginDependency(PacketUtilsPlugin.class)
 public class LucidLeviHelperPlugin extends Plugin
 {
 

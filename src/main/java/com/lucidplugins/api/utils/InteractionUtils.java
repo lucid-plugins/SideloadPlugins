@@ -241,6 +241,29 @@ public class InteractionUtils
         return out;
     }
 
+    public static WorldPoint getClosestSafeLocationFiltered(Client client, List<LocalPoint> list, Predicate<Tile> filter)
+    {
+        List<Tile> safeTiles = getAll(client, filter.and(tile -> !list.contains(tile.getLocalLocation()) && isWalkable(tile.getWorldLocation())));
+
+        WorldPoint closestTile = null;
+
+        if (safeTiles.size() > 0)
+        {
+            float closest = 999;
+            for (Tile closeTile : safeTiles)
+            {
+                float testDistance = distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), closeTile.getWorldLocation());
+
+                if (testDistance < closest)
+                {
+                    closestTile = closeTile.getWorldLocation();
+                    closest = testDistance;
+                }
+            }
+        }
+        return closestTile;
+    }
+
 
 
     public static WorldPoint getSafeLocationNorthSouth(Client client, List<LocalPoint> list)
@@ -445,6 +468,11 @@ public class InteractionUtils
             }
         }
         return closestTile;
+    }
+
+    public static boolean isNpcInMeleeDistance(NPC target)
+    {
+        return approxDistanceTo(getCenterTileFromWorldArea(target.getWorldArea()), EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()) == (target.getWorldArea().getWidth() / 2) + 1;
     }
 
     public static boolean isWalkable(WorldPoint point)

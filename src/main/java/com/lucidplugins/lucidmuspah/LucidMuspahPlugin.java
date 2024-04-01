@@ -32,8 +32,6 @@ import java.util.List;
         enabledByDefault = false,
         tags = {"muspah"}
 )
-@PluginDependency(EthanApiPlugin.class)
-@PluginDependency(PacketUtilsPlugin.class)
 public class LucidMuspahPlugin extends Plugin
 {
 

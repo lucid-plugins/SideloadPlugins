@@ -36,6 +36,16 @@ public class CombatUtils
         }
     }
 
+    public static void deactivatePrayer(Client client, Prayer prayer)
+    {
+        if (client == null || client.getBoostedSkillLevel(Skill.PRAYER) == 0 || !client.isPrayerActive(prayer))
+        {
+            return;
+        }
+
+        PrayerInteraction.togglePrayer(prayer);
+    }
+
     public static void deactivatePrayers(Client client, boolean protectionOnly)
     {
         if (protectionOnly)

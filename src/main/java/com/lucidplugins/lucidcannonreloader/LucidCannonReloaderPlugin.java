@@ -32,8 +32,6 @@ import java.util.Random;
         name = "<html><font color=\"#32CD32\">Lucid </font>Cannon Reloader</html>",
         description = "A plugin that will reload your cannon so you don't have to",
         tags = {"lucid", "cannon", "cball", "reload"})
-@PluginDependency(EthanApiPlugin.class)
-@PluginDependency(PacketUtilsPlugin.class)
 public class LucidCannonReloaderPlugin extends Plugin
 {
 

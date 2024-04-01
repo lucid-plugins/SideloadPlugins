@@ -33,7 +33,7 @@ dependencies {
 }
 
 group = "com.lucidplugins"
-version = "5.8.3"
+version = "5.8.4"
 
 val javaMajorVersion = JavaVersion.VERSION_11.majorVersion
 
@@ -53,23 +53,5 @@ tasks {
     }
     withType<ShadowJar> {
         baseName = "LucidPlugins"
-
-        //exclude("com/lucidplugins/disablerendering/**")
-        //exclude("com/lucidplugins/lucidcannonreloader/**")
-        //exclude("com/lucidplugins/lucidcombat/**")
-        //exclude("com/lucidplugins/lucidcustomprayers/**")
-        //exclude("com/lucidplugins/luciddiscordlogger/**")
-        //exclude("com/lucidplugins/luciddukehelper/**")
-        //exclude("com/lucidplugins/lucidgauntlet/**")
-        //exclude("com/lucidplugins/lucidgearswapper/**")
-        //exclude("com/lucidplugins/lucidhotkeys/**")
-        //exclude("com/lucidplugins/lucidlevihelper/**")
-        //exclude("com/lucidplugins/lucidmuspah/**")
-        //exclude("com/lucidplugins/lucidspices/**")
-        //exclude("com/lucidplugins/lucidscurriushelper/**")
-        //exclude("com/lucidplugins/lucidwhispererhelper/**")
-        //exclude("com/lucidplugins/lucidtobprayers/**")
-        //exclude("com/lucidplugins/api/**")
-        exclude("com/lucidplugins/toa/**")
     }
 }

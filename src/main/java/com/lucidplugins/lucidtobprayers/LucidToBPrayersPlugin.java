@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
         enabledByDefault = false,
         tags = {"prayer", "swap", "tob", "lucid"}
 )
-@PluginDependency(EthanApiPlugin.class)
-@PluginDependency(PacketUtilsPlugin.class)
 public class LucidToBPrayersPlugin extends Plugin
 {
 

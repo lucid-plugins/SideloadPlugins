@@ -33,8 +33,6 @@ import java.util.Map;
         tags = {"whisperer", "dt2"}
 )
 @Extension
-@PluginDependency(EthanApiPlugin.class)
-@PluginDependency(PacketUtilsPlugin.class)
 public class WhispererHelperPlugin extends Plugin
 {
 

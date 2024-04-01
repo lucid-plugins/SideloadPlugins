@@ -33,8 +33,6 @@ import java.util.function.Predicate;
 
 @Extension
 @PluginDescriptor(name = "<html><font color=\"#32CD32\">Lucid </font>Combat</html>", description = "Helps with Combat related stuff", enabledByDefault = false)
-@PluginDependency(EthanApiPlugin.class)
-@PluginDependency(PacketUtilsPlugin.class)
 public class LucidCombatPlugin extends Plugin implements KeyListener
 {
 

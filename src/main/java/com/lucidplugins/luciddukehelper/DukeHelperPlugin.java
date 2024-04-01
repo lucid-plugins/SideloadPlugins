@@ -23,8 +23,6 @@ import java.util.Map;
 
 @Extension
 @PluginDescriptor(name = "<html><font color=\"#32CD32\">Lucid </font>Duke Helper</html>", description = "Auto-prayers and other helper features and overlays for Duke Succ", enabledByDefault = false, tags = {"succ", "duke", "lucid", "helper"})
-@PluginDependency(EthanApiPlugin.class)
-@PluginDependency(PacketUtilsPlugin.class)
 public class DukeHelperPlugin extends Plugin
 {
     @Inject
