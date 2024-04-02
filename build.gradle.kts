@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
 }
 
-val runeLiteVersion = "1.10.22"
+val runeLiteVersion = "latest.release"
 
 dependencies {
     implementation(group = "net.runelite", name = "jshell", version = "1.9.9")
@@ -26,7 +26,7 @@ dependencies {
     implementation("com.fifesoft:rsyntaxtextarea:3.1.1")
     compileOnly(group = "com.example", name = "example", version = "5.4")
     compileOnly("org.projectlombok:lombok:1.18.20")
-    compileOnly("net.runelite:client:$runeLiteVersion+")
+    compileOnly("net.runelite:client:$runeLiteVersion")
     compileOnly("org.pf4j:pf4j:3.6.0")
     annotationProcessor("org.projectlombok:lombok:1.18.20")
     testImplementation("junit:junit:4.13.1")
