@@ -341,6 +341,12 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
+    @ConfigItem(name = "Only Spec If Autocombat", description = "Only specs when autocombat is running", position = 5, keyName = "specIfAutocombat", section = autoSpecSection)
+    default boolean specIfAutocombat()
+    {
+        return false;
+    }
+
     // Alching
     @ConfigSection(name = "Alchemy Settings", description = "Control settings for Low/High Alchemy", position = 7, closedByDefault = true)
     String alchemySection = "Alchemy Settings";

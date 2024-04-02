@@ -42,6 +42,16 @@ public class EquipmentUtils
         return weaponWidget.map(equipmentItemWidget -> new Item(equipmentItemWidget.getEquipmentItemId(), equipmentItemWidget.getItemQuantity())).orElse(null);
     }
 
+    public static Item getShieldSlotItem()
+    {
+        Optional<EquipmentItemWidget> weaponWidget = Equipment.search().filter(item -> {
+            EquipmentItemWidget iw = (EquipmentItemWidget) item;
+            return iw.getEquipmentIndex() == 5;
+        }).first();
+
+        return weaponWidget.map(equipmentItemWidget -> new Item(equipmentItemWidget.getEquipmentItemId(), equipmentItemWidget.getItemQuantity())).orElse(null);
+    }
+
     public static boolean contains(int id)
     {
         return !Equipment.search().withId(id).result().isEmpty();
