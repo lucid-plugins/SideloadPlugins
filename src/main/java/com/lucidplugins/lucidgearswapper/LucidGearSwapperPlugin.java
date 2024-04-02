@@ -325,13 +325,15 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
 
             if (slotSelected != 0)
             {
-                final List<SlottedItem> equippedGear = EquipmentUtils.getAll();
-                equippedGear.sort(Comparator.comparing(item -> slotOrderToCopy.indexOf(item.getSlot())));
+                clientThread.invoke(() -> {
+                    final List<SlottedItem> equippedGear = EquipmentUtils.getAll();
+                    equippedGear.sort(Comparator.comparing(item -> slotOrderToCopy.indexOf(item.getSlot())));
 
-                String equippedItemsString = equippedGear.stream().map(slottedItem -> client.getItemDefinition(slottedItem.getItem().getId()).getName()).collect(Collectors.joining(","));
-                String key = "swap" + slotSelected + "String";
-                configManager.setConfiguration("lucid-gear-swapper", key, equippedItemsString);
-                clientThread.invoke(() -> MessageUtils.addMessage(client, "Copied Equipment to Preset Slot " + slotSelected));
+                    String equippedItemsString = equippedGear.stream().map(slottedItem -> client.getItemDefinition(slottedItem.getItem().getId()).getName()).collect(Collectors.joining(","));
+                    String key = "swap" + slotSelected + "String";
+                    configManager.setConfiguration("lucid-gear-swapper", key, equippedItemsString);
+                    MessageUtils.addMessage(client, "Copied Equipment to Preset Slot " + slotSelected);
+                });
             }
         }
 
