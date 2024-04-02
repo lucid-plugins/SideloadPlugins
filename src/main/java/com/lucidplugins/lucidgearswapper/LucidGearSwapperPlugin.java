@@ -149,7 +149,7 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
                     continue;
                 }
 
-                String itemString = configList.get(0);
+                String itemString = configList.get(0).trim();
                 List<SlottedItem> firstItem = EquipmentUtils.getAll().stream().filter(item -> client.getItemDefinition(item.getItem().getId()).getName().contains(itemString)).collect(Collectors.toList());
 
                 if (firstItem.size() > 0)
@@ -325,50 +325,146 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
 
             if (slotSelected != 0)
             {
-                clientThread.invoke(() -> {
-                    final List<SlottedItem> equippedGear = EquipmentUtils.getAll();
-                    equippedGear.sort(Comparator.comparing(item -> slotOrderToCopy.indexOf(item.getSlot())));
-                    String equippedItemsString = equippedGear.stream().map(slottedItem -> client.getItemDefinition(slottedItem.getItem().getId()).getName()).collect(Collectors.joining(","));
-                    String key = "swap" + slotSelected + "String";
-                    configManager.setConfiguration("lucid-gear-swapper", key, equippedItemsString);
-                    MessageUtils.addMessage(client, "Copied Equipment to Preset Slot " + slotSelected);
-                });
-            }
-        }
+                final List<SlottedItem> equippedGear = EquipmentUtils.getAll();
+                equippedGear.sort(Comparator.comparing(item -> slotOrderToCopy.indexOf(item.getSlot())));
 
-        if (gearSwapSelected != -1)
-        {
-            return;
+                String equippedItemsString = equippedGear.stream().map(slottedItem -> client.getItemDefinition(slottedItem.getItem().getId()).getName()).collect(Collectors.joining(","));
+                String key = "swap" + slotSelected + "String";
+                configManager.setConfiguration("lucid-gear-swapper", key, equippedItemsString);
+                clientThread.invoke(() -> MessageUtils.addMessage(client, "Copied Equipment to Preset Slot " + slotSelected));
+            }
         }
 
         if (config.swap1Hotkey().matches(e) && config.swap1Enabled())
         {
-            gearSwapSelected = 0;
+            clientThread.invoke(() -> {
+                if (client.getGameState() != GameState.LOGGED_IN)
+                {
+                    return;
+                }
+
+                if (config.oneTickSwap())
+                {
+                    swap(0, false);
+                    gearSwapState = GearSwapState.TICK_1;
+                }
+                else
+                {
+                    gearSwapSelected = 0;
+                    swap(0, true);
+                    gearSwapState = GearSwapState.TICK_2;
+                }
+            });
         }
 
         if (config.swap2Hotkey().matches(e) && config.swap2Enabled())
         {
-            gearSwapSelected = 1;
+            clientThread.invoke(() -> {
+                if (client.getGameState() != GameState.LOGGED_IN)
+                {
+                    return;
+                }
+
+                if (config.oneTickSwap())
+                {
+                    swap(1, false);
+                    gearSwapState = GearSwapState.TICK_1;
+                }
+                else
+                {
+                    gearSwapSelected = 1;
+                    swap(1, true);
+                    gearSwapState = GearSwapState.TICK_2;
+                }
+            });
         }
 
         if (config.swap3Hotkey().matches(e) && config.swap3Enabled())
         {
-            gearSwapSelected = 2;
+            clientThread.invoke(() -> {
+                if (client.getGameState() != GameState.LOGGED_IN)
+                {
+                    return;
+                }
+
+                if (config.oneTickSwap())
+                {
+                    swap(2, false);
+                    gearSwapState = GearSwapState.TICK_1;
+                }
+                else
+                {
+                    gearSwapSelected = 2;
+                    swap(2, true);
+                    gearSwapState = GearSwapState.TICK_2;
+                }
+            });
         }
 
         if (config.swap4Hotkey().matches(e) && config.swap4Enabled())
         {
-            gearSwapSelected = 3;
+            clientThread.invoke(() -> {
+                if (client.getGameState() != GameState.LOGGED_IN)
+                {
+                    return;
+                }
+
+                if (config.oneTickSwap())
+                {
+                    swap(3, false);
+                    gearSwapState = GearSwapState.TICK_1;
+                }
+                else
+                {
+                    gearSwapSelected = 3;
+                    swap(3, true);
+                    gearSwapState = GearSwapState.TICK_2;
+                }
+            });
         }
 
         if (config.swap5Hotkey().matches(e) && config.swap5Enabled())
         {
-            gearSwapSelected = 4;
+            clientThread.invoke(() -> {
+                if (client.getGameState() != GameState.LOGGED_IN)
+                {
+                    return;
+                }
+
+                if (config.oneTickSwap())
+                {
+                    swap(4, false);
+                    gearSwapState = GearSwapState.TICK_1;
+                }
+                else
+                {
+                    gearSwapSelected = 4;
+                    swap(4, true);
+                    gearSwapState = GearSwapState.TICK_2;
+                }
+            });
         }
 
         if (config.swap6Hotkey().matches(e) && config.swap6Enabled())
         {
-            gearSwapSelected = 5;
+            clientThread.invoke(() -> {
+                if (client.getGameState() != GameState.LOGGED_IN)
+                {
+                    return;
+                }
+
+                if (config.oneTickSwap())
+                {
+                    swap(5, false);
+                    gearSwapState = GearSwapState.TICK_1;
+                }
+                else
+                {
+                    gearSwapSelected = 5;
+                    swap(5, true);
+                    gearSwapState = GearSwapState.TICK_2;
+                }
+            });
         }
 
         if (gearSwapSelected != -1)
@@ -388,7 +484,7 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
         List<SlottedItem> validItems = new ArrayList<>();
         for (String item : itemList)
         {
-            Optional<SlottedItem> slottedItem = Inventory.search().nameContains(item).result().stream().map(widget -> new SlottedItem(widget.getItemId(), widget.getItemQuantity(), widget.getIndex())).findFirst();
+            Optional<SlottedItem> slottedItem = Inventory.search().nameContains(item.trim()).result().stream().map(widget -> new SlottedItem(widget.getItemId(), widget.getItemQuantity(), widget.getIndex())).findFirst();
             slottedItem.ifPresent(validItems::add);
         }
 
