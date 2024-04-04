@@ -83,6 +83,15 @@ public class InteractionUtils
         });
     }
 
+    public static void useSlotOnWallObject(int slot, TileObject object)
+    {
+        Optional<Widget> itemWidget = Inventory.search().indexIs(27).first();
+        itemWidget.ifPresent((iw) -> {
+            MousePackets.queueClickPacket();
+            ObjectPackets.queueWidgetOnTileObject(iw, object);
+        });
+    }
+
     public static boolean sleep(Client client, long ms)
     {
         if (client.isClientThread())

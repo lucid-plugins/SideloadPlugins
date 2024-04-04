@@ -101,6 +101,27 @@ public class InventoryUtils
         }
     }
 
+    public static SlottedItem getItemInSlot(int slot)
+    {
+        Widget itemWidget = Inventory.search().indexIs(slot).first().orElse(null);
+
+        int id = -1;
+        int amount = -1;
+
+        if (itemWidget != null)
+        {
+            amount = itemWidget.getItemQuantity();
+            id = itemWidget.getItemId();
+        }
+
+        if (id == -1 || amount == -1)
+        {
+            return null;
+        }
+
+        return new SlottedItem(itemWidget.getItemId(), amount, itemWidget.getIndex());
+    }
+
     public static SlottedItem getFirstItem(int id)
     {
         Widget itemWidget = Inventory.search().withId(id).first().orElse(null);

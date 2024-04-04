@@ -19,11 +19,6 @@ repositories {
 val runeLiteVersion = "latest.release"
 
 dependencies {
-    implementation(group = "net.runelite", name = "jshell", version = "1.9.9")
-    implementation(group = "net.runelite", name = "flatlaf", version = "3.2.5-rl4")
-    implementation(group = "net.runelite", name = "flatlaf-extras", version = "3.2.5-rl4")
-    implementation("com.fifesoft:autocomplete:2.6.1")
-    implementation("com.fifesoft:rsyntaxtextarea:3.1.1")
     compileOnly(group = "com.example", name = "example", version = "5.4")
     compileOnly("org.projectlombok:lombok:1.18.20")
     compileOnly("net.runelite:client:$runeLiteVersion")
