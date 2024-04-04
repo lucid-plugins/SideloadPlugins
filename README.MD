@@ -22,6 +22,8 @@ Current Plugin List:
   - Disables rendering to reduce CPU usage and mimics minimal mode while allowing multiple plugins to run. Toggleable.
 - **Lucid Discord Logger**
   - Lets you send any received game, public, private, clan, or group messages to a Discord hook for easy logging. Has customizable override webhook URLs available for each type.
+- **Lucid Duke Helper**
+  - Adds tons of auto helper features and some overlays to make Duke Succ braindead content
 - **Lucid Gauntlet**
   - It's like Gauntlet Extended but includes auto features like auto-prayer/wep switching at Hunllef to make
     the Hunllef fight nothing but having to dodge tornados and tiles. Makes getting combat achievements a piece of cake.
@@ -32,7 +34,7 @@ Current Plugin List:
 - **Lucid Hotkeys**
   - Set up unlimited savable/loadable presets that let you do a multitude of actions that you can bind to hotkeys, as well as conditions for when they activate.
 - **Lucid Levi Helper**
-  - Does auto-prayers for Leviathan as well as some other overlay helper features
+  - Does auto-prayers for Leviathan (as well as some other overlay helper features coming soon...)
 - **Lucid Muspah**
   - Overlay for stepback method + auto-prayers (auto-smite not included in auto-prayers)
 - **Lucid Scurrius Helper**
@@ -42,6 +44,8 @@ Current Plugin List:
     stews painless without risking your cat dying (I totally have no experience with this happening, I swear)
 - **Lucid ToB Prayers**
   - Activates prayers when appropriate at ToB. Can also tick eat the Sote bomb for you, too. Each boss is separately toggle-able
+- **Lucid Vardorvis Helper**
+  - Adds tons of auto helper features to make Vardorvis basically full auto. Includes awakened support.
 - **Lucid Whisperer Helper**
   - Adds tons of auto helper features and overlays to make the Whisperer braindead content
 
