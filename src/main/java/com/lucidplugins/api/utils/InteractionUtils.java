@@ -78,18 +78,23 @@ public class InteractionUtils
     {
         Optional<Widget> itemWidget = Inventory.search().withId(item.getId()).first();
         itemWidget.ifPresent((iw) -> {
-            MousePackets.queueClickPacket();
-            ObjectPackets.queueWidgetOnTileObject(iw, object);
+            if (object != null)
+            {
+                MousePackets.queueClickPacket();
+                ObjectPackets.queueWidgetOnTileObject(iw, object);
+            }
         });
     }
 
-    public static void useSlotOnWallObject(int slot, TileObject object)
+    public static void useLastIdOnWallObject(int id, TileObject object)
     {
-        Optional<Widget> itemWidget = Inventory.search().indexIs(27).first();
-        itemWidget.ifPresent((iw) -> {
+        List<Widget> itemWidgets = Inventory.search().withId(id).result();
+        Widget itemWidget = itemWidgets.get(itemWidgets.size() - 1);
+        if (object != null)
+        {
             MousePackets.queueClickPacket();
-            ObjectPackets.queueWidgetOnTileObject(iw, object);
-        });
+            ObjectPackets.queueWidgetOnTileObject(itemWidget, object);
+        }
     }
 
     public static boolean sleep(Client client, long ms)

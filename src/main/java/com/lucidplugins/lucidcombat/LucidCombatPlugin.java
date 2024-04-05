@@ -14,6 +14,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
@@ -56,6 +57,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     @Inject
     private LucidCombatConfig config;
+
+    @Inject
+    private ItemManager itemManager;
 
     private int nextSolidFoodTick = 0;
     private int nextPotionTick = 0;
@@ -247,6 +251,26 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
         }
 
+        return false;
+    }
+
+    private boolean idInNpcBlackList(int id)
+    {
+        if (config.idBlacklist().trim().isEmpty())
+        {
+            return false;
+        }
+
+        for (String stringId : config.idBlacklist().split(","))
+        {
+            String idTrimmed = stringId.trim();
+            int npcId = Integer.parseInt(idTrimmed);
+
+            if (id == npcId)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -751,6 +775,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
             boolean inWhitelist = nameInLootWhiteList(composition.getName());
             boolean inBlacklist = nameInLootBlackList(composition.getName());
+            boolean isValuable = itemManager.getItemPrice(composition.getId()) >= config.lootAbovePrice();
 
             boolean antiLureActivated = false;
 
@@ -761,7 +786,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
             boolean inAnExpectedLocation = config.lootGoblin() || expectedLootLocations.containsKey(LocalPoint.fromWorld(client, tileItem.getLocation()));
 
-            return (!inBlacklist && inWhitelist) && inAnExpectedLocation &&
+            return (!inBlacklist && (inWhitelist || isValuable)) && inAnExpectedLocation &&
                     InteractionUtils.distanceTo2DHypotenuse(tileItem.getLocation(), client.getLocalPlayer().getWorldLocation()) <= config.lootRange() &&
                     !antiLureActivated;
         });
@@ -1152,7 +1177,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         return NpcUtils.getNearestNpc(npc ->
-            (npc.getName() != null && isNameInNpcsToFight(npc.getName())) &&
+            (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
             (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
             (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
             (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
@@ -1175,7 +1200,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
-        return (npc.getName() != null && isNameInNpcsToFight(npc.getName())) &&
+        return (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
 
                 (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
                 (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
@@ -1243,7 +1268,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     private NPC getEligibleNpcInteractingWithUs()
     {
         return NpcUtils.getNearestNpc((npc) ->
-            (npc.getName() != null && isNameInNpcsToFight(npc.getName())) &&
+            (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
             (npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0) &&
             Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
             InteractionUtils.isWalkable(npc.getWorldLocation()) &&

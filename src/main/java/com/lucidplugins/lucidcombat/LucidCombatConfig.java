@@ -39,37 +39,43 @@ public interface LucidCombatConfig extends Config
         return "";
     }
 
-    @ConfigItem(name = "Right Click Entry", description = "Shows a menu entry on NPC's to be able to start the plugin that way.", position = 5, keyName = "rightClickMenu", section = autoCombatSection)
+    @ConfigItem(name = "NPC ID Blacklist", description = "The IDs of NPCs to avoid, separated by commas. E.g: 122, 6233, 352", position = 5, keyName = "idBlacklist", section = autoCombatSection)
+    default String idBlacklist()
+    {
+        return "";
+    }
+
+    @ConfigItem(name = "Right Click Entry", description = "Shows a menu entry on NPC's to be able to start the plugin that way.", position = 6, keyName = "rightClickMenu", section = autoCombatSection)
     default boolean rightClickMenu()
     {
         return false;
     }
 
-    @ConfigItem(name = "Max Range From Start", description = "The plugin will ignore any monsters AND loot that are more than x tiles away from starting tile", position = 6, keyName = "maxRange", section = autoCombatSection)
+    @ConfigItem(name = "Max Range From Start", description = "The plugin will ignore any monsters AND loot that are more than x tiles away from starting tile", position = 7, keyName = "maxRange", section = autoCombatSection)
     default int maxRange()
     {
         return 5;
     }
 
-    @ConfigItem(name = "Anti-Lure Protection", description = "Will loot not loot any items outside of the max range + 3", position = 7, keyName = "antilureProtection", section = autoCombatSection)
+    @ConfigItem(name = "Anti-Lure Protection", description = "Will loot not loot any items outside of the max range + 3", position = 8, keyName = "antilureProtection", section = autoCombatSection)
     default boolean antilureProtection()
     {
         return false;
     }
 
-    @ConfigItem(name = "Auto-Combat Play-Style", description = "The plugin will imitate a certain type of playstyle to suit your needs. Normal by default.", position = 8, keyName = "autocombatStyle", section = autoCombatSection)
+    @ConfigItem(name = "Auto-Combat Play-Style", description = "The plugin will imitate a certain type of playstyle to suit your needs. Normal by default.", position = 9, keyName = "autocombatStyle", section = autoCombatSection)
     default PlayStyle autocombatStyle()
     {
         return PlayStyle.NORMAL;
     }
 
-    @ConfigItem(name = "Reaction Anti-Pattern", description = "The plugin will make random micro-adjustments to reaction times over time in an attempt to create anti-patterns. Will make the reaction times change over time.", position = 9, keyName = "reactionAntiPattern", section = autoCombatSection)
+    @ConfigItem(name = "Reaction Anti-Pattern", description = "The plugin will make random micro-adjustments to reaction times over time in an attempt to create anti-patterns. Will make the reaction times change over time.", position = 10, keyName = "reactionAntiPattern", section = autoCombatSection)
     default boolean reactionAntiPattern()
     {
         return false;
     }
 
-    @ConfigItem(name = "Use Safepot", description = "Uses the starting tile as your safespot and will return to it if not looting", position = 9, keyName = "useSafespot", section = autoCombatSection)
+    @ConfigItem(name = "Use Safepot", description = "Uses the starting tile as your safespot and will return to it if not looting", position = 11, keyName = "useSafespot", section = autoCombatSection)
     default boolean useSafespot()
     {
         return false;
@@ -96,38 +102,44 @@ public interface LucidCombatConfig extends Config
         return "";
     }
 
-    @ConfigItem(name = "Max Range From Player", description = "How far away from the player can an item be for us to pick it up? Plugin still respects max range.", position = 3, keyName = "lootRange", section = lootSection)
+    @ConfigItem(name = "Loot Above Price", description = "Loot items above this price", position = 3, keyName = "lootAbovePrice", section = lootSection)
+    default int lootAbovePrice()
+    {
+        return 10000;
+    }
+
+    @ConfigItem(name = "Max Range From Player", description = "How far away from the player can an item be for us to pick it up? Plugin still respects max range.", position = 4, keyName = "lootRange", section = lootSection)
     default int lootRange()
     {
         return 5;
     }
 
     @ConfigItem(name = "Stackable Only", description = "Will only loot the item if it is stackable in your inventory <br>"
-            + "(excludes bones/ashes which can still be picked up normally)", position = 4, keyName = "stackableOnly", section = lootSection)
+            + "(excludes bones/ashes which can still be picked up normally)", position = 5, keyName = "stackableOnly", section = lootSection)
     default boolean stackableOnly()
     {
         return false;
     }
 
-    @ConfigItem(name = "Bury Bones/Scatter Ashes", description = "Will auto-bury or scatter any bones or ashes that get picked up", position = 5, keyName = "buryScatter", section = lootSection)
+    @ConfigItem(name = "Bury Bones/Scatter Ashes", description = "Will auto-bury or scatter any bones or ashes that get picked up", position = 6, keyName = "buryScatter", section = lootSection)
     default boolean buryScatter()
     {
         return false;
     }
 
-    @ConfigItem(name = "Only Loot No/Dead Target", description = "Will only grab loot if you don't have a target or they are dead or it's been more than max loot ticks since the last time you looted something", position = 6, keyName = "onlyLootWithNoTarget", section = lootSection)
+    @ConfigItem(name = "Only Loot No/Dead Target", description = "Will only grab loot if you don't have a target or they are dead or it's been more than max loot ticks since the last time you looted something", position = 7, keyName = "onlyLootWithNoTarget", section = lootSection)
     default boolean onlyLootWithNoTarget()
     {
         return false;
     }
 
-    @ConfigItem(name = "Max Ticks Between Loot Attempts", description = "If you are only looting with no/dead target it will attempt to loot if its been x amount of ticks since you last looted", position = 7, keyName = "maxTicksBetweenLooting", section = lootSection)
+    @ConfigItem(name = "Max Ticks Between Loot Attempts", description = "If you are only looting with no/dead target it will attempt to loot if its been x amount of ticks since you last looted", position = 8, keyName = "maxTicksBetweenLooting", section = lootSection)
     default int maxTicksBetweenLooting()
     {
         return 115;
     }
 
-    @ConfigItem(name = "Loot Goblin", description = "Will grab any valid loot, even if it's not yours", position = 8, keyName = "lootGoblin", section = lootSection)
+    @ConfigItem(name = "Loot Goblin", description = "Will grab any valid loot, even if it's not yours", position = 9, keyName = "lootGoblin", section = lootSection)
     default boolean lootGoblin()
     {
         return false;

@@ -54,6 +54,11 @@ public class InventoryUtils
         return !Inventory.search().idInList(intIdList).result().isEmpty();
     }
 
+    public static boolean contains(int id)
+    {
+        return !Inventory.search().idInList(List.of(id)).result().isEmpty();
+    }
+
     public static int getFreeSlots()
     {
         return Inventory.getEmptySlots();
@@ -125,6 +130,25 @@ public class InventoryUtils
     public static SlottedItem getFirstItem(int id)
     {
         Widget itemWidget = Inventory.search().withId(id).first().orElse(null);
+        int amount = -1;
+
+        if (itemWidget != null)
+        {
+            amount = itemWidget.getItemQuantity();
+        }
+
+        if (id == -1 || amount == -1)
+        {
+            return null;
+        }
+
+        return new SlottedItem(id, amount, itemWidget.getIndex());
+    }
+
+    public static SlottedItem getLastItem(int id)
+    {
+        List<Widget> itemWidgets = Inventory.search().withId(id).result();
+        Widget itemWidget = itemWidgets.get(itemWidgets.size() - 1);
         int amount = -1;
 
         if (itemWidget != null)
