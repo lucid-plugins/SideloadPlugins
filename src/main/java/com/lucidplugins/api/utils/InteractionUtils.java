@@ -358,11 +358,11 @@ public class InteractionUtils
     public static WorldPoint getClosestSafeLocationNotInNPCMeleeDistance(Client client, List<LocalPoint> list, NPC target, int maxDistance)
     {
         List<Tile> safeTiles = getAll(client, tile ->
-                approxDistanceTo(getCenterTileFromWorldArea(target.getWorldArea()), tile.getWorldLocation()) > (target.getWorldArea().getWidth() / 2) + 1 &&
-                        !target.getWorldArea().contains(tile.getWorldLocation()) &&
-                        approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
-                        isWalkable(tile.getWorldLocation()) &&
-                        Math.round(distanceTo2DHypotenuse(tile.getWorldLocation(), target.getWorldLocation())) <= maxDistance);
+            !isNpcInMeleeDistance(target) &&
+            !target.getWorldArea().contains(tile.getWorldLocation()) &&
+            approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
+            isWalkable(tile.getWorldLocation()) &&
+            Math.round(distanceTo2DHypotenuse(tile.getWorldLocation(), target.getWorldLocation())) <= maxDistance);
 
         List<Tile> trueSafeTiles = new ArrayList<>();
         for (Tile t : safeTiles)
@@ -486,7 +486,7 @@ public class InteractionUtils
 
     public static boolean isNpcInMeleeDistance(NPC target)
     {
-        return approxDistanceTo(getCenterTileFromWorldArea(target.getWorldArea()), EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()) == (target.getWorldArea().getWidth() / 2) + 1;
+        return target.getWorldArea().isInMeleeDistance(EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation());
     }
 
     public static boolean isWalkable(WorldPoint point)

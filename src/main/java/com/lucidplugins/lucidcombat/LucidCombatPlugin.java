@@ -775,7 +775,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
             boolean inWhitelist = nameInLootWhiteList(composition.getName());
             boolean inBlacklist = nameInLootBlackList(composition.getName());
-            boolean isValuable = itemManager.getItemPrice(composition.getId()) >= config.lootAbovePrice();
+            boolean isValuable = (itemManager.getItemPrice(composition.getId()) * tileItem.getTileItem().getQuantity()) >= config.lootAbovePrice();
 
             boolean antiLureActivated = false;
 
