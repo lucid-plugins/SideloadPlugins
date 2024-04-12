@@ -176,7 +176,7 @@ public class LucidMuspahPlugin extends Plugin
             ticksUntilAttack = 5;
         }
 
-        if (animId == MUSPAH_MAGIC_SPECIAL_ANIM)
+        if (animId == MUSPAH_MAGIC_SPECIAL_ANIM && config.autoPray())
         {
             scheduledPrayers.add(new ScheduledPrayer(Prayer.PROTECT_FROM_MAGIC, client.getTickCount() + 2));
             scheduledPrayers.add(new ScheduledPrayer(Prayer.PROTECT_FROM_MISSILES, client.getTickCount() + 4));
