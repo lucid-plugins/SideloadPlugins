@@ -400,6 +400,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return;
         }
 
+        if (client.getTickCount() > 10 && client.getTickCount() - lastAlchTick == 1)
+        {
+            client.runScript(915, 3);
+        }
 
         if (!actionTakenThisTick)
         {
@@ -443,6 +447,16 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         if (!actionTakenThisTick)
         {
+            actionTakenThisTick = handleSlaughterEquip();
+        }
+
+        if (!actionTakenThisTick)
+        {
+            actionTakenThisTick = handleExpeditiousEquip();
+        }
+
+        if (!actionTakenThisTick)
+        {
             actionTakenThisTick = handleLooting();
 
             if (!actionTakenThisTick && (nextLootAttempt - client.getTickCount()) < 0 && lastTarget != null)
@@ -461,6 +475,82 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     public boolean isMoving()
     {
         return client.getLocalPlayer().getPoseAnimation() != client.getLocalPlayer().getIdlePoseAnimation();
+    }
+
+    private boolean handleSlaughterEquip()
+    {
+        if (!config.equipSlaughterBracelet())
+        {
+            return false;
+        }
+
+        if (!autoCombatRunning)
+        {
+            return false;
+        }
+
+        if (!InventoryUtils.contains("Bracelet of slaughter"))
+        {
+            return false;
+        }
+
+        if (config.equipExpeditiousBracelet() && EquipmentUtils.contains("Expeditious bracelet"))
+        {
+            return false;
+        }
+
+        if (EquipmentUtils.contains("Bracelet of slaughter"))
+        {
+            return false;
+        }
+
+        Item bracelet = InventoryUtils.getFirstItem("Bracelet of slaughter");
+
+        if (bracelet != null)
+        {
+            InventoryUtils.itemInteract(bracelet.getId(), "Wear");
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean handleExpeditiousEquip()
+    {
+        if (!config.equipExpeditiousBracelet())
+        {
+            return false;
+        }
+
+        if (!autoCombatRunning)
+        {
+            return false;
+        }
+
+        if (!InventoryUtils.contains("Expeditious bracelet"))
+        {
+            return false;
+        }
+
+        if (EquipmentUtils.contains("Expeditious bracelet"))
+        {
+            return false;
+        }
+
+        if (config.equipSlaughterBracelet() && EquipmentUtils.contains("Bracelet of slaughter"))
+        {
+            return false;
+        }
+
+        Item bracelet = InventoryUtils.getFirstItem("Expeditious bracelet");
+
+        if (bracelet != null)
+        {
+            InventoryUtils.itemInteract(bracelet.getId(), "Wear");
+            return true;
+        }
+
+        return false;
     }
 
     private boolean handleReAttack()
@@ -954,6 +1044,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         boolean hasRunes = (isHighAlching() && hasAlchRunes(true)) || (!isHighAlching() && hasAlchRunes(false));
         if (!hasRunes)
         {
+            MessageUtils.addMessage(client, "Need to alch but not enough runes");
+            return false;
+        }
+
+        if (client.getVarbitValue(4070) != 0)
+        {
+            MessageUtils.addMessage(client, "Need to alch but not on normal spellbook");
             return false;
         }
 

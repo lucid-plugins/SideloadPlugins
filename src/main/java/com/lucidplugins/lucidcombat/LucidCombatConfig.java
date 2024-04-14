@@ -185,6 +185,17 @@ public interface LucidCombatConfig extends Config
         return 10;
     }
 
+    @ConfigItem(name = "Equip Slaughter Bracelets", description = "Will equip any Bracelets of Slaughter from your inventory when the current one disintegrates.", position = 6, keyName = "equipSlaughterBracelet", section = slayerSection)
+    default boolean equipSlaughterBracelet()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Equip Expeditious Bracelets", description = "Will equip any Expeditious Bracelets from your inventory when the current one disintegrates.", position = 7, keyName = "equipExpeditiousBracelet", section = slayerSection)
+    default boolean equipExpeditiousBracelet()
+    {
+        return false;
+    }
 
     // Prayer upkeep
     @ConfigSection(name = "Prayer Upkeep", description = "Control settings for prayer upkeep", position = 3, closedByDefault = true)
