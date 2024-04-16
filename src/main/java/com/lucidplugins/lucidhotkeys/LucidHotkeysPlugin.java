@@ -93,6 +93,8 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
     private boolean lastActionSucceeded = false;
 
+    private Map<Integer, ArrayList<Integer>> hotkeysToRun = new HashMap<>();
+
     private List<String> playerNamesTracked = new ArrayList<>();
     private List<String> npcNamesTracked = new ArrayList<>();
 
@@ -419,6 +421,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             String[] preconditionParams = preconditionsArray.split("&");
             boolean preconditionsOkay = true;
 
+            int failedIndex = -1;
             for (int j = 0; j < preconditionParams.length; j++)
             {
                 String[] params = preconditionParams[j].split(",");
@@ -436,6 +439,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                     if (!satisfiesPreconditions(precondition, params))
                     {
                         preconditionsOkay = false;
+                        failedIndex = j;
                         break;
                     }
                 }
@@ -444,6 +448,12 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             if (!preconditionsOkay)
             {
                 lastActionSucceeded = false;
+                if (config.debugOutput())
+                {
+                    String failMessage = "Hotkey " + index + " [" + i + "][" + failedIndex + "] pre-condition failed for params<br>" + preconditionsArray.substring(0, preconditionsArray.length() - 1);
+                    MessageUtils.addMessage(client, failMessage);
+                    System.out.println(failMessage);
+                }
                 continue;
             }
 
@@ -453,6 +463,13 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             {
                 MessageUtils.addMessage(client, "Invalid param length for action index " + i + " in preset " + index + "!");
                 return;
+            }
+
+            if (config.debugOutput())
+            {
+                String successMessage = "Hotkey " + index + " [" + i + "] pre-condition succeeded. Executing action:<br>" + splitActions[i];
+                MessageUtils.addMessage(client, successMessage);
+                System.out.println("Hotkey " + successMessage);
             }
 
             processAction(action, actionParams);
@@ -466,6 +483,17 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         {
             tickDelay--;
         }
+
+        ArrayList<Integer> hotkeysToEvaluate = hotkeysToRun.get(client.getTickCount());
+        if (hotkeysToEvaluate != null)
+        {
+            for (int hotkey : hotkeysToEvaluate)
+            {
+                handleHotkey(hotkey);
+            }
+        }
+
+        hotkeysToRun.keySet().removeIf(i -> i == client.getTickCount());
 
         if (tickMetronomeCount > 0)
         {
@@ -691,32 +719,27 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         final int lpWorldY = lpWp.getY();
         final int lpPlane = lpWp.getPlane();
 
-        int param1Int = -1;
-        int param2Int = -1;
-        int param3Int = -1;
-        int param4Int = -1;
+        int param1Int = -69420;
+        int param2Int = -69420;
+        int param3Int = -69420;
+        int param4Int = -69420;
 
         if (preconditionParams.length >= 2)
         {
             if (preconditionParams[1].contains("%"))
             {
-                if (precondition != Precondition.VAR_VALUE_EQUALS &&
-                    precondition != Precondition.VAR_VALUE_NOT_EQUAL)
+                String varValue = getVarValue(preconditionParams[1].replaceAll("%", ""));
+                if (varValue != null)
                 {
-                    String varValue = getVarValue(preconditionParams[1].replaceAll("%", ""));
-                    if (varValue != null)
+                    if (isNumeric(varValue))
                     {
-                        if (isNumeric(varValue))
-                        {
-                            param1Int = Integer.parseInt(varValue);
-                        }
-                        else
-                        {
-                            preconditionParams[1] = varValue;
-                        }
+                        param1Int = Integer.parseInt(varValue);
+                    }
+                    else
+                    {
+                        preconditionParams[1] = varValue;
                     }
                 }
-
             }
             else if (isNumeric(preconditionParams[1]))
             {
@@ -1161,9 +1184,17 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             case NO_PLAYER_TARGETING_YOU:
                 return PlayerUtils.getNearest(player -> player.getInteracting() == client.getLocalPlayer()) == null;
             case VAR_VALUE_EQUALS:
-                return getVarValue(preconditionParams[1]).equals(preconditionParams[2]);
+                if (param1Int != -69420 && param2Int != -69420)
+                {
+                    return param1Int == param2Int;
+                }
+                return preconditionParams[1].equals(preconditionParams[2]);
             case VAR_VALUE_NOT_EQUAL:
-                return !getVarValue(preconditionParams[1]).equals(preconditionParams[2]);
+                if (param1Int != -69420 && param2Int != -69420)
+                {
+                    return param1Int != param2Int;
+                }
+                return !preconditionParams[1].equals(preconditionParams[2]);
             case VAR_VALUE_LESS_THAN:
                 return param1Int < param2Int;
             case VAR_VALUE_GREATER_THAN:
@@ -1295,21 +1326,25 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
     private void processAction(Action action, String[] actionParams)
     {
-        if (tickDelay > 0)
+        if (tickDelay > 0 && action != Action.RESET_DELAY && action != Action.SET_DELAY)
         {
+            if (config.debugOutput())
+            {
+                MessageUtils.addMessage(client, "Tick delay of " + tickDelay + " not processing actions");
+            }
             return;
         }
 
-        int param1Int = -1;
-        int param2Int = -1;
-        int param3Int = -1;
-        int param4Int = -1;
+        int param1Int = -69420;
+        int param2Int = -69420;
+        int param3Int = -69420;
+        int param4Int = -69420;
 
         if (actionParams.length >= 2)
         {
             if (actionParams[1].contains("%"))
             {
-                if (action != Action.PRINT_VARIABLE && action != Action.ADD_VALUE_TO_VARIABLE && action != Action.SET_VAR_VALUE)
+                if (action != Action.PRINT_VARIABLE && action != Action.ADD_VALUE_TO_VARIABLE && action != Action.SUBTRACT_VALUE_FROM_VARIABLE && action != Action.SET_VAR_VALUE)
                 {
                     String varValue = getVarValue(actionParams[1].replaceAll("%", ""));
                     if (varValue != null)
@@ -1468,7 +1503,25 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 initUserVariables();
                 break;
             case SET_VAR_VALUE:
-                userVariables.put(actionParams[1], actionParams[2]);
+                String varValue = getVarValue(actionParams[2].replaceAll("%", ""));
+                if (isReservedVar(actionParams[1]))
+                {
+                    break;
+                }
+
+                if (getVarValue(actionParams[1].replaceAll("%", "")) == null)
+                {
+                    break;
+                }
+
+                if (!varValue.isEmpty())
+                {
+                    userVariables.put(actionParams[1].replaceAll("%", ""), varValue);
+                }
+                else
+                {
+                    userVariables.put(actionParams[1].replaceAll("%", ""), actionParams[2]);
+                }
                 break;
             case INTERACT_NEAREST_NAMED_TILE_ITEM:
                 InteractionUtils.interactWithTileItem(actionParams[1], actionParams[2]);
@@ -1486,12 +1539,21 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 tickMetronomeCount = tickMetronomeMaxValue;
                 break;
             case ADD_VALUE_TO_VARIABLE:
-                String varVal = getVarValue(actionParams[1]);
+                String varVal = getVarValue(actionParams[1].replaceAll("%", ""));
+                if (varVal.isEmpty())
+                {
+                    break;
+                }
+
                 if (isNumeric(varVal))
                 {
                     int intVar = Integer.parseInt(varVal);
                     intVar += param2Int;
-                    userVariables.put(actionParams[1], String.valueOf(intVar));
+                    userVariables.put(actionParams[1].replaceAll("%", ""), String.valueOf(intVar));
+                }
+                else
+                {
+                    userVariables.put(actionParams[1].replaceAll("%", ""), varVal + actionParams[2]);
                 }
                 break;
             case INTERACT_NAMED_PLAYER:
@@ -1643,6 +1705,32 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             case WIDGET_RESUME_PAUSE:
                 InteractionUtils.queueResumePause(param1Int, param2Int, param3Int);
                 break;
+            case SUBTRACT_VALUE_FROM_VARIABLE:
+                String varVal2 = getVarValue(actionParams[1].replaceAll("%", ""));
+                if (varVal2.isEmpty())
+                {
+                    break;
+                }
+
+                if (isNumeric(varVal2))
+                {
+                    int intVar = Integer.parseInt(varVal2);
+                    intVar -= param2Int;
+                    userVariables.put(actionParams[1].replaceAll("%", ""), String.valueOf(intVar));
+                }
+                break;
+            case EVALUATE_HOTKEY_IN_X_TICKS:
+                ArrayList<Integer> hotkeysToAdd = new ArrayList<>();
+                ArrayList<Integer> hotkeysPending = hotkeysToRun.get(client.getTickCount() + param2Int);
+                if (hotkeysPending != null)
+                {
+                    hotkeysToAdd.addAll(hotkeysPending);
+                }
+
+                hotkeysToAdd.add(param1Int);
+
+                hotkeysToRun.put(client.getTickCount() + param2Int, hotkeysToAdd);
+                break;
         }
     }
 
@@ -1736,7 +1824,10 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         {
             if (!varsSplit[i].contains("="))
             {
-                MessageUtils.addMessage(client, varsSplit[i] + " is not a valid variable assignment.");
+                if (client.getGameState() == GameState.LOGGED_IN)
+                {
+                    MessageUtils.addMessage(client, varsSplit[i] + " is not a valid variable assignment.");
+                }
                 continue;
             }
 
@@ -1749,6 +1840,15 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
             String varName = varParts[0];
             String varValue = varParts[1];
+
+            if (isReservedVar(varName))
+            {
+                if (client.getGameState() == GameState.LOGGED_IN)
+                {
+                    MessageUtils.addMessage(client, varName + " is part of a reserved var name and cannot be used");
+                }
+                continue;
+            }
 
             userVariables.put(varName, varValue);
         }
@@ -2102,8 +2202,6 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
     {
         npcNamesTracked.clear();
     }
-
-
 
     private void addRegionPointTileMarker(int regionId, int x, int y, String text)
     {

@@ -67,6 +67,8 @@ public enum Action
     WIDGET_ACTION(52, 4),
     WIDGET_SUBCHILD_ACTION(53, 5),
     WIDGET_RESUME_PAUSE(54, 4),
+    SUBTRACT_VALUE_FROM_VARIABLE(55, 3),
+    EVALUATE_HOTKEY_IN_X_TICKS(56, 3)
     ;
 
     int id;

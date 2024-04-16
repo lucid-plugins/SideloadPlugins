@@ -5,56 +5,73 @@ import net.runelite.client.config.*;
 @ConfigGroup("lucid-hotkeys")
 public interface LucidHotkeysConfig extends Config
 {
-    @ConfigSection(name = "Preset Loading/Saving", description = "Save/Load a custom preset", position = 0)
+    @ConfigSection(name = "General", description = "General settings", position = 0)
+    String generalSection = "General";
+
+    @ConfigSection(name = "Preset Loading/Saving", description = "Save/Load a custom preset", position = 1)
     String presetSection = "Preset Loading/Saving";
 
-    @ConfigSection(name = "Custom Variables", description = "Set custom variables here", position = 1)
+    @ConfigSection(name = "Custom Variables", description = "Set custom variables here", position = 2)
     String customVariablesSection = "Custom Variables";
 
-    @ConfigSection(name = "Custom Hotkey 1", description = "Hotkey # 1", position = 2)
+    @ConfigSection(name = "Custom Hotkey 1", description = "Hotkey # 1", position = 3)
     String section1 = "Custom Hotkey 1";
 
-    @ConfigSection(name = "Custom Hotkey 2", description = "Hotkey # 2", position = 3)
+    @ConfigSection(name = "Custom Hotkey 2", description = "Hotkey # 2", position = 4)
     String section2 = "Custom Hotkey 2";
 
-    @ConfigSection(name = "Custom Hotkey 3", description = "Hotkey # 3", position = 4)
+    @ConfigSection(name = "Custom Hotkey 3", description = "Hotkey # 3", position = 5)
     String section3 = "Custom Hotkey 3";
 
-    @ConfigSection(name = "Custom Hotkey 4", description = "Hotkey # 4", position = 5)
+    @ConfigSection(name = "Custom Hotkey 4", description = "Hotkey # 4", position = 6)
     String section4 = "Custom Hotkey 4";
 
-    @ConfigSection(name = "Custom Hotkey 5", description = "Hotkey # 5", position = 6)
+    @ConfigSection(name = "Custom Hotkey 5", description = "Hotkey # 5", position = 7)
     String section5 = "Custom Hotkey 5";
 
-    @ConfigSection(name = "Custom Hotkey 6", description = "Hotkey # 6", position = 7)
+    @ConfigSection(name = "Custom Hotkey 6", description = "Hotkey # 6", position = 8)
     String section6 = "Custom Hotkey 6";
 
-    @ConfigSection(name = "Custom Hotkey 7", description = "Hotkey # 7", position = 8)
+    @ConfigSection(name = "Custom Hotkey 7", description = "Hotkey # 7", position = 9)
     String section7 = "Custom Hotkey 7";
 
-    @ConfigSection(name = "Custom Hotkey 8", description = "Hotkey # 8", position = 9)
+    @ConfigSection(name = "Custom Hotkey 8", description = "Hotkey # 8", position = 10)
     String section8 = "Custom Hotkey 8";
 
-    @ConfigSection(name = "Custom Hotkey 9", description = "Hotkey # 9", position = 10)
+    @ConfigSection(name = "Custom Hotkey 9", description = "Hotkey # 9", position = 11)
     String section9 = "Custom Hotkey 9";
 
-    @ConfigSection(name = "Custom Hotkey 10", description = "Hotkey # 10", position = 11)
+    @ConfigSection(name = "Custom Hotkey 10", description = "Hotkey # 10", position = 12)
     String section10 = "Custom Hotkey 10";
 
-    @ConfigSection(name = "Custom Hotkey 11", description = "Hotkey # 11", position = 12)
+    @ConfigSection(name = "Custom Hotkey 11", description = "Hotkey # 11", position = 13)
     String section11 = "Custom Hotkey 11";
 
-    @ConfigSection(name = "Custom Hotkey 12", description = "Hotkey # 12", position = 13)
+    @ConfigSection(name = "Custom Hotkey 12", description = "Hotkey # 12", position = 14)
     String section12 = "Custom Hotkey 12";
 
-    @ConfigSection(name = "Custom Hotkey 13", description = "Hotkey # 13", position = 14)
+    @ConfigSection(name = "Custom Hotkey 13", description = "Hotkey # 13", position = 15)
     String section13 = "Custom Hotkey 13";
 
-    @ConfigSection(name = "Custom Hotkey 14", description = "Hotkey # 14", position = 15)
+    @ConfigSection(name = "Custom Hotkey 14", description = "Hotkey # 14", position = 16)
     String section14 = "Custom Hotkey 14";
 
-    @ConfigSection(name = "Custom Hotkey 15", description = "Hotkey # 15", position = 16)
+    @ConfigSection(name = "Custom Hotkey 15", description = "Hotkey # 15", position = 17)
     String section15 = "Custom Hotkey 15";
+
+    // General Settings
+
+    @ConfigItem(name = "Use As Bot", description = "Ignores hotkeys and evaluates all preset slot preconditions each game tick and will execute the actions that its able to", position = 0, keyName = "useAsBot", section = generalSection)
+    default boolean useAsBot()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Debug Output", description = "Will output text in chat and in runelite log telling you if the activated hotkey precondition is valid and what it activates", position = 1, keyName = "debugOutput", section = generalSection)
+    default boolean debugOutput()
+    {
+        return false;
+    }
 
     // Preset Loading/Saving
 
@@ -82,12 +99,6 @@ public interface LucidHotkeysConfig extends Config
     default String customVariables()
     {
         return "i=1 /";
-    }
-
-    @ConfigItem(name = "Use As Bot", description = "Ignores hotkeys and evaluates all preset slot preconditions each game tick and will execute the actions that its able to", position = 1, keyName = "useAsBot", section = customVariablesSection)
-    default boolean useAsBot()
-    {
-        return false;
     }
 
     // Custom hotkey 1
