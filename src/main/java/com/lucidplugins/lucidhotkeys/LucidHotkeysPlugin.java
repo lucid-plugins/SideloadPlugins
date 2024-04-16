@@ -1370,7 +1370,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         {
             if (actionParams[2].contains("%"))
             {
-                String varValue = getVarValue(actionParams[2].replaceAll("%", ""));
+                String varValue = getVarValue(actionParams[2].replaceAll("%", ""), action == Action.SET_VAR_VALUE || action == Action.ADD_VALUE_TO_VARIABLE);
                 if (varValue != null)
                 {
                     if (isNumeric(varValue) && !varValue.contains("|"))
@@ -1503,7 +1503,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 initUserVariables();
                 break;
             case SET_VAR_VALUE:
-                String varValue = getVarValue(actionParams[2].replaceAll("%", ""));
+                String varValue = getVarValue(actionParams[2].replaceAll("%", ""), true);
                 if (isReservedVar(actionParams[1]))
                 {
                     break;
@@ -1539,7 +1539,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 tickMetronomeCount = tickMetronomeMaxValue;
                 break;
             case ADD_VALUE_TO_VARIABLE:
-                String varVal = getVarValue(actionParams[1].replaceAll("%", ""));
+                String varVal = getVarValue(actionParams[1].replaceAll("%", ""), true);
                 if (varVal.isEmpty())
                 {
                     break;
@@ -1784,7 +1784,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
     {
         String userVar = variable.replaceAll("%", "");
 
-        String varValue = getVarValue(userVar);
+        String varValue = getVarValue(userVar, true);
 
         if (!varValue.isEmpty())
         {
@@ -1854,7 +1854,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         }
     }
 
-    public String getVarValue(String varName)
+    public String getVarValue(String varName, boolean rawValue)
     {
         if (isReservedVar(varName))
         {
@@ -1865,13 +1865,23 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             String varValue = getVarCheckCoords(varName);
             if (varValue.startsWith("*"))
             {
-                return varValue.substring(1);
+                return rawValue ? varValue : varValue.substring(1);
             }
             else
             {
-                return varValue.replaceAll("_", " ");
+                if (varValue.startsWith("%") && isDynamicReservedVar(varValue.substring(1)))
+                {
+                    return getDynamicReservedVarValue(varValue.substring(1));
+                }
+
+                return rawValue ? varValue : varValue.replaceAll("_", " ");
             }
         }
+    }
+
+    public String getVarValue(String varName)
+    {
+        return getVarValue(varName, false);
     }
 
     private String getVarCheckCoords(String varName)
@@ -1934,21 +1944,21 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
     private boolean isDynamicReservedVar(String varName)
     {
         final List<String> dynamicVars = List.of(
-                "nbi ",
-                "ibi ",
-                "nii ",
-                "iii ",
-                "nsi ",
-                "isi ",
-                "nnnwl ",
-                "ninwl ",
-                "nnnrl ",
-                "ninrl "
+                "nbi",
+                "ibi",
+                "nii",
+                "iii",
+                "nsi",
+                "isi",
+                "nnnwl",
+                "ninwl",
+                "nnnrl",
+                "ninrl"
         );
 
         for (String var : dynamicVars)
         {
-            if (varName.startsWith(var))
+            if (varName.startsWith(var) && varName.length() > var.length() + 1)
             {
                 return true;
             }
@@ -1959,50 +1969,50 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
     private String getDynamicReservedVarValue(String varName)
     {
-        if (varName.startsWith("nbi "))
+        if (varName.startsWith("nbi"))
         {
             String namedBankItem = varName.substring(4).replaceAll("_", " ");
             return String.valueOf(getNamedItemIndex(namedBankItem, 12, 13));
         }
 
-        if (varName.startsWith("ibi "))
+        if (varName.startsWith("ibi"))
         {
             int itemId = Integer.parseInt(varName.substring(4));
             return String.valueOf(getIdItemIndex(itemId, 12, 13));
         }
 
-        if (varName.startsWith("nii "))
+        if (varName.startsWith("nii"))
         {
             String namedBankItem = varName.substring(4).replaceAll("_", " ");
             return String.valueOf(getNamedItemIndex(namedBankItem, 149, 0));
         }
 
-        if (varName.startsWith("iii "))
+        if (varName.startsWith("iii"))
         {
             int itemId = Integer.parseInt(varName.substring(4));
             return String.valueOf(getIdItemIndex(itemId, 149, 0));
         }
 
-        if (varName.startsWith("nsi "))
+        if (varName.startsWith("nsi"))
         {
             String namedBankItem = varName.substring(4).replaceAll("_", " ");
             return String.valueOf(getNamedItemIndex(namedBankItem, 300, 2));
         }
 
-        if (varName.startsWith("isi "))
+        if (varName.startsWith("isi"))
         {
             int itemId = Integer.parseInt(varName.substring(4));
             return String.valueOf(getIdItemIndex(itemId, 300, 2));
         }
 
-        if (varName.startsWith("nnnwl ") || varName.startsWith("ninwl ") ||
-                varName.startsWith("nnnrl ") || varName.startsWith("ninrl "))
+        if (varName.startsWith("nnnwl") || varName.startsWith("ninwl") ||
+                varName.startsWith("nnnrl") || varName.startsWith("ninrl"))
         {
             NPC nearestNpc = null;
             boolean varNameHasCoords = varName.endsWith(".x") || varName.endsWith(".y") || varName.endsWith(".z");
             String varNameNoCoords = varName.substring(6, varNameHasCoords ? varName.length() - 2 : varName.length());
 
-            if (varName.startsWith("nnnwl ") || varName.startsWith("nnnrl "))
+            if (varName.startsWith("nnnwl") || varName.startsWith("nnnrl"))
             {
                 nearestNpc = NpcUtils.getNearestNpc(varNameNoCoords.replaceAll("_", " "));
             }
@@ -2016,11 +2026,11 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 final WorldPoint nnwp = nearestNpc.getWorldLocation();
                 if (varName.endsWith(".x"))
                 {
-                    return varName.contains("wl ") ? String.valueOf(nnwp.getX()) : String.valueOf(nnwp.getRegionX());
+                    return varName.contains("wl") ? String.valueOf(nnwp.getX()) : String.valueOf(nnwp.getRegionX());
                 }
                 else if (varName.endsWith(".y"))
                 {
-                    return varName.contains("wl ") ? String.valueOf(nnwp.getY()) : String.valueOf(nnwp.getRegionY());
+                    return varName.contains("wl") ? String.valueOf(nnwp.getY()) : String.valueOf(nnwp.getRegionY());
                 }
                 else if (varName.endsWith(".z"))
                 {
@@ -2028,7 +2038,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 }
                 else
                 {
-                    return varName.contains("wl ") ?  (nnwp.getX() + "|" + nnwp.getY() + "|" + nnwp.getPlane()) : (nnwp.getRegionX() + "|" + nnwp.getRegionY() + "|" + nnwp.getPlane());
+                    return varName.contains("wl") ?  (nnwp.getX() + "|" + nnwp.getY() + "|" + nnwp.getPlane()) : (nnwp.getRegionX() + "|" + nnwp.getRegionY() + "|" + nnwp.getPlane());
                 }
             }
 
