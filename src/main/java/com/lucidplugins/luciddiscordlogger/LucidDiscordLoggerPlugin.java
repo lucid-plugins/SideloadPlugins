@@ -12,8 +12,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.util.Text;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
-
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Calendar;
@@ -245,14 +243,14 @@ public class LucidDiscordLoggerPlugin extends Plugin
         {
 
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e)
+            public void onFailure(Call call, IOException e)
             {
                 log.info(e.getMessage());
                 call.cancel();
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
+            public void onResponse(Call call, Response response) throws IOException
             {
                 assert response.body() != null;
 

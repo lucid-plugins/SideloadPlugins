@@ -1,9 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java")
-    kotlin("jvm") version("1.8.21")
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -37,9 +35,6 @@ tasks {
         options.encoding = "UTF-8"
         sourceCompatibility = javaMajorVersion
         targetCompatibility = javaMajorVersion
-    }
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = javaMajorVersion
     }
     withType<Jar> {
         manifest {
