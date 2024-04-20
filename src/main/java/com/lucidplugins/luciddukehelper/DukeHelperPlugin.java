@@ -1,7 +1,5 @@
 package com.lucidplugins.luciddukehelper;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.PacketUtils.PacketUtilsPlugin;
 import com.google.inject.Provides;
 import com.lucidplugins.api.utils.*;
 import lombok.Getter;
@@ -12,7 +10,6 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
@@ -301,16 +298,14 @@ public class DukeHelperPlugin extends Plugin
         return false;
     }
 
-    private boolean dodgeAcross()
+    private void dodgeAcross()
     {
         int regX = client.getLocalPlayer().getWorldLocation().getRegionX();
         int dx = regX == 35 ? -8 : regX == 27 ? 8 : 0;
         if (dx != 0)
         {
             InteractionUtils.walk(client.getLocalPlayer().getWorldLocation().dx(dx));
-            return true;
         }
-        return false;
     }
 
     private boolean attackGas()
@@ -373,10 +368,6 @@ public class DukeHelperPlugin extends Plugin
         {
             // Start tracking
             fallingCeilingTiles.clear();
-        }
-        else
-        {
-            // Stop tracking
         }
     }
 
