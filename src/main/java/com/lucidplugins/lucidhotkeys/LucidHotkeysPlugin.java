@@ -272,12 +272,12 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
         if (config.loadPresetHotkey().matches(e))
         {
-            loadPreset();
+            clientThread.invoke(this::loadPreset);
         }
 
         if (config.savePresetHotkey().matches(e))
         {
-            savePreset();
+            clientThread.invoke(this::savePreset);
         }
 
         if (config.hotkey1().matches(e))
@@ -712,13 +712,6 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
     private boolean satisfiesPreconditions(Precondition precondition, String[] preconditionParams)
     {
-        final int inventoryItemCount = 28 - InventoryUtils.getFreeSlots();
-
-        final WorldPoint lpWp = client.getLocalPlayer().getWorldLocation();
-        final int lpWorldX = lpWp.getX();
-        final int lpWorldY = lpWp.getY();
-        final int lpPlane = lpWp.getPlane();
-
         int param1Int = -69420;
         int param2Int = -69420;
         int param3Int = -69420;
@@ -816,17 +809,23 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             }
         }
 
-        int hp1 = client.getBoostedSkillLevel(Skill.HITPOINTS);
-        int hp2 = client.getRealSkillLevel(Skill.HITPOINTS);
-        int playerHpPercent = hp1 * 100 / hp2;
+        if (precondition.getId() <= 100)
+        {
+            return preconditionUnder101True(precondition, preconditionParams, param1Int, param2Int, param3Int, param4Int);
+        }
+        else
+        {
+            return preconditionOver100True(precondition, preconditionParams, param1Int, param2Int, param3Int, param4Int);
+        }
+    }
 
-        Actor target = client.getLocalPlayer().getInteracting();
-        int ratio = target != null ? target.getHealthRatio() : -1;
-        int scale = target != null ? target.getHealthScale() : -1;
+    private boolean preconditionUnder101True(Precondition precondition, String[] preconditionParams, int param1Int, int param2Int, int param3Int, int param4Int)
+    {
+        final int inventoryItemCount = 28 - InventoryUtils.getFreeSlots();
 
-        int targetHpPercent = target != null ? (int) Math.floor((double) ratio  / (double) scale * 100) : -1;
-
-        int targetAnimation = target != null ? target.getAnimation() : -2;
+        final WorldPoint lpWp = client.getLocalPlayer().getWorldLocation();
+        final int lpWorldX = lpWp.getX();
+        final int lpWorldY = lpWp.getY();
 
         switch (precondition)
         {
@@ -1195,12 +1194,30 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                     return param1Int != param2Int;
                 }
                 return !preconditionParams[1].equals(preconditionParams[2]);
+            }
+            return false;
+    }
+
+    private boolean preconditionOver100True(Precondition precondition, String[] preconditionParams, int param1Int, int param2Int, int param3Int, int param4Int)
+    {
+        int hp1 = client.getBoostedSkillLevel(Skill.HITPOINTS);
+        int hp2 = client.getRealSkillLevel(Skill.HITPOINTS);
+        int playerHpPercent = hp1 * 100 / hp2;
+
+        Actor target = client.getLocalPlayer().getInteracting();
+        int ratio = target != null ? target.getHealthRatio() : -1;
+        int scale = target != null ? target.getHealthScale() : -1;
+
+        int targetHpPercent = target != null ? (int) Math.floor((double) ratio  / (double) scale * 100) : -1;
+
+        int targetAnimation = target != null ? target.getAnimation() : -2;
+
+        switch (precondition)
+        {
             case VAR_VALUE_LESS_THAN:
                 return param1Int < param2Int;
             case VAR_VALUE_GREATER_THAN:
                 return param1Int > param2Int;
-                default:
-                return false;
             case LOCAL_PLAYER_SCENE_LOCATION_EQUALS:
                 return client.getLocalPlayer().getLocalLocation().getSceneX() == param1Int &&
                         client.getLocalPlayer().getLocalLocation().getSceneY() == param2Int;
@@ -1322,8 +1339,8 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             case WIDGET_SUB_IS_SHOWING:
                 return !InteractionUtils.isWidgetHidden(param1Int, param2Int, param3Int);
         }
+        return false;
     }
-
     private void processAction(Action action, String[] actionParams)
     {
         if (tickDelay > 0 && action != Action.RESET_DELAY && action != Action.SET_DELAY)

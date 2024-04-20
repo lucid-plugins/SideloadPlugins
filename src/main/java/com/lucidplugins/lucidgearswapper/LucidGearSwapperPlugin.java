@@ -314,12 +314,12 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
     {
         if (config.loadPresetHotkey().matches(e))
         {
-            loadPreset();
+            clientThread.invoke(this::loadPreset);
         }
 
         if (config.savePresetHotkey().matches(e))
         {
-            savePreset();
+            clientThread.invoke(this::savePreset);
         }
 
         if (config.copyGearHotkey().matches(e))
