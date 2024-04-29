@@ -2,6 +2,7 @@ package com.lucidplugins.api.utils;
 
 import com.lucidplugins.api.utils.query.EquipmentItemQuery;
 import net.runelite.api.Client;
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.widgets.Widget;
@@ -75,31 +76,4 @@ public class Equipment {
         }
         return new EquipmentItemQuery(equipment);
     }
-
-//    @SneakyThrows
-//    @Subscribe
-//    public void onItemContainerChanged(ItemContainerChanged e) {
-//        if (e.getContainerId() == InventoryID.EQUIPMENT.getId()) {
-//            int x = 25362447;
-//            for (int i = 0; i < 11; i++) {
-//                client.runScript(545, (x + i), mappingToIterableIntegers.get(i), 1, 1, 2);
-//            }
-//            equipment.clear();
-//            int i = -1;
-//            for (Item item : e.getItemContainer().getItems()) {
-//                i++;
-//                if (item == null) {
-//                    continue;
-//                }
-//                if (item.getId() == 6512 || item.getId() == -1) {
-//                    continue;
-//                }
-//                Widget w = client.getWidget(WidgetInfo.EQUIPMENT.getGroupId(), equipmentSlotWidgetMapping.get(i));
-//                if (w == null || w.getActions() == null) {
-//                    continue;
-//                }
-//                equipment.add(new EquipmentItemWidget(w.getName(), item.getId(), w.getId(), i, w.getActions()));
-//            }
-//        }
-//    }
 }

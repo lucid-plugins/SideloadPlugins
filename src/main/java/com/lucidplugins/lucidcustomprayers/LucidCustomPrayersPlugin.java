@@ -295,21 +295,21 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
         if (oneTickFlicking)
         {
-            if (CombatUtils.isQuickPrayersEnabled(client))
+            if (CombatUtils.isQuickPrayersEnabled())
             {
-                CombatUtils.toggleQuickPrayers(client);
-                CombatUtils.toggleQuickPrayers(client);
+                CombatUtils.toggleQuickPrayers();
+                CombatUtils.toggleQuickPrayers();
             }
             else
             {
-                CombatUtils.toggleQuickPrayers(client);
+                CombatUtils.toggleQuickPrayers();
             }
         }
         else
         {
-            if (disableQuickPrayers && CombatUtils.isQuickPrayersEnabled(client))
+            if (disableQuickPrayers && CombatUtils.isQuickPrayersEnabled())
             {
-                CombatUtils.toggleQuickPrayers(client);
+                CombatUtils.toggleQuickPrayers();
                 disableQuickPrayers = false;
             }
         }
@@ -612,11 +612,11 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         {
             if (useQuickPrayers)
             {
-                CombatUtils.toggleQuickPrayers(client);
+                CombatUtils.toggleQuickPrayers();
             }
             else
             {
-                CombatUtils.togglePrayer(client, prayer);
+                CombatUtils.togglePrayer(prayer);
             }
 
         }
@@ -624,11 +624,11 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         {
             if (useQuickPrayers)
             {
-                CombatUtils.activateQuickPrayers(client);
+                CombatUtils.activateQuickPrayers();
             }
             else
             {
-                CombatUtils.activatePrayer(client, prayer);
+                CombatUtils.activatePrayer(prayer);
             }
         }
     }

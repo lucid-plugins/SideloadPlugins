@@ -762,7 +762,7 @@ public class LucidGauntletPlugin extends Plugin
         {
             if (config.autoOffense())
             {
-                CombatUtils.togglePrayer(client, getPrayerBasedOnWeapon());
+                CombatUtils.togglePrayer(getPrayerBasedOnWeapon());
             }
         }
     }
@@ -840,11 +840,11 @@ public class LucidGauntletPlugin extends Plugin
         {
             if (config.autoPrayer())
             {
-                CombatUtils.togglePrayer(client, hunllef.getAttackPhase().getPrayer());
+                CombatUtils.togglePrayer(hunllef.getAttackPhase().getPrayer());
             }
             if (config.autoOffense())
             {
-                CombatUtils.togglePrayer(client, getPrayerBasedOnWeapon());
+                CombatUtils.togglePrayer(getPrayerBasedOnWeapon());
             }
         }
     }
@@ -913,7 +913,7 @@ public class LucidGauntletPlugin extends Plugin
 
                 if (config.autoPrayer())
                 {
-                    CombatUtils.togglePrayer(client, hunllef.getAttackPhase().getPrayer());
+                    CombatUtils.togglePrayer(hunllef.getAttackPhase().getPrayer());
                 }
             }
         }
@@ -1039,7 +1039,7 @@ public class LucidGauntletPlugin extends Plugin
     {
         if (InventoryUtils.contains(RANGE_WEAPONS))
         {
-            SlottedItem wep = InventoryUtils.getFirstItem(RANGE_WEAPONS);
+            SlottedItem wep = InventoryUtils.getFirstItemSlotted(RANGE_WEAPONS);
 
             InventoryUtils.wieldItem(wep.getItem().getId());
 
@@ -1047,7 +1047,7 @@ public class LucidGauntletPlugin extends Plugin
         }
         else if (InventoryUtils.contains(MAGE_WEAPONS))
         {
-            SlottedItem wep = InventoryUtils.getFirstItem(MAGE_WEAPONS);
+            SlottedItem wep = InventoryUtils.getFirstItemSlotted(MAGE_WEAPONS);
 
             InventoryUtils.wieldItem(wep.getItem().getId());
 
@@ -1055,7 +1055,7 @@ public class LucidGauntletPlugin extends Plugin
         }
         else if (InventoryUtils.contains(MELEE_WEAPONS))
         {
-            SlottedItem wep = InventoryUtils.getFirstItem(MELEE_WEAPONS);
+            SlottedItem wep = InventoryUtils.getFirstItemSlotted(MELEE_WEAPONS);
 
             InventoryUtils.wieldItem(wep.getItem().getId());
 
@@ -1077,7 +1077,7 @@ public class LucidGauntletPlugin extends Plugin
             {
                 if (InventoryUtils.contains(MELEE_WEAPONS))
                 {
-                    SlottedItem wep = InventoryUtils.getFirstItem(MELEE_WEAPONS);
+                    SlottedItem wep = InventoryUtils.getFirstItemSlotted(MELEE_WEAPONS);
 
                     InventoryUtils.wieldItem(wep.getItem().getId());
                 }
@@ -1094,7 +1094,7 @@ public class LucidGauntletPlugin extends Plugin
                 {
                     if (InventoryUtils.contains(RANGE_WEAPONS))
                     {
-                        SlottedItem wep = InventoryUtils.getFirstItem(RANGE_WEAPONS);
+                        SlottedItem wep = InventoryUtils.getFirstItemSlotted(RANGE_WEAPONS);
 
                         InventoryUtils.wieldItem(wep.getItem().getId());
 
@@ -1105,7 +1105,7 @@ public class LucidGauntletPlugin extends Plugin
                 {
                     if (InventoryUtils.contains(MAGE_WEAPONS))
                     {
-                        SlottedItem wep = InventoryUtils.getFirstItem(MAGE_WEAPONS);
+                        SlottedItem wep = InventoryUtils.getFirstItemSlotted(MAGE_WEAPONS);
 
                         InventoryUtils.wieldItem(wep.getItem().getId());
 
@@ -1121,7 +1121,7 @@ public class LucidGauntletPlugin extends Plugin
             {
                 if (InventoryUtils.contains(MAGE_WEAPONS))
                 {
-                    SlottedItem wep = InventoryUtils.getFirstItem(MAGE_WEAPONS);
+                    SlottedItem wep = InventoryUtils.getFirstItemSlotted(MAGE_WEAPONS);
 
                     InventoryUtils.wieldItem(wep.getItem().getId());
 
@@ -1133,7 +1133,7 @@ public class LucidGauntletPlugin extends Plugin
             {
                 if (InventoryUtils.contains(RANGE_WEAPONS))
                 {
-                    SlottedItem wep = InventoryUtils.getFirstItem(RANGE_WEAPONS);
+                    SlottedItem wep = InventoryUtils.getFirstItemSlotted(RANGE_WEAPONS);
 
                     InventoryUtils.wieldItem(wep.getItem().getId());
 

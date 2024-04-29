@@ -1,7 +1,5 @@
 package com.lucidplugins.lucidtobprayers;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.PacketUtils.PacketUtilsPlugin;
 import com.google.common.collect.Lists;
 import com.google.inject.Provides;
 import com.lucidplugins.api.item.SlottedItem;
@@ -15,7 +13,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
@@ -146,7 +143,7 @@ public class LucidToBPrayersPlugin extends Plugin
                 {
                     if (client.isPrayerActive(Prayer.PIETY))
                     {
-                        CombatUtils.togglePrayer(client, Prayer.PIETY);
+                        CombatUtils.togglePrayer(Prayer.PIETY);
                     }
                 }
             }
@@ -372,11 +369,11 @@ public class LucidToBPrayersPlugin extends Plugin
     {
         if (toggle)
         {
-            CombatUtils.togglePrayer(client, prayer);
+            CombatUtils.togglePrayer(prayer);
         }
         else
         {
-            CombatUtils.activatePrayer(client, prayer);
+            CombatUtils.activatePrayer(prayer);
         }
     }
 

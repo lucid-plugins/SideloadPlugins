@@ -1,7 +1,5 @@
 package com.lucidplugins.lucidmuspah;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.PacketUtils.PacketUtilsPlugin;
 import com.google.inject.Provides;
 import com.lucidplugins.api.utils.CombatUtils;
 import com.lucidplugins.api.utils.NpcUtils;
@@ -18,7 +16,6 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
@@ -106,7 +103,7 @@ public class LucidMuspahPlugin extends Plugin
             {
                 if (client.getTickCount() == prayer.getActivationTick())
                 {
-                    CombatUtils.activatePrayer(client, prayer.getPrayer());
+                    CombatUtils.activatePrayer(prayer.getPrayer());
                 }
             }
 

@@ -1245,13 +1245,13 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             case CURRENT_ANIMATION_NOT_EQUALS:
                 return client.getLocalPlayer().getAnimation() != param1Int;
             case SPEC_ENERGY_EQUALS:
-                return CombatUtils.getSpecEnergy(client) == param1Int;
+                return CombatUtils.getSpecEnergy() == param1Int;
             case SPEC_ENERGY_NOT_EQUALS:
-                return CombatUtils.getSpecEnergy(client) != param1Int;
+                return CombatUtils.getSpecEnergy() != param1Int;
             case SPEC_ENERGY_GREATER_THAN:
-                return CombatUtils.getSpecEnergy(client) > param1Int;
+                return CombatUtils.getSpecEnergy() > param1Int;
             case SPEC_ENERGY_LESS_THAN:
-                return CombatUtils.getSpecEnergy(client) < param1Int;
+                return CombatUtils.getSpecEnergy() < param1Int;
             case PLAYER_HP_PERCENT_EQUALS:
                 return playerHpPercent == param1Int;
             case PLAYER_HP_PERCENT_NOT_EQUALS:
@@ -1616,14 +1616,14 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 Prayer pToActivate = CombatUtils.prayerForName(actionParams[1]);
                 if (pToActivate != null)
                 {
-                    CombatUtils.activatePrayer(client, pToActivate);
+                    CombatUtils.activatePrayer(pToActivate);
                 }
                 break;
             case TOGGLE_PRAYER:
                 Prayer pToToggle = CombatUtils.prayerForName(actionParams[1]);
                 if (pToToggle != null)
                 {
-                    CombatUtils.togglePrayer(client, pToToggle);
+                    CombatUtils.togglePrayer(pToToggle);
                 }
                 break;
             case TOGGLE_SPEC:
@@ -1689,8 +1689,8 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 InventoryUtils.itemOnItem(first, second);
                 break;
             case ID_ITEM_ON_ITEM:
-                SlottedItem firstId = InventoryUtils.getFirstItem(param1Int);
-                SlottedItem secondId = InventoryUtils.getFirstItem(param2Int);
+                SlottedItem firstId = InventoryUtils.getFirstItemSlotted(param1Int);
+                SlottedItem secondId = InventoryUtils.getFirstItemSlotted(param2Int);
                 InventoryUtils.itemOnItem(firstId.getItem(), secondId.getItem());
                 break;
             case NAMED_ITEM_ON_NPC:
@@ -1699,7 +1699,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 InteractionUtils.useItemOnNPC(firstNamedItem.getId(), firstNamedNpc);
                 break;
             case ID_ITEM_ON_NPC:
-                SlottedItem firstIdItem = InventoryUtils.getFirstItem(param1Int);
+                SlottedItem firstIdItem = InventoryUtils.getFirstItemSlotted(param1Int);
                 NPC firstIDNpc = NpcUtils.getNearestNpc(param2Int);
                 InteractionUtils.useItemOnNPC(firstIdItem.getItem().getId(), firstIDNpc);
                 break;
@@ -1709,7 +1709,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 InteractionUtils.useItemOnWallObject(firstNamedItem1, namedTileObject);
                 break;
             case ID_ITEM_ON_OBJECT:
-                SlottedItem firstIdItem1 = InventoryUtils.getFirstItem(param1Int);
+                SlottedItem firstIdItem1 = InventoryUtils.getFirstItemSlotted(param1Int);
                 TileObject idObject = GameObjectUtils.nearest(param2Int);
                 InteractionUtils.useItemOnWallObject(firstIdItem1.getItem(), idObject);
                 break;

@@ -650,11 +650,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
             if (offhandWeaponID != -1)
             {
-                if (InventoryUtils.itemHasAction(client, offhandWeaponID, "Wield"))
+                if (InventoryUtils.itemHasAction(offhandWeaponID, "Wield"))
                 {
                     InventoryUtils.itemInteract(offhandWeaponID, "Wield");
                 }
-                else if (InventoryUtils.itemHasAction(client, offhandWeaponID, "Wear"))
+                else if (InventoryUtils.itemHasAction(offhandWeaponID, "Wear"))
                 {
                     InventoryUtils.itemInteract(offhandWeaponID, "Wear");
                 }
@@ -717,13 +717,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean canStartSpeccing()
     {
-        final int spec = CombatUtils.getSpecEnergy(client);
+        final int spec = CombatUtils.getSpecEnergy();
         return spec >= config.minSpec() && spec >= config.specNeeded();
     }
 
     private boolean canSpec()
     {
-        final int spec = CombatUtils.getSpecEnergy(client);
+        final int spec = CombatUtils.getSpecEnergy();
         return spec >= config.specNeeded();
     }
 

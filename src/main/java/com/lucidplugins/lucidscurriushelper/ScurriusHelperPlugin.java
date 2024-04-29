@@ -188,11 +188,11 @@ public class ScurriusHelperPlugin extends Plugin
 
                     if (config.stayMelee())
                     {
-                        safeTile = InteractionUtils.getClosestSafeLocationInNPCMeleeDistance(client, unsafeTiles, scurrius);
+                        safeTile = InteractionUtils.getClosestSafeLocationInNPCMeleeDistance(unsafeTiles, scurrius);
                     }
                     else
                     {
-                        safeTile = InteractionUtils.getClosestSafeLocationNotInNPCMeleeDistance(client, unsafeTiles, scurrius);
+                        safeTile = InteractionUtils.getClosestSafeLocationNotInNPCMeleeDistance(unsafeTiles, scurrius);
 
                     }
 

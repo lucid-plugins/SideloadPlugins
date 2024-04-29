@@ -1,6 +1,5 @@
 package com.lucidplugins.api.utils;
 
-import com.example.EthanApiPlugin.Collections.Equipment;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PrayerInteraction;
 import com.example.Packets.MousePackets;
@@ -15,7 +14,7 @@ public class CombatUtils
         String p = name.toUpperCase().replaceAll(" ", "_");
         for (Prayer prayer : Prayer.values())
         {
-            if (prayer.name().equals(p))
+            if (prayer.name().equalsIgnoreCase(p))
             {
                 return prayer;
             }
@@ -23,22 +22,33 @@ public class CombatUtils
         return null;
     }
 
-    public static void activatePrayer(Client client, Prayer prayer)
+    public static Skill skillForName(String name)
     {
-        if (client.getBoostedSkillLevel(Skill.PRAYER) == 0)
+        for (Skill skill : Skill.values())
+        {
+            if (skill.name().equalsIgnoreCase(name))
+            {
+                return skill;
+            }
+        }
+        return null;
+    }
+    public static void activatePrayer(Prayer prayer)
+    {
+        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0)
         {
             return;
         }
 
-        if (!client.isPrayerActive(prayer))
+        if (!EthanApiPlugin.getClient().isPrayerActive(prayer))
         {
             PrayerInteraction.togglePrayer(prayer);
         }
     }
 
-    public static void deactivatePrayer(Client client, Prayer prayer)
+    public static void deactivatePrayer(Prayer prayer)
     {
-        if (client == null || client.getBoostedSkillLevel(Skill.PRAYER) == 0 || !client.isPrayerActive(prayer))
+        if (EthanApiPlugin.getClient() == null || EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 || !EthanApiPlugin.getClient().isPrayerActive(prayer))
         {
             return;
         }
@@ -46,21 +56,21 @@ public class CombatUtils
         PrayerInteraction.togglePrayer(prayer);
     }
 
-    public static void deactivatePrayers(Client client, boolean protectionOnly)
+    public static void deactivatePrayers(boolean protectionOnly)
     {
         if (protectionOnly)
         {
-            if (client.isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
+            if (EthanApiPlugin.getClient().isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
             {
                 PrayerInteraction.togglePrayer(Prayer.PROTECT_FROM_MISSILES);
             }
 
-            if (client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
+            if (EthanApiPlugin.getClient().isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
             {
                 PrayerInteraction.togglePrayer(Prayer.PROTECT_FROM_MAGIC);
             }
 
-            if (client.isPrayerActive(Prayer.PROTECT_FROM_MELEE))
+            if (EthanApiPlugin.getClient().isPrayerActive(Prayer.PROTECT_FROM_MELEE))
             {
                 PrayerInteraction.togglePrayer(Prayer.PROTECT_FROM_MELEE);
             }
@@ -69,7 +79,7 @@ public class CombatUtils
         {
             for (Prayer prayer : PrayerInteraction.prayerMap.keySet())
             {
-                if (client.isPrayerActive(prayer))
+                if (EthanApiPlugin.getClient().isPrayerActive(prayer))
                 {
                     PrayerInteraction.togglePrayer(prayer);
                 }
@@ -77,9 +87,9 @@ public class CombatUtils
         }
     }
 
-    public static void togglePrayer(Client client, Prayer prayer)
+    public static void togglePrayer(Prayer prayer)
     {
-        if (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !client.isPrayerActive(prayer))
+        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 && !EthanApiPlugin.getClient().isPrayerActive(prayer))
         {
             return;
         }
@@ -87,9 +97,9 @@ public class CombatUtils
         PrayerInteraction.togglePrayer(prayer);
     }
 
-    public static void toggleQuickPrayers(Client client)
+    public static void toggleQuickPrayers()
     {
-        if (client == null || (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled(client)))
+        if (EthanApiPlugin.getClient() == null || (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled()))
         {
             return;
         }
@@ -98,50 +108,28 @@ public class CombatUtils
         WidgetPackets.queueWidgetActionPacket(1, WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
     }
 
-    public static void activateQuickPrayers(Client client)
+    public static void activateQuickPrayers()
     {
-        if (client == null || (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled(client)))
+        if (EthanApiPlugin.getClient() == null || (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled()))
         {
             return;
         }
 
-        if (!isQuickPrayersEnabled(client))
+        if (!isQuickPrayersEnabled())
         {
             MousePackets.queueClickPacket();
             WidgetPackets.queueWidgetActionPacket(1, WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
         }
     }
 
-    public static boolean isQuickPrayersEnabled(Client client)
+    public static boolean isQuickPrayersEnabled()
     {
-        return client.getVarbitValue(Varbits.QUICK_PRAYER) == 1;
+        return EthanApiPlugin.getClient().getVarbitValue(Varbits.QUICK_PRAYER) == 1;
     }
 
-    public static int getSpecEnergy(Client client)
+    public static int getSpecEnergy()
     {
-        return client.getVarpValue(300) / 10;
-    }
-
-    public static void quickKerisSpec(Client client)
-    {
-        if (client == null)
-        {
-            return;
-        }
-
-        Item keris = InventoryUtils.getFirstItem("Keris partisan of the sun");
-        boolean kerisEquipped = Equipment.search().nameContains("of the sun").first().isPresent();
-        if ((keris == null && !kerisEquipped) || CombatUtils.getSpecEnergy(client) < 75)
-        {
-            return;
-        }
-
-        if (!kerisEquipped)
-        {
-            InventoryUtils.itemInteract(keris.getId(), "Wield");
-        }
-
-       toggleSpec();
+        return EthanApiPlugin.getClient().getVarpValue(300) / 10;
     }
 
     public static void toggleSpec()

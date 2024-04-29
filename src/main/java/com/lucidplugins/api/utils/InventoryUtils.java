@@ -7,7 +7,6 @@ import com.example.InteractionApi.InventoryInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
 import com.lucidplugins.api.item.SlottedItem;
-import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.Widget;
@@ -27,7 +26,6 @@ public class InventoryUtils
 
         if (itemToUse.isPresent() && itemToUseOn.isPresent())
         {
-            MousePackets.queueClickPacket();
             MousePackets.queueClickPacket();
             WidgetPackets.queueWidgetOnWidget(itemToUse.get(), itemToUseOn.get());
         }
@@ -64,9 +62,9 @@ public class InventoryUtils
         return Inventory.getEmptySlots();
     }
 
-    public static boolean itemHasAction(Client client, int itemId, String action)
+    public static boolean itemHasAction(int itemId, String action)
     {
-        return Arrays.stream(client.getItemDefinition(itemId).getInventoryActions()).anyMatch(a -> a != null && a.equalsIgnoreCase(action));
+        return Arrays.stream(EthanApiPlugin.getClient().getItemDefinition(itemId).getInventoryActions()).anyMatch(a -> a != null && a.equalsIgnoreCase(action));
     }
 
     public static void itemInteract(int itemId, String action)
@@ -84,15 +82,14 @@ public class InventoryUtils
         {
             itemWidget.ifPresent(widget -> {
                 MousePackets.queueClickPacket();
-                MousePackets.queueClickPacket();
                 WidgetPackets.queueWidgetOnWidget(alchemyWidget, widget);
             });
         }
     }
 
-    public static int calculateWidgetId(Client client, Item item)
+    public static int calculateWidgetId(Item item)
     {
-        Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(WidgetInfo.INVENTORY.getPackedId());
         if (inventoryWidget == null)
         {
             return -1;
@@ -127,7 +124,7 @@ public class InventoryUtils
         return new SlottedItem(itemWidget.getItemId(), amount, itemWidget.getIndex());
     }
 
-    public static SlottedItem getFirstItem(int id)
+    public static SlottedItem getFirstItemSlotted(int id)
     {
         Widget itemWidget = Inventory.search().withId(id).first().orElse(null);
         int amount = -1;
@@ -145,7 +142,7 @@ public class InventoryUtils
         return new SlottedItem(id, amount, itemWidget.getIndex());
     }
 
-    public static SlottedItem getLastItem(int id)
+    public static SlottedItem getLastItemSlotted(int id)
     {
         List<Widget> itemWidgets = Inventory.search().withId(id).result();
         Widget itemWidget = itemWidgets.get(itemWidgets.size() - 1);
@@ -164,7 +161,7 @@ public class InventoryUtils
         return new SlottedItem(id, amount, itemWidget.getIndex());
     }
 
-    public static SlottedItem getFirstItem(int[] ids)
+    public static SlottedItem getFirstItemSlotted(int[] ids)
     {
         List<Integer> intIdList = Arrays.stream(ids).boxed().collect(Collectors.toList());
 
@@ -188,6 +185,18 @@ public class InventoryUtils
     {
         final Widget itemWidget = Inventory.search().filter(item -> item.getName().contains(name)).first().orElse(null);
         return itemWidget != null ? itemWidget.getItemId() : -1;
+    }
+
+    public static Item getFirstItem(int id)
+    {
+        Widget itemWidget = Inventory.search().withId(id).first().orElse(null);
+        Item item = null;
+
+        if (itemWidget != null)
+        {
+            item = new Item(itemWidget.getItemId(), itemWidget.getItemQuantity());
+        }
+        return item;
     }
 
     public static Item getFirstItem(String name)

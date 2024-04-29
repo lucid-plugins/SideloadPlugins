@@ -25,11 +25,13 @@ public class EquipmentUtils
         return Equipment.search().result().stream().map(equipmentItemWidget -> new SlottedItem(equipmentItemWidget.getEquipmentItemId(), equipmentItemWidget.getItemQuantity(), equipmentItemWidget.getEquipmentIndex())).filter(filter).collect(Collectors.toList());
     }
 
-    public static Optional<EquipmentItemWidget> getItemInSlot() {
-        return Equipment.search().filter(item -> {
+    public static Item getItemInSlot(int slot) {
+        Optional<EquipmentItemWidget> weaponWidget = Equipment.search().filter(item -> {
             EquipmentItemWidget iw = (EquipmentItemWidget) item;
-            return iw.getEquipmentIndex() == 3;
+            return iw.getEquipmentIndex() == slot;
         }).first();
+
+        return weaponWidget.map(equipmentItemWidget -> new Item(equipmentItemWidget.getEquipmentItemId(), equipmentItemWidget.getItemQuantity())).orElse(null);
     }
 
     public static Item getWepSlotItem()

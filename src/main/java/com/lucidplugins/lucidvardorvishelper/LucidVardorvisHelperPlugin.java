@@ -1,10 +1,8 @@
 package com.lucidplugins.lucidvardorvishelper;
 
-import com.example.EthanApiPlugin.Collections.Widgets;
 import com.google.inject.Provides;
 import com.lucidplugins.api.utils.CombatUtils;
 import com.lucidplugins.api.utils.InteractionUtils;
-import com.lucidplugins.api.utils.MessageUtils;
 import com.lucidplugins.api.utils.NpcUtils;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -221,13 +219,13 @@ public class LucidVardorvisHelperPlugin extends Plugin
             if (config.autoPray())
             {
 
-                CombatUtils.deactivatePrayer(client, Prayer.PROTECT_FROM_MISSILES);
-                CombatUtils.deactivatePrayer(client, Prayer.PROTECT_FROM_MAGIC);
-                CombatUtils.deactivatePrayer(client, Prayer.PROTECT_FROM_MELEE);
+                CombatUtils.deactivatePrayer(Prayer.PROTECT_FROM_MISSILES);
+                CombatUtils.deactivatePrayer(Prayer.PROTECT_FROM_MAGIC);
+                CombatUtils.deactivatePrayer(Prayer.PROTECT_FROM_MELEE);
 
                 if (config.autoPiety())
                 {
-                    CombatUtils.deactivatePrayer(client, Prayer.PIETY);
+                    CombatUtils.deactivatePrayer(Prayer.PIETY);
                 }
             }
             deactivatePrayers = false;
@@ -264,7 +262,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
             {
                 if ((noAxesSpawned()) || (haventDodged() || betweenDodges()))
                 {
-                    WorldPoint safeDodgeTile = InteractionUtils.getClosestSafeLocationFiltered(client, unsafeSpikeyPoints, tile -> inNorthWestAreaForDodging(WorldPoint.fromLocalInstance(client, tile.getLocalLocation())));
+                    WorldPoint safeDodgeTile = InteractionUtils.getClosestSafeLocationFiltered(unsafeSpikeyPoints, tile -> inNorthWestAreaForDodging(WorldPoint.fromLocalInstance(client, tile.getLocalLocation())));
 
                     if (safeDodgeTile != null && !dodgedSomethingThisTick)
                     {
@@ -299,7 +297,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
             return;
         }
 
-        if (InteractionUtils.isNpcInMeleeDistance(vard) && client.getLocalPlayer().getInteracting() != vard && !dodgedSomethingThisTick && (axeTicks == 4 || axeTicks > 7))
+        if (InteractionUtils.isNpcInMeleeDistanceToPlayer(vard) && client.getLocalPlayer().getInteracting() != vard && !dodgedSomethingThisTick && (axeTicks == 4 || axeTicks > 7))
         {
             NpcUtils.interact(vard, "Attack");
         }
@@ -312,7 +310,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
             if (config.autoAttack() && solveDelay == 2)
             {
                 final NPC vard = NpcUtils.getNearestNpc("Vardorvis");
-                if (vard != null && InteractionUtils.isNpcInMeleeDistance(vard) && client.getLocalPlayer().getInteracting() != vard)
+                if (vard != null && InteractionUtils.isNpcInMeleeDistanceToPlayer(vard) && client.getLocalPlayer().getInteracting() != vard)
                 {
                     NpcUtils.interact(vard, "Attack");
                 }
@@ -338,7 +336,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
 
         if (prayer != null && config.autoPray())
         {
-            CombatUtils.activatePrayer(client, prayer);
+            CombatUtils.activatePrayer(prayer);
         }
         else
         {
@@ -356,11 +354,11 @@ public class LucidVardorvisHelperPlugin extends Plugin
                     return;
                 }
 
-                CombatUtils.activatePrayer(client, Prayer.PROTECT_FROM_MELEE);
+                CombatUtils.activatePrayer(Prayer.PROTECT_FROM_MELEE);
 
                 if (config.autoPiety())
                 {
-                    CombatUtils.activatePrayer(client, Prayer.PIETY);
+                    CombatUtils.activatePrayer(Prayer.PIETY);
                 }
             }
         }

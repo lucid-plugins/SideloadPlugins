@@ -43,7 +43,7 @@ public class LucidCombatTileOverlay extends OverlayPanel
 
         if (config.highlightMaxRangeTiles() && plugin.getStartLocation() != null)
         {
-            java.util.List<Tile> edgeTiles = InteractionUtils.getAll(client, tile -> Math.round(InteractionUtils.distanceTo2DHypotenuse(tile.getWorldLocation(), plugin.getStartLocation())) == config.maxRange());
+            java.util.List<Tile> edgeTiles = InteractionUtils.getAll(tile -> Math.round(InteractionUtils.distanceTo2DHypotenuse(tile.getWorldLocation(), plugin.getStartLocation())) == config.maxRange());
 
             if (!edgeTiles.isEmpty())
             {

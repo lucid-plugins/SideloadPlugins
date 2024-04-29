@@ -1,7 +1,5 @@
 package com.lucidplugins.lucidwhispererhelper;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.PacketUtils.PacketUtilsPlugin;
 import com.google.inject.Provides;
 import com.lucidplugins.api.item.SlottedItem;
 import com.lucidplugins.api.utils.*;
@@ -15,7 +13,6 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
@@ -132,7 +129,7 @@ public class WhispererHelperPlugin extends Plugin
         NPC whisperer = NpcUtils.getNearestNpc(npc -> npc != null && npc.getName().contains("Whisperer"));
         if (whisperer != null && whisperer.getAnimation() == 10257)
         {
-            SlottedItem venator = InventoryUtils.getFirstItem(ItemID.VENATOR_BOW);
+            SlottedItem venator = InventoryUtils.getFirstItemSlotted(ItemID.VENATOR_BOW);
             if (config.autoVenator() && venator != null && venator.getItem() != null)
             {
                 InventoryUtils.itemInteract(venator.getItem().getId(), "Wield");
@@ -175,15 +172,15 @@ public class WhispererHelperPlugin extends Plugin
             {
                 if (client.isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
                 {
-                    CombatUtils.togglePrayer(client, Prayer.PROTECT_FROM_MISSILES);
+                    CombatUtils.togglePrayer(Prayer.PROTECT_FROM_MISSILES);
                 }
                 if (client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
                 {
-                    CombatUtils.togglePrayer(client, Prayer.PROTECT_FROM_MAGIC);
+                    CombatUtils.togglePrayer(Prayer.PROTECT_FROM_MAGIC);
                 }
                 if (client.isPrayerActive(Prayer.PROTECT_FROM_MELEE))
                 {
-                    CombatUtils.togglePrayer(client, Prayer.PROTECT_FROM_MELEE);
+                    CombatUtils.togglePrayer(Prayer.PROTECT_FROM_MELEE);
                 }
             }
         }
@@ -341,7 +338,7 @@ public class WhispererHelperPlugin extends Plugin
         {
             if (config.autoPray())
             {
-                CombatUtils.activatePrayer(client, prayer);
+                CombatUtils.activatePrayer(prayer);
             }
         }
     }
@@ -403,7 +400,7 @@ public class WhispererHelperPlugin extends Plugin
 
         if (!unsafeTiles.isEmpty())
         {
-            WorldPoint safeTile = InteractionUtils.getClosestSafeLocationNotInNPCMeleeDistance(client, new ArrayList<>(unsafeTiles.keySet()), whisperer, config.maxWeaponRange());
+            WorldPoint safeTile = InteractionUtils.getClosestSafeLocationNotInNPCMeleeDistance(new ArrayList<>(unsafeTiles.keySet()), whisperer, config.maxWeaponRange());
             if (safeTile != null && !safeTile.equals(client.getLocalPlayer().getWorldLocation()))
             {
                 InteractionUtils.walk(safeTile);

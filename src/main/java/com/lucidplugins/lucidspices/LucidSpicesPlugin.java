@@ -4,7 +4,6 @@ import com.google.inject.Provides;
 import com.lucidplugins.api.item.SlottedItem;
 import com.lucidplugins.api.utils.*;
 import net.runelite.api.Client;
-import net.runelite.api.Item;
 import net.runelite.api.NPC;
 import net.runelite.api.TileObject;
 import net.runelite.api.events.GameTick;
@@ -250,7 +249,7 @@ public class LucidSpicesPlugin extends Plugin
 
     private SlottedItem getFood()
     {
-        return InventoryUtils.getFirstItem(config.foodId());
+        return InventoryUtils.getFirstItemSlotted(config.foodId());
     }
 
     private int ticksSinceLastHeal()

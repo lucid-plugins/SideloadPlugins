@@ -16,6 +16,11 @@ public class PlayerUtils
         PlayerInteractionHelper.interact(name, action);
     }
 
+    public static List<Player> getAll(Predicate<Player> filter)
+    {
+        return Players.search().filter(filter).result();
+    }
+
     public static Player getNearest(String name)
     {
         List<Player> players = Players.search().filter(player -> player.getName() != null && player.getName().contains(name)).result();

@@ -506,11 +506,11 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
                 for (int i = 0; i < validItems.size() / 2; i++)
                 {
                     SlottedItem item = validItems.get(i);
-                    if (InventoryUtils.itemHasAction(client, item.getItem().getId(), "Wield"))
+                    if (InventoryUtils.itemHasAction(item.getItem().getId(), "Wield"))
                     {
                         InventoryUtils.itemInteract(item.getItem().getId(), "Wield");
                     }
-                    else if (InventoryUtils.itemHasAction(client, item.getItem().getId(), "Wear"))
+                    else if (InventoryUtils.itemHasAction(item.getItem().getId(), "Wear"))
                     {
                         InventoryUtils.itemInteract(item.getItem().getId(), "Wear");
                     }
@@ -520,11 +520,11 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
             {
                 for (SlottedItem item : validItems)
                 {
-                    if (InventoryUtils.itemHasAction(client, item.getItem().getId(), "Wield"))
+                    if (InventoryUtils.itemHasAction(item.getItem().getId(), "Wield"))
                     {
                         InventoryUtils.itemInteract(item.getItem().getId(), "Wield");
                     }
-                    else if (InventoryUtils.itemHasAction(client, item.getItem().getId(), "Wear"))
+                    else if (InventoryUtils.itemHasAction(item.getItem().getId(), "Wear"))
                     {
                         InventoryUtils.itemInteract(item.getItem().getId(), "Wear");
                     }
@@ -687,17 +687,17 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
         switch (lastSwapSelected)
         {
             case 0:
-                return config.activateSpec1() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold1());
+                return config.activateSpec1() && (CombatUtils.getSpecEnergy() >= config.specThreshold1());
             case 1:
-                return config.activateSpec2() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold2());
+                return config.activateSpec2() && (CombatUtils.getSpecEnergy() >= config.specThreshold2());
             case 2:
-                return config.activateSpec3() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold3());
+                return config.activateSpec3() && (CombatUtils.getSpecEnergy() >= config.specThreshold3());
             case 3:
-                return config.activateSpec4() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold4());
+                return config.activateSpec4() && (CombatUtils.getSpecEnergy() >= config.specThreshold4());
             case 4:
-                return config.activateSpec5() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold5());
+                return config.activateSpec5() && (CombatUtils.getSpecEnergy() >= config.specThreshold5());
             case 5:
-                return config.activateSpec6() && (CombatUtils.getSpecEnergy(client) >= config.specThreshold6());
+                return config.activateSpec6() && (CombatUtils.getSpecEnergy() >= config.specThreshold6());
             default:
                 return false;
         }

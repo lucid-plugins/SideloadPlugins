@@ -21,7 +21,7 @@ public class BankUtils
         return false;
     }
 
-    public static void depositAll(){
+    public static void depositAll() {
         Widget depositInventory = EthanApiPlugin.getClient().getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
         if (depositInventory != null && !depositInventory.isSelfHidden()) {
             MousePackets.queueClickPacket();
@@ -42,6 +42,9 @@ public class BankUtils
 
     public static void close()
     {
-        EthanApiPlugin.getClient().runScript(29);
+        if (isOpen())
+        {
+            EthanApiPlugin.getClient().runScript(29);
+        }
     }
 }

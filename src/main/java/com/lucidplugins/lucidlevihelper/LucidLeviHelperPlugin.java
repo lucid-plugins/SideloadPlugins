@@ -1,7 +1,5 @@
 package com.lucidplugins.lucidlevihelper;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.PacketUtils.PacketUtilsPlugin;
 import com.lucidplugins.api.utils.CombatUtils;
 import net.runelite.api.Client;
 import net.runelite.api.Prayer;
@@ -10,7 +8,6 @@ import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.ProjectileMoved;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 
 import javax.inject.Inject;
@@ -57,7 +54,7 @@ public class LucidLeviHelperPlugin extends Plugin
 
         if (prayer != null)
         {
-            CombatUtils.activatePrayer(client, prayer);
+            CombatUtils.activatePrayer(prayer);
         }
     }
 
