@@ -38,7 +38,6 @@ public class GameObjectUtils
         }
 
         ObjectComposition composition = client.getObjectDefinition(objectId);
-
         if (composition == null)
         {
             return false;

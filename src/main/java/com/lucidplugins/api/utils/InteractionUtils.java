@@ -60,6 +60,36 @@ public class InteractionUtils
         return true;
     }
 
+    public static int getWidgetSpriteId(int parentId, int childId)
+    {
+        return getWidgetSpriteId(parentId, childId, -1);
+    }
+
+    public static int getWidgetSpriteId(int parentId, int childId, int grandchildId)
+    {
+        Widget target = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        if (grandchildId != -1)
+        {
+            if (target == null || target.isSelfHidden())
+            {
+                return -1;
+            }
+
+            Widget subTarget = target.getChild(grandchildId);
+            if (subTarget != null)
+            {
+                return subTarget.getSpriteId();
+            }
+        }
+
+        if (target != null)
+        {
+            return target.getSpriteId();
+        }
+
+        return -1;
+    }
+
     public static String getWidgetText(int parentId, int childId)
     {
         return getWidgetText(parentId, childId, -1);
@@ -390,7 +420,21 @@ public class InteractionUtils
 
     public static float distanceTo2DHypotenuse(WorldPoint main, WorldPoint other)
     {
-        return (float)Math.hypot((double)(main.getX() - other.getX()), (double)(main.getY() - other.getY()));
+        return (float) Math.hypot((main.getX() - other.getX()), (main.getY() - other.getY()));
+    }
+
+    public static float distanceTo2DHypotenuse(WorldPoint main, WorldPoint other, int size1, int size2)
+    {
+        WorldPoint midMain = main.dx((int) Math.floor((float) size1 / 2)).dy((int) Math.floor((float) size1 / 2));
+        WorldPoint midOther = other.dx((int) Math.floor((float) size2 / 2)).dy((int) Math.floor((float) size2 / 2));
+        return (float) Math.hypot(midMain.getX() - midOther.getX(), midMain.getY() - midOther.getY());
+    }
+
+    public static float distanceTo2DHypotenuse(WorldPoint main, WorldPoint other, int size1X, int size1Y, int size2)
+    {
+        WorldPoint midMain = main.dx((int) Math.floor((float) size1X / 2)).dy((int) Math.floor((float) size1Y / 2));
+        WorldPoint midOther = other.dx((int) Math.floor((float) size2 / 2)).dy((int) Math.floor((float) size2 / 2));
+        return (float) Math.hypot(midMain.getX() - midOther.getX(), midMain.getY() - midOther.getY());
     }
 
     public static WorldPoint getCenterTileFromWorldArea(WorldArea area)
@@ -424,7 +468,10 @@ public class InteractionUtils
     {
         ETileItem item = TileItems.search().withId(itemId).nearestToPlayer().orElse(null);
 
-        TileItemPackets.queueTileItemAction(item, false);
+        if (item != null)
+        {
+            TileItemPackets.queueTileItemAction(item, false);
+        }
     }
 
     public static void interactWithTileItem(String name, String action)

@@ -1343,7 +1343,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
     }
     private void processAction(Action action, String[] actionParams)
     {
-        if (tickDelay > 0 && action != Action.RESET_DELAY && action != Action.SET_DELAY)
+        if (tickDelay > 0 && action != Action.RESET_DELAY && action != Action.PRINT_VARIABLE)
         {
             if (config.debugOutput())
             {

@@ -26,7 +26,7 @@ dependencies {
 }
 
 group = "com.lucidplugins"
-version = "6.0.0"
+version = "6.1.0"
 
 val javaMajorVersion = JavaVersion.VERSION_11.majorVersion
 
@@ -43,5 +43,6 @@ tasks {
     }
     withType<ShadowJar> {
         baseName = "LucidPlugins"
+        exclude("com/lucidplugins/lucidhotkeys2")
     }
 }
