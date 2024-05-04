@@ -450,7 +450,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 lastActionSucceeded = false;
                 if (config.debugOutput())
                 {
-                    String failMessage = "Hotkey " + index + " [" + i + "][" + failedIndex + "] pre-condition failed for params<br>" + preconditionsArray.substring(0, preconditionsArray.length() - 1);
+                    String failMessage = "Hotkey " + index + " [" + i + "][" + failedIndex + "] pre-condition failed for params<br>" + preconditionsArray;
                     MessageUtils.addMessage(client, failMessage);
                     System.out.println(failMessage);
                 }
