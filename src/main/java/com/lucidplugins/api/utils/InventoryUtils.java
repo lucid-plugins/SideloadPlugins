@@ -31,14 +31,24 @@ public class InventoryUtils
         }
     }
 
-    public static List<SlottedItem> getAll()
+    public static List<SlottedItem> getAllSlotted()
     {
         return Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).collect(Collectors.toList());
     }
 
-    public static List<SlottedItem> getAll(Predicate<SlottedItem> filter)
+    public static List<SlottedItem> getAllSlotted(Predicate<SlottedItem> filter)
     {
         return Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).filter(filter).collect(Collectors.toList());
+    }
+
+    public static List<Item> getAll()
+    {
+        return Inventory.search().result().stream().map(item -> new Item(item.getItemId(), item.getItemQuantity())).collect(Collectors.toList());
+    }
+
+    public static List<Item> getAll(Predicate<Item> filter)
+    {
+        return Inventory.search().result().stream().map(item -> new Item(item.getItemId(), item.getItemQuantity())).filter(filter).collect(Collectors.toList());
     }
 
     public static boolean contains(String itemName)
@@ -189,14 +199,12 @@ public class InventoryUtils
 
     public static Item getFirstItem(int id)
     {
-        Widget itemWidget = Inventory.search().withId(id).first().orElse(null);
-        Item item = null;
+        return getAll(item -> item.getId() == id).stream().findFirst().orElse(null);
+    }
 
-        if (itemWidget != null)
-        {
-            item = new Item(itemWidget.getItemId(), itemWidget.getItemQuantity());
-        }
-        return item;
+    public static Item getFirstItem(Predicate<Item> filter)
+    {
+        return getAll().stream().filter(filter).findFirst().orElse(null);
     }
 
     public static Item getFirstItem(String name)
@@ -218,9 +226,9 @@ public class InventoryUtils
 
     public static int count(String name)
     {
-        List<SlottedItem> itemsToCount = InventoryUtils.getAll(item -> {
+        List<SlottedItem> itemsToCount = InventoryUtils.getAllSlotted(item -> {
             final ItemComposition itemDef = EthanApiPlugin.getClient().getItemDefinition(item.getItem().getId());
-            return itemDef != null && itemDef.getName() != null && itemDef.getName().toLowerCase().contains(name.toLowerCase());
+            return itemDef.getName() != null && itemDef.getName().toLowerCase().contains(name.toLowerCase());
         });
         int count = 0;
         for (SlottedItem i : itemsToCount)
@@ -235,7 +243,7 @@ public class InventoryUtils
 
     public static int count(int id)
     {
-        List<SlottedItem> itemsToCount = InventoryUtils.getAll(item -> item.getItem().getId() == id);
+        List<SlottedItem> itemsToCount = InventoryUtils.getAllSlotted(item -> item.getItem().getId() == id);
 
         int count = 0;
         for (SlottedItem i : itemsToCount)
@@ -251,6 +259,12 @@ public class InventoryUtils
 
     public static void interactSlot(int slot, String action)
     {
+        SlottedItem item = getItemInSlot(slot);
+        if (item == null)
+        {
+            return;
+        }
+
         InventoryInteraction.useItemIndex(slot, action);
     }
 }

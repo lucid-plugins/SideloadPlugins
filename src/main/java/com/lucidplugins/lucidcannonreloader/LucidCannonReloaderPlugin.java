@@ -1,8 +1,6 @@
 package com.lucidplugins.lucidcannonreloader;
 
 import com.example.EthanApiPlugin.Collections.TileObjects;
-import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.PacketUtils.PacketUtilsPlugin;
 import com.google.inject.Provides;
 import com.lucidplugins.api.utils.GameObjectUtils;
 import com.lucidplugins.api.utils.InventoryUtils;
@@ -18,7 +16,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +105,7 @@ public class LucidCannonReloaderPlugin extends Plugin
             return;
         }
 
-        if (brokenCannon != null && GameObjectUtils.hasAction(client, brokenCannon.getId(), "Repair"))
+        if (brokenCannon != null && GameObjectUtils.hasAction(brokenCannon.getId(), "Repair"))
         {
             if (ticksSinceLastRepairAttempt() > 3)
             {

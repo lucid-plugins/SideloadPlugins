@@ -62,4 +62,14 @@ public interface ScurriusHelperConfig extends Config
         return false;
     }
 
+    @ConfigItem(
+            name = "Auto Pray",
+            description = "Auto pray against attacks",
+            position = 5,
+            keyName = "autoPray"
+    )
+    default boolean autoPray()
+    {
+        return false;
+    }
 }

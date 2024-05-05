@@ -332,7 +332,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
             if (config.teletabOnCompletion() && taskEnded)
             {
-                Optional<SlottedItem> teletab = InventoryUtils.getAll(item -> {
+                Optional<SlottedItem> teletab = InventoryUtils.getAllSlotted(item -> {
                     ItemComposition composition = client.getItemDefinition(item.getItem().getId());
                     return Arrays.asList(composition.getInventoryActions()).contains("Break") && composition.getName().toLowerCase().contains("teleport");
                 }).stream().findFirst();
@@ -815,13 +815,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         if (config.buryScatter())
         {
-            List<SlottedItem> itemsToBury = InventoryUtils.getAll(item -> {
+            List<SlottedItem> itemsToBury = InventoryUtils.getAllSlotted(item -> {
                 ItemComposition composition = client.getItemDefinition(item.getItem().getId());
                 return Arrays.asList(composition.getInventoryActions()).contains("Bury") &&
                         !(composition.getName().contains("Long") || composition.getName().contains("Curved"));
             });
 
-            List<SlottedItem> itemsToScatter = InventoryUtils.getAll(item -> {
+            List<SlottedItem> itemsToScatter = InventoryUtils.getAllSlotted(item -> {
                 ItemComposition composition = client.getItemDefinition(item.getItem().getId());
                 return Arrays.asList(composition.getInventoryActions()).contains("Scatter");
             });
@@ -1173,7 +1173,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return List.of();
         }
 
-        return InventoryUtils.getAll(item ->
+        return InventoryUtils.getAllSlotted(item ->
         {
             ItemComposition composition = client.getItemDefinition(item.getItem().getId());
             boolean nameContains = false;
@@ -1494,7 +1494,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 shouldEat = true;
             }
 
-            final SlottedItem karambwan = InventoryUtils.getAll(karambwanFilter).stream().findFirst().orElse(null);
+            final SlottedItem karambwan = InventoryUtils.getAllSlotted(karambwanFilter).stream().findFirst().orElse(null);
 
             if (karambwan != null && shouldEat)
             {
@@ -1708,7 +1708,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private List<SlottedItem> getFoodItemsNotInBlacklist()
     {
-        return InventoryUtils.getAll(foodFilterNoBlacklistItems);
+        return InventoryUtils.getAllSlotted(foodFilterNoBlacklistItems);
     }
 
     private Item getAttackBoostingItem()

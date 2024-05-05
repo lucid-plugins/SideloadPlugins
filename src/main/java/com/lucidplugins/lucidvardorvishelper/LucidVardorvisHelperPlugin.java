@@ -163,7 +163,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
 
         handleAutoBlood();
 
-
+        prayerMap.keySet().removeIf(i -> client.getTickCount() > i);
         spikeyBois.keySet().removeIf(i -> client.getTickCount() > i);
     }
 

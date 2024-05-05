@@ -1,11 +1,11 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.TileObjects;
+import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.TileObjectInteraction;
 import net.runelite.api.*;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 public class GameObjectUtils
@@ -30,20 +30,20 @@ public class GameObjectUtils
         TileObjectInteraction.interact(object, action);
     }
 
-    public static boolean hasAction(Client client, int objectId, String action)
+    public static boolean hasAction(int objectId, String action)
     {
-        if (client == null)
-        {
-            return false;
-        }
-
-        ObjectComposition composition = client.getObjectDefinition(objectId);
+        ObjectComposition composition = EthanApiPlugin.getClient().getObjectDefinition(objectId);
         if (composition == null)
         {
             return false;
         }
 
-        return Arrays.stream(composition.getActions()).anyMatch(s -> s != null && s.equalsIgnoreCase(action));
+        if (composition.getActions() == null)
+        {
+            return false;
+        }
+
+        return Arrays.stream(composition.getActions()).anyMatch(s -> s != null && s.equals(action));
     }
 
     public static TileObject nearest(String name)

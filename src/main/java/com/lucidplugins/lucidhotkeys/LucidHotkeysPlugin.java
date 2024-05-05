@@ -1514,7 +1514,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 break;
             case INTERACT_ID_INVENTORY_ITEM:
                 final int p1Int = param1Int;
-                InventoryUtils.getAll(it -> it.getItem().getId() == p1Int).stream().findFirst().ifPresent(idItem -> InventoryUtils.itemInteract(p1Int, actionParams[2]));
+                InventoryUtils.getAllSlotted(it -> it.getItem().getId() == p1Int).stream().findFirst().ifPresent(idItem -> InventoryUtils.itemInteract(p1Int, actionParams[2]));
                 break;
             case RELOAD_VARS:
                 initUserVariables();

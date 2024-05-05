@@ -65,9 +65,4 @@ public class PlayerUtils
 
         return closestPlayer;
     }
-
-    private Player nearestTest(List<Player> players)
-    {
-        return players.size() == 0 ? null : players.stream().min(Comparator.comparingInt((player) -> player.getWorldLocation().distanceTo(EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()))).get();
-    }
 }

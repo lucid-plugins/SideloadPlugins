@@ -483,4 +483,12 @@ public class InteractionUtils
             TileItemPackets.queueTileItemAction(item, false);
         }
     }
+
+    public static void interactWithTileItem(ETileItem item, String action)
+    {
+        if (item != null)
+        {
+            TileItemPackets.queueTileItemAction(item, false);
+        }
+    }
 }
