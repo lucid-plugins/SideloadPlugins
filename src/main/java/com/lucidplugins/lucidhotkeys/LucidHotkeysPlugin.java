@@ -44,7 +44,7 @@ import static net.runelite.client.RuneLite.RUNELITE_DIR;
 
 @Extension
 @PluginDescriptor(
-        name = "<html><font color=\"#32CD32\">Lucid </font>Hotkeys</html>",
+        name = "<html><font color=\"#32CD32\">Lucid </font>Hotkeys 1</html>",
         description = "Setup hotkeys that can do a variety of different actions.",
         enabledByDefault = false,
         tags = {"hotkeys", "lucid"}
