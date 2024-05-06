@@ -26,7 +26,7 @@ dependencies {
 }
 
 group = "com.lucidplugins"
-version = "6.1.1"
+version = "6.1.2"
 
 val javaMajorVersion = JavaVersion.VERSION_11.majorVersion
 

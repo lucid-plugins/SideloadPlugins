@@ -907,9 +907,21 @@ public interface LucidGauntletConfig extends Config
     }
 
     @ConfigItem(
+            name = "Auto dodge",
+            description = "Automatically dodges unsafe tiles and tornados",
+            position = 6,
+            keyName = "autoDodge",
+            section = playerSection
+    )
+    public default boolean autoDodge()
+    {
+        return false;
+    }
+
+    @ConfigItem(
             name = "Flash on wrong attack style",
             description = "Flash the screen if you use the wrong attack style.",
-            position = 6,
+            position = 7,
             keyName = "flashOnWrongAttack",
             section = playerSection
     )
@@ -925,7 +937,7 @@ public interface LucidGauntletConfig extends Config
     @ConfigItem(
             name = "Flash duration",
             description = "Change the duration of the flash.",
-            position = 7,
+            position = 8,
             keyName = "flashOnWrongAttackDuration",
             section = playerSection
     )
@@ -938,7 +950,7 @@ public interface LucidGauntletConfig extends Config
     @ConfigItem(
             name = "Flash color",
             description = "Color of the flash notification.",
-            position = 8,
+            position = 9,
             keyName = "flashOnWrongAttackColor",
             section = playerSection
     )
@@ -950,7 +962,7 @@ public interface LucidGauntletConfig extends Config
     @ConfigItem(
             name = "Flash on 5:1 method",
             description = "Flash the screen to weapon switch when using 5:1 method.",
-            position = 9,
+            position = 10,
             keyName = "flashOn51Method",
             section = playerSection
     )
@@ -966,7 +978,7 @@ public interface LucidGauntletConfig extends Config
     @ConfigItem(
             name = "Flash duration",
             description = "Change the duration of the flash.",
-            position = 10,
+            position = 11,
             keyName = "flashOn51MethodDuration",
             section = playerSection
     )
@@ -979,7 +991,7 @@ public interface LucidGauntletConfig extends Config
     @ConfigItem(
             name = "Flash color",
             description = "Color of the flash notification.",
-            position = 11,
+            position = 12,
             keyName = "flashOn51MethodColor",
             section = playerSection
     )

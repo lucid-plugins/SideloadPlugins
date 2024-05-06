@@ -225,6 +225,9 @@ public class LucidGauntletPlugin extends Plugin
 
     private WorldPoint secondLastSafeTile;
 
+    @Inject
+    private GauntletInstanceGrid instanceGrid;
+
     @Provides
 
     LucidGauntletConfig getConfig(final ConfigManager configManager)
@@ -244,6 +247,7 @@ public class LucidGauntletPlugin extends Plugin
         {
             clientThread.invoke(this::pluginEnabled);
         }
+
     }
 
     @Override
@@ -261,7 +265,7 @@ public class LucidGauntletPlugin extends Plugin
 
         overlayTimer.reset();
         resourceManager.reset();
-
+        instanceGrid.reset();
         entitySets.forEach(Set::clear);
     }
 
@@ -344,6 +348,12 @@ public class LucidGauntletPlugin extends Plugin
     @Subscribe
     private void onGameTick(final GameTick event)
     {
+        NPC hun = NpcUtils.getNearestNpc(npc -> npc.getName() != null && npc.getName().contains("Hunllef"));
+        if (hun != null && !instanceGrid.isInitialized())
+        {
+            instanceGrid.initialize();
+        }
+
         if (hunllef == null)
         {
             return;
@@ -415,8 +425,15 @@ public class LucidGauntletPlugin extends Plugin
             }
         }
 
-        // WorldPoint safeTile = getToSafeTile();
-        // TODO: Finish
+        if (!inHunllef)
+        {
+            return;
+        }
+
+        if (config.autoDodge())
+        {
+            WorldPoint safeTile = getToSafeTile();
+        }
     }
 
     private WorldPoint getToSafeTile()
@@ -453,13 +470,13 @@ public class LucidGauntletPlugin extends Plugin
 
     private boolean tileUnderUsUnsafe(boolean checkTornados)
     {
-        WorldArea biggerArea = fromSwToNe(hunllef.getNpc().getWorldLocation().dx(-2).dy(-2), hunllef.getNpc().getWorldLocation().dx(6).dy(6));
-        Predicate<TileObject> safeTileFilter = (groundObject) -> (groundObject.getId() == 36047 || groundObject.getId() == 36048) &&
-                groundObject.getWorldLocation().equals(client.getLocalPlayer().getWorldLocation());
+        Predicate<TileObject> unsafeTileFilter = (groundObject) -> (groundObject.getId() == 36150 || groundObject.getId() == 36151 ||
+                groundObject.getId() == 36047 || groundObject.getId() == 36048) &&
+                groundObject.getLocalLocation().equals(client.getLocalPlayer().getLocalLocation());
 
-        boolean isTileSafe = GameObjectUtils.nearest(safeTileFilter) == null;
+        boolean isTileSafe = GameObjectUtils.nearest(unsafeTileFilter) == null;
 
-        boolean underHunllef = isTileSafe ? biggerArea.contains(client.getLocalPlayer().getWorldLocation()) : hunllef.getNpc().getWorldArea().contains(client.getLocalPlayer().getWorldLocation());
+        boolean underHunllef = hunllef.getNpc().getWorldArea().contains(client.getLocalPlayer().getWorldLocation());
 
         boolean tooCloseToTornados = tooCloseToTornado(client.getLocalPlayer().getWorldLocation(), 3);
 
@@ -506,10 +523,20 @@ public class LucidGauntletPlugin extends Plugin
 
     private WorldPoint getClosestSafeTile()
     {
-        WorldArea biggerArea = fromSwToNe(hunllef.getNpc().getWorldLocation().dx(-2).dy(-2), hunllef.getNpc().getWorldLocation().dx(6).dy(6));
+        //WorldArea biggerArea = fromSwToNe(hunllef.getNpc().getWorldLocation().dx(-2).dy(-2), hunllef.getNpc().getWorldLocation().dx(6).dy(6));
+        if (lastSafeTile == null)
+        {
+            lastSafeTile = client.getLocalPlayer().getWorldLocation();
+        }
 
+        if (secondLastSafeTile == null)
+        {
+            secondLastSafeTile = client.getLocalPlayer().getWorldLocation();
+        }
+
+        WorldArea biggerArea = hunllef.getNpc().getWorldArea();
         Predicate<TileObject> filter1 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation()) &&
                 !tooCloseToTornado(groundObject.getWorldLocation(), 5) &&
                 groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1 &&
@@ -519,7 +546,7 @@ public class LucidGauntletPlugin extends Plugin
                 groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
 
         Predicate<TileObject> filter2 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation()) &&
                 !tooCloseToTornado(groundObject.getWorldLocation(), 4) &&
                 groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1 &&
@@ -530,7 +557,7 @@ public class LucidGauntletPlugin extends Plugin
 
 
         Predicate<TileObject> filter3 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation()) &&
                 !tooCloseToTornado(groundObject.getWorldLocation(), 3) &&
                 groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1 &&
@@ -540,7 +567,7 @@ public class LucidGauntletPlugin extends Plugin
                 groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
 
         Predicate<TileObject> filter4 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 2)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -552,7 +579,7 @@ public class LucidGauntletPlugin extends Plugin
 
 
         Predicate<TileObject> filter5 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 5)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -562,7 +589,7 @@ public class LucidGauntletPlugin extends Plugin
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
 
         Predicate<TileObject> filter6 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 4)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -572,7 +599,7 @@ public class LucidGauntletPlugin extends Plugin
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
 
         Predicate<TileObject> filter7 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 3)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -582,7 +609,7 @@ public class LucidGauntletPlugin extends Plugin
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
 
         Predicate<TileObject> filter8 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !biggerArea.contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 2)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -592,7 +619,7 @@ public class LucidGauntletPlugin extends Plugin
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) < 5;
 
         Predicate<TileObject> filter9 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 5)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -601,7 +628,7 @@ public class LucidGauntletPlugin extends Plugin
                 || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1);
 
         Predicate<TileObject> filter10 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 4)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -610,7 +637,7 @@ public class LucidGauntletPlugin extends Plugin
                 || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1);
 
         Predicate<TileObject> filter11 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 3)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -619,7 +646,7 @@ public class LucidGauntletPlugin extends Plugin
                 || secondLastSafeTile.distanceTo2D(groundObject.getWorldLocation()) > 1);
 
         Predicate<TileObject> filter12 = groundObject ->
-                groundObject.getId() == 36046 &&
+                (groundObject.getId() == 36149 || groundObject.getId() == 36046) &&
                 !hunllef.getNpc().getWorldArea().contains(groundObject.getWorldLocation())
                 && !tooCloseToTornado(groundObject.getWorldLocation(), 2)
                 && groundObject.getWorldLocation().distanceTo2D(client.getLocalPlayer().getWorldLocation()) >= 1
@@ -653,13 +680,12 @@ public class LucidGauntletPlugin extends Plugin
 
     private boolean isInsideArena(WorldPoint point)
     {
-        /*final int hunllefBaseX = instanceGrid.getRoom(3, 3).getBaseX();
+        final int hunllefBaseX = instanceGrid.getRoom(3, 3).getBaseX();
         final int hunllefBaseY = instanceGrid.getRoom(3, 3).getBaseY();
-        final WorldPoint arenaSouthWest = new WorldPoint(hunllefBaseX + 2, hunllefBaseY - 13, client.getLocalPlayer().getPlane());
-        final WorldPoint arenaNorthEast = new WorldPoint(hunllefBaseX + 13, hunllefBaseY - 2, client.getLocalPlayer().getPlane());
+        final WorldPoint arenaSouthWest = new WorldPoint(hunllefBaseX + 2, hunllefBaseY - 13, client.getLocalPlayer().getWorldLocation().getPlane());
+        final WorldPoint arenaNorthEast = new WorldPoint(hunllefBaseX + 13, hunllefBaseY - 2, client.getLocalPlayer().getWorldLocation().getPlane());
 
-        return new WorldArea(arenaSouthWest, arenaNorthEast).contains(point);*/
-        return true;
+        return fromSwToNe(arenaSouthWest, arenaNorthEast).contains(point);
     }
 
     @Subscribe
@@ -999,7 +1025,6 @@ public class LucidGauntletPlugin extends Plugin
 
         overlayTimer.setHunllefStart();
         resourceManager.reset();
-
         overlayManager.remove(overlayGauntlet);
         overlayManager.add(overlayHunllef);
         overlayManager.add(overlayPrayerWidget);
