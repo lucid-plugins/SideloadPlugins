@@ -187,11 +187,59 @@ public class InteractionUtils
 
     public static void useWidgetOnNPC(Widget widget, NPC npc)
     {
-        if (widget != null && npc != null)
+        if (widget == null || npc == null)
         {
+            return;
+        }
             MousePackets.queueClickPacket();
             NPCPackets.queueWidgetOnNPC(npc, widget);
+    }
+
+    public static void useWidgetOnPlayer(Widget widget, Player player)
+    {
+        if (widget == null || player == null)
+        {
+            return;
         }
+            MousePackets.queueClickPacket();
+            PlayerPackets.queueWidgetOnPlayer(player, widget);
+    }
+
+    public static void useWidgetOnTileObject(Widget widget, TileObject object)
+    {
+        if (widget == null || object == null)
+        {
+            return;
+        }
+        MousePackets.queueClickPacket();
+        ObjectPackets.queueWidgetOnTileObject(widget, object);
+    }
+
+    public static void useWidgetOnTileItem(Widget widget, ETileItem tileItem)
+    {
+        if (widget == null || tileItem == null)
+        {
+            return;
+        }
+
+        MousePackets.queueClickPacket();
+        TileItemPackets.queueWidgetOnTileItem(tileItem, widget, false);
+    }
+
+    public static Widget getItemWidget(Item item)
+    {
+        return Inventory.search().withId(item.getId()).first().orElse(null);
+    }
+
+    public static void useWidgetOnWidget(Widget widget, Widget widget2)
+    {
+        if (widget == null || widget2 == null)
+        {
+            return;
+        }
+
+        MousePackets.queueClickPacket();
+        WidgetPackets.queueWidgetOnWidget(widget, widget2);
     }
 
     public static boolean isMoving()
