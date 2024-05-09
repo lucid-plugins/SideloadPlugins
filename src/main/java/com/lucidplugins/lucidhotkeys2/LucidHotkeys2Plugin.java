@@ -1072,6 +1072,16 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     debugMessage("Spell not recognized: " + params.get(0));
                 }
                 break;
+            case WIDGET_CC_OP_1:
+                int packedId = ((int) params.get(0) << 16)| (int) params.get(1);
+                MousePackets.queueClickPacket();
+                EthanApiPlugin.invoke(-1, packedId, MenuAction.CC_OP.getId(), 1, -1, "", "", -1, -1);
+                break;
+            case WIDGET_CC_OP_2:
+                int packedId2 = ((int) params.get(0) << 16)| (int) params.get(1);
+                MousePackets.queueClickPacket();
+                EthanApiPlugin.invoke(-1, packedId2, MenuAction.CC_OP.getId(), 2, -1, "", "", -1, -1);
+                break;
         }
     }
 
