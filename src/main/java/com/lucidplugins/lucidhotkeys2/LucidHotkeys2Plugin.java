@@ -1117,7 +1117,13 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
     {
         return (npc) -> {
             boolean any = nameOrId instanceof String && String.valueOf(nameOrId).equals("Any");
-            boolean nameMatches = !(nameOrId instanceof String) || any || (nPartialMatching ? npc.getName() != null &&  npc.getName().contains(String.valueOf(nameOrId)) : npc.getName() != null && npc.getName().equals(String.valueOf(nameOrId)));
+            NPCComposition comp = npc.getComposition();
+            if (npc.getComposition().transform() != null)
+            {
+                comp = npc.getComposition().transform();
+            }
+
+            boolean nameMatches = !(nameOrId instanceof String) || any || (nPartialMatching ? comp.getName() != null &&  comp.getName().contains(String.valueOf(nameOrId)) : comp.getName() != null && comp.getName().equals(String.valueOf(nameOrId)));
             boolean idMatches = !(nameOrId instanceof Integer) || (npc.getId() == (int) nameOrId);
             return (nameMatches &&
                     idMatches &&
@@ -1218,13 +1224,18 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
 
             boolean any = nameOrId instanceof String && String.valueOf(nameOrId).equals("Any");
             ObjectComposition objComp = client.getObjectDefinition(obj.getId());
+            if (objComp != null && objComp.getImpostorIds() != null)
+            {
+                objComp = objComp.getImpostor();
+            }
+
             boolean idMatches = !(nameOrId instanceof Integer) || (obj.getId() == (int) nameOrId);
             boolean nameMatches = !(nameOrId instanceof String) || any || (oPartialMatching ? objComp.getName() != null && objComp.getName().contains(String.valueOf(nameOrId)) : objComp.getName() != null && objComp.getName().equals(String.valueOf(nameOrId)));
             return  nameMatches &&
                     idMatches &&
                     InteractionUtils.distanceTo2DHypotenuse(obj.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), ((GameObject) obj).sizeX(), ((GameObject) obj).sizeY(), 1) > oFurtherThanDistance &&
                     InteractionUtils.distanceTo2DHypotenuse(obj.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), ((GameObject) obj).sizeX(), ((GameObject) obj).sizeY(), 1) < oWithinDistance &&
-                    (oHasAction.equals("Any") || GameObjectUtils.hasAction(obj.getId(), oHasAction));
+                    (oHasAction.equals("Any") || GameObjectUtils.hasAction(objComp != null ? objComp.getId() : obj.getId(), oHasAction));
         };
     }
 
