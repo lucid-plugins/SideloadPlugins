@@ -2351,7 +2351,8 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             "itemEquipped", "distToPlayer", "distToWLoc", "distToNpc", "distToObj", "distToTItem", "tSinceAnim",
             "projsTargetRTile", "widgetHidden", "widgetSubHidden", "widgetText", "widgetSubText", "varbit", "varp",
             "npcWLoc", "objWLoc", "playerWLoc", "titemWLoc", "npcRLoc", "objRLoc", "playerRLoc", "titemRLoc",
-            "widgetSpriteId", "widgetSubSpriteId", "random", "objAnimId", "npcAnimId", "invSlotContains"
+            "widgetSpriteId", "widgetSubSpriteId", "random", "objAnimId", "npcAnimId", "invSlotContains", "widgetValue",
+            "widgetSubValue"
     );
 
     private String getDynamicGlobalVariableValue(String varName)
@@ -2534,25 +2535,25 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         if (varName.startsWith("widgetHidden"))
         {
             String[] params = valAsString.split("\\.");
-            return booleanAsString(InteractionUtils.isWidgetHidden(Integer.parseInt(params[0]), Integer.parseInt(params[1])));
+            return booleanAsString(InteractionUtils.isWidgetHidden((int) getValueFromString(params[0]), (int) getValueFromString(params[1])));
         }
 
         if (varName.startsWith("widgetSubHidden"))
         {
             String[] params = valAsString.split("\\.");
-            return booleanAsString(InteractionUtils.isWidgetHidden(Integer.parseInt(params[0]), Integer.parseInt(params[1], Integer.parseInt(params[2]))));
+            return booleanAsString(InteractionUtils.isWidgetHidden((int) getValueFromString(params[0]), (int) getValueFromString(params[1]), (int) getValueFromString(params[2])));
         }
 
         if (varName.startsWith("widgetText"))
         {
             String[] params = valAsString.split("\\.");
-            return InteractionUtils.getWidgetText(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
+            return InteractionUtils.getWidgetText((int) getValueFromString(params[0]), (int) getValueFromString(params[1]));
         }
 
         if (varName.startsWith("widgetSubText"))
         {
             String[] params = valAsString.split("\\.");
-            return InteractionUtils.getWidgetText(Integer.parseInt(params[0]), Integer.parseInt(params[1], Integer.parseInt(params[2])));
+            return InteractionUtils.getWidgetText((int) getValueFromString(params[0]), (int) getValueFromString(params[1]), (int) getValueFromString(params[2]));
         }
 
         if (varName.startsWith("varbit"))
@@ -2624,19 +2625,19 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         if (varName.startsWith("widgetSpriteId"))
         {
             String[] params = valAsString.split("\\.");
-            return intAsString(InteractionUtils.getWidgetSpriteId(Integer.parseInt(params[0]), Integer.parseInt(params[1])));
+            return intAsString(InteractionUtils.getWidgetSpriteId((int) getValueFromString(params[0]), (int) getValueFromString(params[1])));
         }
 
         if (varName.startsWith("widgetSubSpriteId"))
         {
             String[] params = valAsString.split("\\.");
-            return intAsString(InteractionUtils.getWidgetSpriteId(Integer.parseInt(params[0]), Integer.parseInt(params[1]), Integer.parseInt(params[2])));
+            return intAsString(InteractionUtils.getWidgetSpriteId((int) getValueFromString(params[0]), (int) getValueFromString(params[1]), (int) getValueFromString(params[2])));
         }
 
         if (varName.startsWith("random"))
         {
             String[] params = valAsString.split("\\.");
-            return intAsString(randomIntInclusive(Integer.parseInt(params[0]), Integer.parseInt(params[1])));
+            return intAsString(randomIntInclusive((int) getValueFromString(params[0]), (int) getValueFromString(params[1])));
         }
 
         if (varName.startsWith("objAnimId"))
@@ -2701,6 +2702,32 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
 
             return booleanAsString(false);
 
+        }
+
+        if (varName.startsWith("widgetValue"))
+        {
+            String[] params = valAsString.split("\\.");
+            String text = InteractionUtils.getWidgetText((int) getValueFromString(params[0]), (int) getValueFromString(params[1]));
+            text = text.replaceAll("[^0-9]", "");
+            if (isInteger(text))
+            {
+                return text;
+            }
+
+            return "-1";
+        }
+
+        if (varName.startsWith("widgetSubValue"))
+        {
+            String[] params = valAsString.split("\\.");
+            String text =  InteractionUtils.getWidgetText((int) getValueFromString(params[0]), (int) getValueFromString(params[1]), (int) getValueFromString(params[2]));
+            text = text.replaceAll("[^0-9]", "");
+            if (isInteger(text))
+            {
+                return text;
+            }
+
+            return "-1";
         }
 
         return "null";
