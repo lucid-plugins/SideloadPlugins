@@ -1082,6 +1082,10 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 MousePackets.queueClickPacket();
                 EthanApiPlugin.invoke(-1, packedId2, MenuAction.CC_OP.getId(), 2, -1, "", "", -1, -1);
                 break;
+            case INVOKE_MENU_ACTION:
+                MousePackets.queueClickPacket();
+                EthanApiPlugin.invoke((int) params.get(0), (int) params.get(1), (int) params.get(2), (int) params.get(3), -1, "", "", -1, -1);
+                break;
         }
     }
 

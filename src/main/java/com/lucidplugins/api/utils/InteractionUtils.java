@@ -137,7 +137,7 @@ public class InteractionUtils
             target = target.getChild(grandchildId);
         }
 
-        if (target != null)
+        if (target != null && target.getActions() != null)
         {
             MousePackets.queueClickPacket();
             WidgetPackets.queueWidgetAction(target, action);

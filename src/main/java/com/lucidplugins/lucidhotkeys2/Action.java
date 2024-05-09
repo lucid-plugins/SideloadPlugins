@@ -80,7 +80,8 @@ public enum Action
     CAST_SPELL_ON_TILE_ITEM(74, 3, "spellOnTItem"),
     CAST_SPELL_ON_ITEM(75, 3, "spellOnItem"),
     WIDGET_CC_OP_1(76, 3, "ccOp1"),
-    WIDGET_CC_OP_2(77, 3, "ccOp2")
+    WIDGET_CC_OP_2(77, 3, "ccOp2"),
+    INVOKE_MENU_ACTION(78, 5, "menuAction")
     ;
 
     int id;
