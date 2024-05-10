@@ -383,7 +383,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
      */
     private void handleHotkey(int hotkeyIndex)
     {
-        String rawConfig = cleanseInput(getHotkeyExpression(hotkeyIndex), true);
+        String rawConfig = cleanseInput(getHotkeyExpression(hotkeyIndex));
 
         if (!rawConfig.contains(";") || !rawConfig.contains("?"))
         {
@@ -3126,23 +3126,31 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 expression.contains("~=");
     }
 
-    private String cleanseInput(String input, boolean removeComments)
+    private String cleanseInput(String input)
     {
-        if (removeComments && input.contains(":"))
+        if (input.contains(":"))
         {
             StringBuilder commentRemovedSB = new StringBuilder();
             boolean commentStarted = false;
+            boolean escapeCharActivatedLastIteration = false;
             for (char c : input.toCharArray())
             {
-                if (c == ':')
+                boolean commentStateFlipped = false;
+                if (c == ':' && !escapeCharActivatedLastIteration)
                 {
                     commentStarted = !commentStarted;
+                    commentStateFlipped = true;
                 }
 
-                if (!commentStarted && c != ':')
+                if (!commentStarted && c != '`')
                 {
-                    commentRemovedSB.append(c);
+                    if (!commentStateFlipped)
+                    {
+                        commentRemovedSB.append(c);
+                    }
                 }
+
+                escapeCharActivatedLastIteration = c == '`';
             }
 
             input = commentRemovedSB.toString();
@@ -3251,7 +3259,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             return;
         }
 
-        String[] vars = cleanseInput(config.customVariables(), false).strip().split(";");
+        String[] vars = cleanseInput(config.customVariables()).strip().split(";");
 
         for (String token : vars)
         {
