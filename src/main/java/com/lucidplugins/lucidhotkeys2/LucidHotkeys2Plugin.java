@@ -1118,7 +1118,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         return (npc) -> {
             boolean any = nameOrId instanceof String && String.valueOf(nameOrId).equals("Any");
             NPCComposition comp = npc.getComposition();
-            if (npc.getComposition().transform() != null)
+            if (comp != null && npc.getComposition() != null && npc.getComposition().getConfigs() != null)
             {
                 comp = npc.getComposition().transform();
             }
