@@ -124,6 +124,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private int lastAlchTick = 0;
 
+    private int lastThrallTick = 0;
+
     private final Predicate<SlottedItem> foodFilterNoBlacklistItems = (item) -> {
         final ItemComposition itemComposition = client.getItemDefinition(item.getItem().getId());
         return itemComposition.getName() != null &&
@@ -358,6 +360,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             lastLootedTile = null;
             lastTickActive = client.getTickCount();
             nextReactionTick = client.getTickCount() + 1;
+        }
+
+        if (event.getType() == ChatMessageType.GAMEMESSAGE && (event.getMessage().contains("cannot cast that") || event.getMessage().contains("can't resurrect a thrall here")))
+        {
+            lastThrallTick = client.getTickCount();
         }
     }
 
@@ -973,6 +980,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
+        if (client.getTickCount() - lastThrallTick < 5 || GameObjectUtils.nearest(ObjectID.PORTAL_4525) != null)
+        {
+            return false;
+        }
+
         if (client.getVarbitValue(Varbits.RESURRECT_THRALL_COOLDOWN) > 0 || client.getVarbitValue(Varbits.RESURRECT_THRALL) == 1)
         {
             return false;
@@ -1001,6 +1013,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         {
             return false;
         }
+
+        lastThrallTick = client.getTickCount();
         MousePackets.queueClickPacket();
         EthanApiPlugin.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, -1, "", "", -1, -1);
 
