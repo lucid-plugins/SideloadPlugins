@@ -968,6 +968,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean handleThralls()
     {
+        if (!config.enableThralls())
+        {
+            return false;
+        }
+
         if (client.getVarbitValue(Varbits.RESURRECT_THRALL_COOLDOWN) > 0 || client.getVarbitValue(Varbits.RESURRECT_THRALL) == 1)
         {
             return false;
