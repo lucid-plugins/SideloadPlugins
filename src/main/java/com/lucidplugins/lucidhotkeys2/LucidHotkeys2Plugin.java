@@ -1123,7 +1123,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 comp = npc.getComposition().transform();
             }
 
-            boolean nameMatches = !(nameOrId instanceof String) || any || (nPartialMatching ? comp.getName() != null &&  comp.getName().contains(String.valueOf(nameOrId)) : comp.getName() != null && comp.getName().equals(String.valueOf(nameOrId)));
+            boolean nameMatches = !(nameOrId instanceof String) || any || (nPartialMatching ? comp != null && comp.getName() != null &&  comp.getName().contains(String.valueOf(nameOrId)) : comp != null && comp.getName() != null && comp.getName().equals(String.valueOf(nameOrId)));
             boolean idMatches = !(nameOrId instanceof Integer) || (npc.getId() == (int) nameOrId);
             return (nameMatches &&
                     idMatches &&
