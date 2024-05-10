@@ -109,6 +109,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean taskEnded = false;
 
+    private boolean tabbed = true;
+
+    private int lastCannonAttempt = 0;
+
     private List<NPC> npcsKilled = new ArrayList<>();
 
     private final List<String> prayerRestoreNames = List.of("Prayer potion", "Super restore", "Sanfew serum", "Blighted super restore", "Moonlight potion");
@@ -152,6 +156,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         expectedLootLocations.clear();
         npcsKilled.clear();
+        taskEnded = false;
+        tabbed = false;
     }
 
     @Override
@@ -204,6 +210,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 lastAlchTick = client.getTickCount();
                 expectedLootLocations.clear();
                 npcsKilled.clear();
+                taskEnded = false;
+                tabbed = false;
                 startLocation = client.getLocalPlayer().getWorldLocation();
                 autoCombatRunning = true;
             });
@@ -228,6 +236,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                     lastLootedTile = null;
                     expectedLootLocations.clear();
                     npcsKilled.clear();
+                    taskEnded = false;
+                    tabbed = false;
                     startLocation = null;
                 });
             }
@@ -285,6 +295,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         clientThread.invoke(() -> {
             lastTickActive = client.getTickCount();
             taskEnded = false;
+            tabbed = false;
             nextHpToRestoreAt = Math.max(1, config.minHp() + (config.minHpBuffer() > 0 ? random.nextInt(config.minHpBuffer() + 1) : 0));
             nextPrayerLevelToRestoreAt = Math.max(1, config.prayerPointsMin() + (config.prayerRestoreBuffer() > 0 ? random.nextInt(config.prayerRestoreBuffer() + 1) : 0));
         });
@@ -328,16 +339,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             {
                 expectedLootLocations.clear();
                 lastTickActive = 0;
-            }
-
-            if (config.teletabOnCompletion() && taskEnded)
-            {
-                Optional<SlottedItem> teletab = InventoryUtils.getAllSlotted(item -> {
-                    ItemComposition composition = client.getItemDefinition(item.getItem().getId());
-                    return Arrays.asList(composition.getInventoryActions()).contains("Break") && composition.getName().toLowerCase().contains("teleport");
-                }).stream().findFirst();
-
-                teletab.ifPresent(tab -> InventoryUtils.itemInteract(tab.getItem().getId(), "Break"));
             }
         }
 
@@ -1423,6 +1424,70 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private void updatePluginVars()
     {
+        if (config.cannonOnCompletion() && !InventoryUtils.contains("Cannon base") && taskEnded)
+        {
+            if (client.getTickCount() - lastCannonAttempt > 2)
+            {
+                if (InventoryUtils.getFreeSlots() < 3)
+                {
+                    List<SlottedItem> food = getFoodItemsNotInBlacklist();
+                    List<SlottedItem> karams = InventoryUtils.getAllSlotted(karambwanFilter);
+                    if (karams != null)
+                    {
+                        food.addAll(karams);
+                    }
+
+                    int slotsNeeded = 4 - InventoryUtils.getFreeSlots();
+                    if (food.size() >= slotsNeeded)
+                    {
+                        for (int i = 0; i < slotsNeeded; i++)
+                        {
+                            InventoryUtils.interactSlot(food.get(i).getSlot(), "Drop");
+                        }
+                    }
+                    else if (config.teletabOnCompletion() && !tabbed)
+                    {
+                        SlottedItem teletab = InventoryUtils.getAllSlotted(item -> {
+                            ItemComposition composition = client.getItemDefinition(item.getItem().getId());
+                            return Arrays.asList(composition.getInventoryActions()).contains("Break") && composition.getName().toLowerCase().contains("teleport");
+                        }).stream().findFirst().orElseGet(null);
+
+                        if (teletab != null)
+                        {
+                            InventoryUtils.itemInteract(teletab.getItem().getId(), "Break");
+                            tabbed = true;
+                        }
+                    }
+                }
+                else
+                {
+                    TileObject cannon = GameObjectUtils.nearest("Dwarf multicannon");
+                    if (cannon != null && !tabbed)
+                    {
+                        GameObjectUtils.interact(cannon, "Pick-up");
+                        lastCannonAttempt = client.getTickCount();
+                    }
+                }
+            }
+        }
+
+        if (config.teletabOnCompletion() && taskEnded && !tabbed)
+        {
+            if ((config.cannonOnCompletion() && InventoryUtils.contains("Cannon base")) || !config.cannonOnCompletion())
+            {
+                SlottedItem teletab = InventoryUtils.getAllSlotted(item -> {
+                    ItemComposition composition = client.getItemDefinition(item.getItem().getId());
+                    return Arrays.asList(composition.getInventoryActions()).contains("Break") && composition.getName().toLowerCase().contains("teleport");
+                }).stream().findFirst().orElseGet(null);
+
+                if (teletab != null)
+                {
+                    InventoryUtils.itemInteract(teletab.getItem().getId(), "Break");
+                    tabbed = true;
+                }
+            }
+        }
+
         if (client.getLocalPlayer().getAnimation() != -1)
         {
             if ((config.stopUpkeepOnTaskCompletion() && !taskEnded) || !config.stopUpkeepOnTaskCompletion())
@@ -2001,10 +2066,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 autoCombatRunning = !autoCombatRunning;
                 expectedLootLocations.clear();
                 npcsKilled.clear();
+                tabbed = false;
+                taskEnded = false;
 
                 if (autoCombatRunning)
                 {
-                    taskEnded = false;
                     startLocation = client.getLocalPlayer().getWorldLocation();
                 }
                 else
