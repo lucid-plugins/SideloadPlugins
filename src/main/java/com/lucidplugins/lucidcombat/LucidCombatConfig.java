@@ -1,5 +1,6 @@
 package com.lucidplugins.lucidcombat;
 
+import com.lucidplugins.api.spells.Spells;
 import lombok.Getter;
 import net.runelite.client.config.*;
 
@@ -398,11 +399,48 @@ public interface LucidCombatConfig extends Config
         return "";
     }
 
+    // Auto-thralls
+    @ConfigSection(name = "Thrall Settings", description = "Control settings for Thrall Summoning", position = 8, closedByDefault = true)
+    String thrallSection = "Thrall Settings";
+
+    @ConfigItem(name = "Enable Auto-Thralls", description = "Will auto-summon thralls as long as you've recently animated and have the runes for it", position = 0, keyName = "enableThralls", section = thrallSection)
+    default boolean enableThralls()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Thrall Type", description = "Select which type of thrall to summon", position = 1, keyName = "thrallType", section = thrallSection)
+    default ThrallType thrallType()
+    {
+        return ThrallType.GREATER_GHOST;
+    }
+
+    enum ThrallType
+    {
+        LESSER_GHOST(Spells.NecromancySpell.RESURRECT_LESSER_GHOST),
+        LESSER_SKELETON(Spells.NecromancySpell.RESURRECT_LESSER_SKELETON),
+        LESSER_ZOMBIE(Spells.NecromancySpell.RESURRECT_LESSER_ZOMBIE),
+        SUPERIOR_GHOST(Spells.NecromancySpell.RESURRECT_SUPERIOR_GHOST),
+        SUPERIOR_SKELETON(Spells.NecromancySpell.RESURRECT_SUPERIOR_SKELETON),
+        SUPERIOR_ZOMBIE(Spells.NecromancySpell.RESURRECT_SUPERIOR_ZOMBIE),
+        GREATER_GHOST(Spells.NecromancySpell.RESURRECT_GREATER_GHOST),
+        GREATER_SKELETON(Spells.NecromancySpell.RESURRECT_GREATER_SKELETON),
+        GREATER_ZOMBIE(Spells.NecromancySpell.RESURRECT_GREATER_ZOMBIE);
+
+        @Getter
+        final Spells.NecromancySpell thrallSpell;
+        ThrallType(Spells.NecromancySpell thrallSpell)
+        {
+            this.thrallSpell = thrallSpell;
+        }
+    }
+
     enum SlayerFinisher
     {
         BAG_OF_SALT("Bag of salt"), ICE_COOLER("Ice cooler"), FUNGICIDE_SPRAY("Fungicide spray"), ROCK_HAMMER("Rock hammer"), ROCK_THROWNHAMMER("Rock thrownhammer"), NONE("n/a");
 
         @Getter
+        final
         String itemName;
 
         SlayerFinisher(String itemName)
