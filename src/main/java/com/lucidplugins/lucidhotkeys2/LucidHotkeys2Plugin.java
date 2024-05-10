@@ -1230,7 +1230,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             }
 
             boolean idMatches = !(nameOrId instanceof Integer) || (obj.getId() == (int) nameOrId);
-            boolean nameMatches = !(nameOrId instanceof String) || any || (oPartialMatching ? objComp.getName() != null && objComp.getName().contains(String.valueOf(nameOrId)) : objComp.getName() != null && objComp.getName().equals(String.valueOf(nameOrId)));
+            boolean nameMatches = !(nameOrId instanceof String) || any || (oPartialMatching ? objComp != null && objComp.getName() != null && objComp.getName().contains(String.valueOf(nameOrId)) : objComp != null && objComp.getName() != null && objComp.getName().equals(String.valueOf(nameOrId)));
             return  nameMatches &&
                     idMatches &&
                     InteractionUtils.distanceTo2DHypotenuse(obj.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), ((GameObject) obj).sizeX(), ((GameObject) obj).sizeY(), 1) > oFurtherThanDistance &&
