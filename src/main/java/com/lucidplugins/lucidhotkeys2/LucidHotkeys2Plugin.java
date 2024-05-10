@@ -2027,7 +2027,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             case "isBankOpen":
                 return booleanAsString(BankUtils.isOpen());
             case "isGeOpen":
-                return booleanAsString(InteractionUtils.isWidgetHidden(465, 1));
+                return booleanAsString(!InteractionUtils.isWidgetHidden(465, 1));
             case "metronomeMax":
                 return intAsString(tickMetronomeMaxValue);
             case "metronomeTick":
