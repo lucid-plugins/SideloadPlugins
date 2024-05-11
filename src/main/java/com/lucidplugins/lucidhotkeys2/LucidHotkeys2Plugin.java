@@ -14,6 +14,7 @@ import com.lucidplugins.lucidhotkeys2.overlay.TileMarkersOverlay;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameTick;
@@ -2365,7 +2366,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             "projsTargetRTile", "widgetHidden", "widgetSubHidden", "widgetText", "widgetSubText", "varbit", "varp",
             "npcWLoc", "objWLoc", "playerWLoc", "titemWLoc", "npcRLoc", "objRLoc", "playerRLoc", "titemRLoc",
             "widgetSpriteId", "widgetSubSpriteId", "random", "objAnimId", "npcAnimId", "invSlotContains", "widgetValue",
-            "widgetSubValue"
+            "widgetSubValue", "isWLocReachable", "isWLocInteractable", "isObjInteractable"
     );
 
     private String getDynamicGlobalVariableValue(String varName)
@@ -2467,7 +2468,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         if (varName.startsWith("distToWLoc"))
         {
             String[] params = valAsString.split("\\|");
-            WorldPoint worldPoint = new WorldPoint(Integer.parseInt(params[0]), Integer.parseInt(params[1]), params.length > 2 ? Integer.parseInt(params[2]) : client.getLocalPlayer().getWorldLocation().getPlane());
+            WorldPoint worldPoint = new WorldPoint((int) getValueFromString(params[0]), (int) getValueFromString(params[1]), params.length > 2 ? (int) getValueFromString(params[2]) : client.getLocalPlayer().getWorldLocation().getPlane());
 
             return intAsString(InteractionUtils.approxDistanceTo(worldPoint, client.getLocalPlayer().getWorldLocation()));
         }
@@ -2579,8 +2580,8 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             return intAsString(client.getVarpValue((int) val));
         }
 
-        boolean isWLoc = varName.contains("WLoc");
-        boolean isRLoc = varName.contains("RLoc");
+        boolean isWLoc = varName.contains("WLoc") && !varName.contains("Reachable");
+        boolean isRLoc = varName.contains("RLoc") && !varName.contains("Reachable");
         boolean loc = isWLoc || isRLoc;
 
         if (loc)
@@ -2741,6 +2742,36 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             }
 
             return "-1";
+        }
+
+        if (varName.startsWith("isWLocReachable"))
+        {
+            String[] params = valAsString.split("\\|");
+            WorldPoint worldPoint = new WorldPoint((int) getValueFromString(params[0]), (int) getValueFromString(params[1]), params.length > 2 ? (int) getValueFromString(params[2]) : client.getLocalPlayer().getWorldLocation().getPlane());
+
+            return booleanAsString(InteractionUtils.isWalkable(worldPoint));
+        }
+
+        if (varName.startsWith("isWLocInteractable"))
+        {
+            String[] params = valAsString.split("\\|");
+            WorldPoint worldPoint = new WorldPoint((int) getValueFromString(params[0]), (int) getValueFromString(params[1]), params.length > 2 ? (int) getValueFromString(params[2]) : client.getLocalPlayer().getWorldLocation().getPlane());
+
+            return booleanAsString(Reachable.isInteractable(worldPoint.toWorldArea()));
+        }
+
+        if (varName.startsWith("isObjInteractable"))
+        {
+            TileObject object = nearestObject(valAsString);
+
+            if (object != null)
+            {
+                return booleanAsString(Reachable.isInteractable(new WorldArea(object.getWorldLocation(), ((GameObject)object).sizeX(), ((GameObject)object).sizeY())));
+            }
+            else
+            {
+                return booleanAsString(false);
+            }
         }
 
         return "null";
