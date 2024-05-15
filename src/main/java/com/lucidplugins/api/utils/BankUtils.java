@@ -29,6 +29,17 @@ public class BankUtils
         }
     }
 
+    public static boolean withdraw1(int id)
+    {
+        if (Bank.search().withId(id).first().isEmpty())
+        {
+            return false;
+        }
+
+        BankInteraction.useItem(id, "Withdraw-1");
+        return true;
+    }
+
     public static boolean withdrawAll(int id)
     {
         if (Bank.search().withId(id).first().isEmpty())
