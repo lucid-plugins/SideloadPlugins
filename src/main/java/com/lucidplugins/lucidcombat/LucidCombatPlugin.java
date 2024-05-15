@@ -18,9 +18,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.ItemStack;
 import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
@@ -1366,9 +1364,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
             (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
             (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
-
             Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
-            InteractionUtils.isWalkable(npc.getWorldLocation()) &&
+            (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
             InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange()
         );
     }
@@ -1386,13 +1383,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         return (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
-
                 (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
                 (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
                 (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
-
                 Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
-                InteractionUtils.isWalkable(npc.getWorldLocation()) &&
+                (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
                 InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();
     }
 
@@ -1456,7 +1451,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
             (npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0) &&
             Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
-            InteractionUtils.isWalkable(npc.getWorldLocation()) &&
+            (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
             InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange()
         );
     }

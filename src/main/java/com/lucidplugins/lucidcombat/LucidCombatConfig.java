@@ -82,6 +82,12 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
+    @ConfigItem(name = "Allow Unreachable NPCs", description = "Allows the plugin to target NPCs whose tile can't be reached", position = 12, keyName = "allowUnreachable", section = autoCombatSection)
+    default boolean allowUnreachable()
+    {
+        return false;
+    }
+
     @ConfigSection(name = "Loot Settings", description = "Control loot settings for auto-combat", position = 1, closedByDefault = true)
     String lootSection = "Loot Settings";
 
