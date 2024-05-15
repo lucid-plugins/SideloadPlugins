@@ -105,10 +105,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     @Getter
     private WorldPoint startLocation = null;
 
-    @Getter
-    private Map<LocalPoint, Integer> expectedLootLocations = new HashMap<>();
-
-    private LocalPoint lastLootedTile = null;
 
     private int nextLootAttempt = 0;
 
@@ -117,8 +113,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     private boolean tabbed = true;
 
     private int lastCannonAttempt = 0;
-
-    private List<NPC> npcsKilled = new ArrayList<>();
 
     private final List<String> prayerRestoreNames = List.of("Prayer potion", "Super restore", "Sanfew serum", "Blighted super restore", "Moonlight potion");
 
@@ -161,8 +155,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             overlayManager.add(panelOverlay);
         }
 
-        expectedLootLocations.clear();
-        npcsKilled.clear();
         taskEnded = false;
         tabbed = false;
     }
@@ -215,8 +207,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 clientThread.invoke(() -> configManager.setConfiguration("lucid-combat", "npcToFight", attackEntry.get().getNpc().getName()));
                 lastTickActive = client.getTickCount();
                 lastAlchTick = client.getTickCount();
-                expectedLootLocations.clear();
-                npcsKilled.clear();
                 taskEnded = false;
                 tabbed = false;
                 startLocation = client.getLocalPlayer().getWorldLocation();
@@ -240,9 +230,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                     autoCombatRunning = false;
                     lastTickActive = client.getTickCount();
                     lastTarget = null;
-                    lastLootedTile = null;
-                    expectedLootLocations.clear();
-                    npcsKilled.clear();
                     taskEnded = false;
                     tabbed = false;
                     startLocation = null;
@@ -344,20 +331,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
             if (config.stopUpkeepOnTaskCompletion() && taskEnded)
             {
-                expectedLootLocations.clear();
                 lastTickActive = 0;
             }
-        }
-
-        if (event.getType() == ChatMessageType.GAMEMESSAGE && (event.getMessage().contains("can't take items that other") || event.getMessage().contains("have enough inventory space")))
-        {
-            expectedLootLocations.keySet().removeIf(tile -> tile.equals(lastLootedTile));
         }
 
         if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("can't reach that"))
         {
             lastTarget = null;
-            lastLootedTile = null;
             lastTickActive = client.getTickCount();
             nextReactionTick = client.getTickCount() + 1;
         }
@@ -369,22 +349,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     }
 
     @Subscribe
-    private void onClientTick(ClientTick tick)
-    {
-        if (client.getLocalPlayer().getInteracting() != null && client.getLocalPlayer().getInteracting().isDead())
-        {
-            if (client.getLocalPlayer().getInteracting() instanceof NPC && !npcsKilled.contains((NPC)client.getLocalPlayer().getInteracting()))
-            {
-                npcsKilled.add((NPC)client.getLocalPlayer().getInteracting());
-            }
-        }
-    }
-
-    @Subscribe
     private void onGameTick(GameTick tick)
     {
-        expectedLootLocations.entrySet().removeIf(i -> client.getTickCount() > i.getValue() + 500);
-
         if (client.getGameState() != GameState.LOGGED_IN || BankUtils.isOpen())
         {
             return;
@@ -814,7 +780,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
 
             InteractionUtils.interactWithTileItem(nearest.getTileItem().getId(), "Take");
-            lastLootedTile = LocalPoint.fromWorld(client, nearest.getLocation());
 
             if (!client.getLocalPlayer().getLocalLocation().equals(LocalPoint.fromWorld(client, nearest.getLocation())))
             {
@@ -1496,39 +1461,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         );
     }
 
-    @Subscribe
-    private void onNpcLootReceived(NpcLootReceived event)
-    {
-        boolean match = false;
-        for (NPC killed : npcsKilled)
-        {
-            if (event.getNpc() == killed)
-            {
-                match = true;
-                break;
-            }
-        }
-
-        if (!match)
-        {
-            return;
-        }
-
-        npcsKilled.remove(event.getNpc());
-
-        if (event.getItems().size() > 0)
-        {
-            List<ItemStack> itemStacks = new ArrayList<>(event.getItems());
-            for (ItemStack itemStack : itemStacks)
-            {
-                if (expectedLootLocations.getOrDefault(itemStack.getLocation(), null) == null)
-                {
-                    expectedLootLocations.put(itemStack.getLocation(), client.getTickCount());
-                }
-            }
-        }
-    }
-
     private void updatePluginVars()
     {
         if (config.cannonOnCompletion() && !InventoryUtils.contains("Cannon base") && taskEnded)
@@ -2171,8 +2103,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             clientThread.invoke(() -> {
                 lastTickActive = client.getTickCount();
                 autoCombatRunning = !autoCombatRunning;
-                expectedLootLocations.clear();
-                npcsKilled.clear();
                 tabbed = false;
                 taskEnded = false;
 
