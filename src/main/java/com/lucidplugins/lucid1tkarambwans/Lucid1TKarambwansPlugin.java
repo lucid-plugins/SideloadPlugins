@@ -104,6 +104,10 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
     {
         resetToDefault();
         keyManager.unregisterKeyListener(this);
+        if (spaceDown)
+        {
+            spaceUp();
+        }
     }
 
     @Subscribe
@@ -144,7 +148,12 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
             return;
         }
 
-        TileObject range = GameObjectUtils.nearest(config.rangeId());
+        if (!bankExists())
+        {
+            return;
+        }
+
+        TileObject range = getRange();
         if (range == null)
         {
             return;
@@ -166,7 +175,7 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
 
         if (InteractionUtils.approxDistanceTo(range.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) != 1)
         {
-            InteractionUtils.useLastIdOnWallObject(ItemID.RAW_KARAMBWAN, GameObjectUtils.nearest(config.rangeId()));
+            InteractionUtils.useLastIdOnWallObject(ItemID.RAW_KARAMBWAN, getRange());
             return;
         }
 
@@ -187,8 +196,13 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
                 return;
             }
 
-            InteractionUtils.useLastIdOnWallObject(ItemID.RAW_KARAMBWAN, GameObjectUtils.nearest(config.rangeId()));
+            InteractionUtils.useLastIdOnWallObject(ItemID.RAW_KARAMBWAN, getRange());
         }
+    }
+
+    public TileObject getRange()
+    {
+        return config.cookingLocation() == Lucid1TKarambwansConfig.CookingLocation.CUSTOM ? GameObjectUtils.nearest(config.rangeId()) : GameObjectUtils.nearest(config.cookingLocation().getRangeId());
     }
 
     @Subscribe
@@ -201,6 +215,21 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
 
         if (client.getGameState() != GameState.LOGGED_IN)
         {
+            return;
+        }
+
+        if (!bankExists())
+        {
+            MessageUtils.addMessage(client, "No nearby bank.");
+            running = false;
+            return;
+        }
+
+        TileObject range = getRange();
+        if (range == null)
+        {
+            MessageUtils.addMessage(client, "No nearby range.");
+            running = false;
             return;
         }
 
@@ -287,26 +316,55 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
             return;
         }
 
-        switch (config.bankType())
+        if (config.cookingLocation() == Lucid1TKarambwansConfig.CookingLocation.CUSTOM)
         {
-            case OBJECT:
-                GameObjectUtils.interact(GameObjectUtils.nearest(config.bankName()), config.bankAction());
-                break;
-            case NPC:
-                NpcUtils.interact(NpcUtils.getNearestNpc(config.bankName()), config.bankAction());
-                break;
+            switch (config.bankType())
+            {
+                case OBJECT:
+                    GameObjectUtils.interact(GameObjectUtils.nearest(config.bankName()), config.bankAction());
+                    break;
+                case NPC:
+                    NpcUtils.interact(NpcUtils.getNearestNpc(config.bankName()), config.bankAction());
+                    break;
+            }
+        }
+        else
+        {
+            switch (config.cookingLocation().getBankingType())
+            {
+                case OBJECT:
+                    GameObjectUtils.interact(GameObjectUtils.nearest(config.cookingLocation().getBankName()), config.cookingLocation().getBankAction());
+                    break;
+                case NPC:
+                    NpcUtils.interact(NpcUtils.getNearestNpc(config.cookingLocation().getBankName()), config.cookingLocation().getBankAction());
+                    break;
+            }
         }
     }
 
     public boolean bankExists()
     {
-        switch (config.bankType())
+        if (config.cookingLocation() == Lucid1TKarambwansConfig.CookingLocation.CUSTOM)
         {
-            case OBJECT:
-                return GameObjectUtils.nearest(config.bankName()) != null;
-            case NPC:
-                return NpcUtils.getNearestNpc(config.bankName()) != null;
+            switch (config.bankType())
+            {
+                case OBJECT:
+                    return GameObjectUtils.nearest(config.bankName()) != null;
+                case NPC:
+                    return NpcUtils.getNearestNpc(config.bankName()) != null;
+            }
         }
+        else
+        {
+            switch (config.cookingLocation().getBankingType())
+            {
+                case OBJECT:
+                    return GameObjectUtils.nearest(config.cookingLocation().getBankName()) != null;
+                case NPC:
+                    return NpcUtils.getNearestNpc(config.cookingLocation().getBankName()) != null;
+            }
+        }
+
         return false;
     }
 
@@ -340,6 +398,10 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
         if (config.autoToggle().matches(e))
         {
             clientThread.invoke(() -> {
+                if (spaceDown)
+                {
+                    spaceUp();
+                }
                 running = !running;
                 resetToDefault();
             });

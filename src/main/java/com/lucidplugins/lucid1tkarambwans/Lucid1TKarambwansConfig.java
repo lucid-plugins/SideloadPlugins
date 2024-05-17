@@ -1,5 +1,6 @@
 package com.lucidplugins.lucid1tkarambwans;
 
+import lombok.Getter;
 import net.runelite.client.config.*;
 
 @ConfigGroup("lucid-1tkarambwans")
@@ -36,11 +37,30 @@ public interface Lucid1TKarambwansConfig extends Config
         return Keybind.NOT_SET;
     }
 
+    @ConfigItem(name = "Cooking Location",
+            description = "Select a pre-defined location or use custom values",
+            position = 2,
+            keyName = "cookingLocation",
+            section = autoSection
+    )
+    default CookingLocation cookingLocation()
+    {
+        return CookingLocation.CUSTOM;
+    }
+
+    // Custom section
+    @ConfigSection(
+            name = "Custom Location Settings",
+            description = "Change the main auto settings",
+            position = 1,
+            closedByDefault = true
+    )
+    String customSection = "Custom Location Settings";
     @ConfigItem(name = "Cooking Range ID",
             description = "ID of cooking range to 1 tick on (Myths guild range is default)",
-            position = 2,
+            position = 0,
             keyName = "rangeId",
-            section = autoSection
+            section = customSection
     )
     default int rangeId()
     {
@@ -50,9 +70,9 @@ public interface Lucid1TKarambwansConfig extends Config
     @ConfigItem(
             name = "Bank Type",
             description = "Is the bank an npc or object?",
-            position = 3,
+            position = 1,
             keyName = "bankType",
-            section = autoSection
+            section = customSection
 
     )
     default BankingType bankType()
@@ -62,9 +82,9 @@ public interface Lucid1TKarambwansConfig extends Config
 
     @ConfigItem(name = "Bank Name",
             description = "Name of the Bank object/npc you are using",
-            position = 4,
+            position = 2,
             keyName = "bankName",
-            section = autoSection
+            section = customSection
     )
     default String bankName()
     {
@@ -73,9 +93,9 @@ public interface Lucid1TKarambwansConfig extends Config
 
     @ConfigItem(name = "Bank Action",
             description = "Name of the action that opens the bank",
-            position = 5,
+            position = 3,
             keyName = "bankAction",
-            section = autoSection
+            section = customSection
     )
     default String bankAction()
     {
@@ -86,7 +106,7 @@ public interface Lucid1TKarambwansConfig extends Config
     @ConfigSection(
             name = "Anti-ban Settings",
             description = "Change the anti-ban settings",
-            position = 1,
+            position = 2,
             closedByDefault = true
     )
     String antibanSection = "Anti-ban Settings";
@@ -144,6 +164,31 @@ public interface Lucid1TKarambwansConfig extends Config
     default int missedPerHour()
     {
         return 50;
+    }
+
+    enum CookingLocation
+    {
+        CATHERBY(26181, "Bank booth", "Bank", BankingType.OBJECT),
+        MYTHS_GUILD(31631, "Bank chest", "Use", BankingType.OBJECT),
+        HOSIDIUS_KITCHEN(21302, "Bank chest", "Use", BankingType.OBJECT),
+        ROGUES_DEN(43475, "Emerald Benedict", "Bank", BankingType.NPC),
+        CUSTOM(-1, "", "", null);
+
+        @Getter
+        final int rangeId;
+        @Getter
+        final String bankName;
+        @Getter
+        final String bankAction;
+        @Getter
+        final BankingType bankingType;
+        CookingLocation(int rangeId, String bankName, String bankAction, BankingType bankingType)
+        {
+            this.rangeId = rangeId;
+            this.bankName = bankName;
+            this.bankAction = bankAction;
+            this.bankingType = bankingType;
+        }
     }
 
     enum BankingType
