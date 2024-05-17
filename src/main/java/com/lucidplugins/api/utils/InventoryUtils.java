@@ -11,6 +11,8 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -33,43 +35,235 @@ public class InventoryUtils
 
     public static List<SlottedItem> getAllSlotted()
     {
-        return Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).collect(Collectors.toList());
+        return BankUtils.isOpen() ? getItemsSlotted(15, 3) : Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).collect(Collectors.toList());
     }
 
     public static List<SlottedItem> getAllSlotted(Predicate<SlottedItem> filter)
     {
-        return Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).filter(filter).collect(Collectors.toList());
+        return BankUtils.isOpen() ? getItemsSlotted(15, 3).stream().filter(filter).collect(Collectors.toList()) :
+                Inventory.search().result().stream().map(item -> new SlottedItem(item.getItemId(), item.getItemQuantity(), item.getIndex())).filter(filter).collect(Collectors.toList());
     }
 
     public static List<Item> getAll()
     {
-        return Inventory.search().result().stream().map(item -> new Item(item.getItemId(), item.getItemQuantity())).collect(Collectors.toList());
+        return BankUtils.isOpen() ? getItems(15, 3) : Inventory.search().result().stream().map(item -> new Item(item.getItemId(), item.getItemQuantity())).collect(Collectors.toList());
     }
 
     public static List<Item> getAll(Predicate<Item> filter)
     {
-        return Inventory.search().result().stream().map(item -> new Item(item.getItemId(), item.getItemQuantity())).filter(filter).collect(Collectors.toList());
+
+        return BankUtils.isOpen() ? getItems(15, 3).stream().filter(filter).collect(Collectors.toList()) : Inventory.search().result().stream().map(item -> new Item(item.getItemId(), item.getItemQuantity())).filter(filter).collect(Collectors.toList());
     }
 
     public static boolean contains(String itemName)
     {
-        return Inventory.search().nameContains(itemName).first().isPresent();
+        return BankUtils.isOpen() ? getItemIndex(itemName, 15, 3) != -1 : Inventory.search().nameContains(itemName).first().isPresent();
     }
 
     public static boolean contains(int[] ids)
     {
-        List<Integer> intIdList = Arrays.stream(ids).boxed().collect(Collectors.toList());
-        return !Inventory.search().idInList(intIdList).result().isEmpty();
+        for (int id : ids)
+        {
+            if (BankUtils.isOpen() && getItemIndex(id, 15, 3) != -1)
+            {
+                return true;
+            }
+            else if (InventoryUtils.contains(id))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean contains(int id)
     {
-        return !Inventory.search().idInList(List.of(id)).result().isEmpty();
+        return BankUtils.isOpen() ? getItemIndex(id, 15, 3) != -1 : !Inventory.search().idInList(List.of(id)).result().isEmpty();
     }
 
     public static int getFreeSlots()
     {
-        return Inventory.getEmptySlots();
+        return BankUtils.isOpen() ? getInBankFreeSlots() : Inventory.getEmptySlots();
+    }
+
+    public static int getInBankFreeSlots()
+    {
+        return getFreeSlots(15, 3);
+    }
+
+    public static int getFreeSlots(int parentId, int childId)
+    {
+        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        if (inventoryWidget == null)
+        {
+            return 0;
+        }
+
+        Widget[] inventoryItems = inventoryWidget.getDynamicChildren();
+        if (inventoryItems == null)
+        {
+            return 0;
+        }
+
+        int freeSlots = 0;
+
+        for (Widget inventoryItem : inventoryItems)
+        {
+            if (inventoryItem == null)
+            {
+                freeSlots++;
+                continue;
+            }
+
+            if (inventoryItem.getName().isBlank())
+            {
+                freeSlots++;
+                continue;
+            }
+
+            if (inventoryItem.getItemId() == -1 || inventoryItem.getItemId() == 6512)
+            {
+                freeSlots++;
+            }
+        }
+
+        return freeSlots;
+    }
+
+    public static int getItemCount(Object id, int parentId, int childId)
+    {
+        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        if (inventoryWidget == null)
+        {
+            return 0;
+        }
+
+        int count = 0;
+
+        Widget[] inventoryItems = inventoryWidget.getDynamicChildren();
+        if (inventoryItems == null)
+        {
+            return 0;
+        }
+
+        for (Widget inventoryItem : inventoryItems)
+        {
+            if (inventoryItem == null)
+            {
+                continue;
+            }
+
+            if (inventoryItem.getName().isBlank())
+            {
+                continue;
+            }
+
+            if (id instanceof Integer && inventoryItem.getItemId() != (int)id)
+            {
+                continue;
+            }
+            else if (id instanceof String && !inventoryItem.getName().equals(String.valueOf(id)))
+            {
+                continue;
+            }
+
+            count += inventoryItem.getItemQuantity();
+        }
+
+        return count;
+    }
+
+    public static List<Item> getItems(int parentId, int childId)
+    {
+        List<Item> items = new ArrayList<>();
+        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        if (inventoryWidget == null)
+        {
+            return List.of();
+        }
+
+        Widget[] inventoryItems = inventoryWidget.getDynamicChildren();
+        if (inventoryItems == null)
+        {
+            return List.of();
+        }
+
+        for (Widget widget : inventoryItems)
+        {
+            if (widget != null && widget.getName() != null && widget.getItemId() != -1)
+            {
+                items.add(new Item(widget.getItemId(), widget.getItemQuantity()));
+            }
+        }
+
+        return items;
+    }
+
+    public static List<SlottedItem> getItemsSlotted(int parentId, int childId)
+    {
+        List<SlottedItem> items = new ArrayList<>();
+        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        if (inventoryWidget == null)
+        {
+            return List.of();
+        }
+
+        Widget[] inventoryItems = inventoryWidget.getDynamicChildren();
+        if (inventoryItems == null)
+        {
+            return List.of();
+        }
+
+        for (Widget widget : inventoryItems)
+        {
+            if (widget != null && widget.getName() != null && widget.getItemId() != -1)
+            {
+                items.add(new SlottedItem(widget.getItemId(), widget.getItemQuantity(), widget.getIndex()));
+            }
+        }
+
+        return items;
+    }
+
+    public static int getItemIndex(Object id, int parentId, int childId)
+    {
+        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        if (inventoryWidget == null)
+        {
+            return -1;
+        }
+
+        Widget[] inventoryItems = inventoryWidget.getDynamicChildren();
+        if (inventoryItems == null)
+        {
+            return -1;
+        }
+
+        for (int i = 0; i < inventoryItems.length; i++)
+        {
+            if (inventoryItems[i] == null)
+            {
+                continue;
+            }
+
+            if (inventoryItems[i].getName().isBlank())
+            {
+                continue;
+            }
+
+            if (id instanceof Integer && inventoryItems[i].getItemId() != (int)id)
+            {
+                continue;
+            }
+            else if (id instanceof String && !inventoryItems[i].getName().equals(String.valueOf(id)))
+            {
+                continue;
+            }
+
+            return i;
+        }
+
+        return -1;
     }
 
     public static boolean itemHasAction(int itemId, String action)
@@ -209,14 +403,10 @@ public class InventoryUtils
 
     public static Item getFirstItem(String name)
     {
-        Widget itemWidget = Inventory.search().nameContains(name).first().orElse(null);
-        Item item = null;
-
-        if (itemWidget != null)
-        {
-            item = new Item(itemWidget.getItemId(), itemWidget.getItemQuantity());
-        }
-        return item;
+        return getAll(item2 -> {
+           ItemComposition composition = EthanApiPlugin.getClient().getItemDefinition(item2.getId());
+           return composition.getName().contains(name);
+        }).stream().findFirst().orElse(null);
     }
 
     public static void wieldItem(int id)
@@ -226,10 +416,13 @@ public class InventoryUtils
 
     public static int count(String name)
     {
-        List<SlottedItem> itemsToCount = InventoryUtils.getAllSlotted(item -> {
+        Predicate<SlottedItem> filter = (item) -> {
             final ItemComposition itemDef = EthanApiPlugin.getClient().getItemDefinition(item.getItem().getId());
             return itemDef.getName() != null && itemDef.getName().toLowerCase().contains(name.toLowerCase());
-        });
+        };
+        List<SlottedItem> itemsToCount = BankUtils.isOpen() ?
+                getItemsSlotted(15, 3).stream().filter(filter).collect(Collectors.toList()) :
+                getAllSlotted(filter);
         int count = 0;
         for (SlottedItem i : itemsToCount)
         {
@@ -243,7 +436,9 @@ public class InventoryUtils
 
     public static int count(int id)
     {
-        List<SlottedItem> itemsToCount = InventoryUtils.getAllSlotted(item -> item.getItem().getId() == id);
+        List<SlottedItem> itemsToCount = BankUtils.isOpen() ?
+                getItemsSlotted(15, 3).stream().filter(item -> item.getItem().getId() == id).collect(Collectors.toList()) :
+                getAllSlotted(item -> item.getItem().getId() == id);
 
         int count = 0;
         for (SlottedItem i : itemsToCount)
