@@ -244,6 +244,13 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
                     BankUtils.close();
                     lastBankTick = client.getTickCount();
                 }
+                else
+                {
+                    MessageUtils.addMessage(client, "Out of Karambwans to cook.");
+                    resetToDefault();
+                    BankUtils.close();
+                    running = false;
+                }
             }
         }
         else if (!InventoryUtils.contains(ItemID.RAW_KARAMBWAN))
