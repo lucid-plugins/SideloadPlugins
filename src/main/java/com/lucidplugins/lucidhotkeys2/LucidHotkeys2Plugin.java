@@ -35,18 +35,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 
 @Extension
@@ -3336,13 +3334,12 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 configManager.setConfiguration(GROUP_NAME, "useAsBot" + (i + 1), loadedConfig.getUseAsBot()[i]);
             }
 
-            JOptionPane.showMessageDialog(null, "Successfully loaded preset '" + presetNameFormatted + "'", "Preset Load Success", INFORMATION_MESSAGE);
-
+            InteractionUtils.showNonModalMessageDialog("Successfully loaded preset '" + presetNameFormatted + "'", "Preset Load Success");
             initUserVariables();
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Preset Load Error", WARNING_MESSAGE);
+            InteractionUtils.showNonModalMessageDialog(e.getMessage(), "Preset Load Error");
             log.error(e.getMessage());
         }
     }
@@ -3385,11 +3382,11 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         {
             fw.write(gson.toJson(exportableConfig2));
             fw.close();
-            JOptionPane.showMessageDialog(null, "Successfully saved preset '" + presetNameFormatted + "' at " + saveFile.getAbsolutePath(), "Preset Save Success", INFORMATION_MESSAGE);
+            InteractionUtils.showNonModalMessageDialog("Successfully saved preset '" + presetNameFormatted + "' at " + saveFile.getAbsolutePath(), "Preset Save Success");
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Save Preset Error", WARNING_MESSAGE);
+            InteractionUtils.showNonModalMessageDialog(e.getMessage(), "Save Preset Error");
             log.error(e.getMessage());
         }
     }

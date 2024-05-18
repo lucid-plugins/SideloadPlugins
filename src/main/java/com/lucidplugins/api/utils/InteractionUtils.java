@@ -11,6 +11,7 @@ import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -538,5 +539,20 @@ public class InteractionUtils
         {
             TileItemPackets.queueTileItemAction(item, false);
         }
+    }
+
+    public static void showNonModalMessageDialog(String message, String title)
+    {
+        JOptionPane pane = new JOptionPane();
+        pane.setComponentOrientation(JOptionPane.getRootFrame().getComponentOrientation());
+        pane.setMessage(message);
+        JDialog dialog = pane.createDialog(pane, title);
+
+        pane.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, ignored -> {
+            dialog.dispose();
+        });
+
+        dialog.setModal(false);
+        dialog.setVisible(true);
     }
 }

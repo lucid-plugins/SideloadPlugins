@@ -6,10 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.inject.Provides;
 import com.lucidplugins.api.item.SlottedItem;
-import com.lucidplugins.api.utils.CombatUtils;
-import com.lucidplugins.api.utils.EquipmentUtils;
-import com.lucidplugins.api.utils.InventoryUtils;
-import com.lucidplugins.api.utils.MessageUtils;
+import com.lucidplugins.api.utils.*;
 import net.runelite.api.*;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.widgets.Widget;
@@ -26,9 +23,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.inject.Inject;
-import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,8 +32,6 @@ import java.io.FileWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
 
 @Extension
@@ -633,11 +626,11 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
         {
             fw.write(gson.toJson(exportableConfig));
             fw.close();
-            JOptionPane.showMessageDialog(null, "Successfully saved preset '" + presetNameFormatted + "' at " + saveFile.getAbsolutePath(), "Preset Save Success", INFORMATION_MESSAGE);
+            InteractionUtils.showNonModalMessageDialog("Successfully saved preset '" + presetNameFormatted + "' at " + saveFile.getAbsolutePath(), "Preset Save Success");
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Save Preset Error", WARNING_MESSAGE);
+            InteractionUtils.showNonModalMessageDialog(e.getMessage(), "Save Preset Error");
             log.error(e.getMessage());
         }
     }
@@ -673,11 +666,11 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
 
             }
 
-            JOptionPane.showMessageDialog(null, "Successfully loaded preset '" + presetNameFormatted + "'", "Preset Load Success", INFORMATION_MESSAGE);
+            InteractionUtils.showNonModalMessageDialog("Successfully loaded preset '" + presetNameFormatted + "'", "Preset Load Success");
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Preset Load Error", WARNING_MESSAGE);
+            InteractionUtils.showNonModalMessageDialog(e.getMessage(), "Preset Load Error");
             log.error(e.getMessage());
         }
     }
