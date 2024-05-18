@@ -1479,18 +1479,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                             InventoryUtils.interactSlot(food.get(i).getSlot(), "Drop");
                         }
                     }
-                    else if (config.teletabOnCompletion() && !tabbed)
+                    else if (config.useItemOnCompletion() && !tabbed)
                     {
-                        SlottedItem teletab = InventoryUtils.getAllSlotted(item -> {
-                            ItemComposition composition = client.getItemDefinition(item.getItem().getId());
-                            return Arrays.asList(composition.getInventoryActions()).contains("Break") && composition.getName().toLowerCase().contains("teleport");
-                        }).stream().findFirst().orElseGet(null);
-
-                        if (teletab != null)
-                        {
-                            InventoryUtils.itemInteract(teletab.getItem().getId(), "Break");
-                            tabbed = true;
-                        }
+                        useTeleportItem();
                     }
                 }
                 else
@@ -1505,20 +1496,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
         }
 
-        if (config.teletabOnCompletion() && taskEnded && !tabbed)
+        if (config.useItemOnCompletion() && taskEnded && !tabbed)
         {
             if ((config.cannonOnCompletion() && InventoryUtils.contains("Cannon base")) || !config.cannonOnCompletion())
             {
-                SlottedItem teletab = InventoryUtils.getAllSlotted(item -> {
-                    ItemComposition composition = client.getItemDefinition(item.getItem().getId());
-                    return Arrays.asList(composition.getInventoryActions()).contains("Break") && composition.getName().toLowerCase().contains("teleport");
-                }).stream().findFirst().orElseGet(null);
-
-                if (teletab != null)
-                {
-                    InventoryUtils.itemInteract(teletab.getItem().getId(), "Break");
-                    tabbed = true;
-                }
+                useTeleportItem();
             }
         }
 
@@ -1538,6 +1520,37 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         if (nextPrayerLevelToRestoreAt <= 0)
         {
             nextPrayerLevelToRestoreAt = Math.max(1, config.prayerPointsMin() + (config.prayerRestoreBuffer() > 0 ? random.nextInt(config.prayerRestoreBuffer() + 1) : 0));
+        }
+    }
+
+    private void useTeleportItem()
+    {
+        String[] itemNames = config.itemNames().split(",");
+        String[] actionNames = config.itemActions().split(",");
+        if (itemNames.length != actionNames.length)
+        {
+            MessageUtils.addMessage(client, "Length mismatch. You have " + itemNames.length + " items listed and " + actionNames.length + " item actions.");
+            return;
+        }
+
+        if (itemNames.length > 0)
+        {
+            for (int i = 0; i < itemNames.length; i++)
+            {
+                final String name = itemNames[i].strip();
+                final String action = actionNames[i].strip();
+
+                SlottedItem itemToUse = InventoryUtils.getAllSlotted(item -> {
+                    ItemComposition composition = client.getItemDefinition(item.getItem().getId());
+                    return Arrays.asList(composition.getInventoryActions()).contains(action) && composition.getName().contains(name);
+                }).stream().findFirst().orElseGet(null);
+
+                if (itemToUse != null)
+                {
+                    InventoryUtils.itemInteract(itemToUse.getItem().getId(), action);
+                    tabbed = true;
+                }
+            }
         }
     }
 

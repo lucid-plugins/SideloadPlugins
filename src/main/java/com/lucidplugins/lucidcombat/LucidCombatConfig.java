@@ -168,43 +168,55 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
-    @ConfigItem(name = "Use Teletab On Task Complete", description = "Will use any teletab available in your inventory when the slayer task is done", position = 2, keyName = "teletabOnCompletion", section = slayerSection)
-    default boolean teletabOnCompletion()
+    @ConfigItem(name = "Use Item On Task Complete", description = "Will use a custom item available in your inventory when the slayer task is done", position = 2, keyName = "useItemOnCompletion", section = slayerSection)
+    default boolean useItemOnCompletion()
     {
         return false;
     }
 
-    @ConfigItem(name = "Take Cannon On Task Complete", description = "Will attempt to take the closest cannon on task completion", position = 3, keyName = "cannonOnCompletion", section = slayerSection)
+    @ConfigItem(name = "Item Name(s) To Use", description = "Will use any of the items available in your inventory when the slayer task is done. Separate multiple values with commas. Case sensitive.", position = 3, keyName = "itemNames", section = slayerSection)
+    default String itemNames()
+    {
+        return "Teleport to house";
+    }
+
+    @ConfigItem(name = "Item Action(s) To Use", description = "Will use this action on the chosen item. Each item must have only 1 action paired with it.", position = 4, keyName = "itemActions", section = slayerSection)
+    default String itemActions()
+    {
+        return "Break";
+    }
+
+    @ConfigItem(name = "Take Cannon On Task Complete", description = "Will attempt to take the closest cannon on task completion", position = 5, keyName = "cannonOnCompletion", section = slayerSection)
     default boolean cannonOnCompletion()
     {
         return false;
     }
 
-    @ConfigItem(name = "Slayer NPC Finishing Item", description = "Will auto use the defined item on your target when they get below % health to finish them off. Works regardless of auto-combat state if enabled", position = 4, keyName = "autoSlayerFinisher", section = slayerSection)
+    @ConfigItem(name = "Slayer NPC Finishing Item", description = "Will auto use the defined item on your target when they get below % health to finish them off. Works regardless of auto-combat state if enabled", position = 6, keyName = "autoSlayerFinisher", section = slayerSection)
     default boolean autoSlayerFinisher()
     {
         return false;
     }
 
-    @ConfigItem(name = "Finishing Item", description = "This is the item you need to use to full-kill your slayer target.", position = 5, keyName = "slayerFinisherItem", section = slayerSection)
+    @ConfigItem(name = "Finishing Item", description = "This is the item you need to use to full-kill your slayer target.", position = 7, keyName = "slayerFinisherItem", section = slayerSection)
     default SlayerFinisher slayerFinisherItem()
     {
         return SlayerFinisher.NONE;
     }
 
-    @ConfigItem(name = "Finish Below HP %", description = "Will auto-use the slayer finisher when your target is less than this % of health remaining", position = 6, keyName = "slayerFinisherHpPercent", section = slayerSection)
+    @ConfigItem(name = "Finish Below HP %", description = "Will auto-use the slayer finisher when your target is less than this % of health remaining", position = 8, keyName = "slayerFinisherHpPercent", section = slayerSection)
     default int slayerFinisherHpPercent()
     {
         return 10;
     }
 
-    @ConfigItem(name = "Equip Slaughter Bracelets", description = "Will equip any Bracelets of Slaughter from your inventory when the current one disintegrates.", position = 7, keyName = "equipSlaughterBracelet", section = slayerSection)
+    @ConfigItem(name = "Equip Slaughter Bracelets", description = "Will equip any Bracelets of Slaughter from your inventory when the current one disintegrates.", position = 9, keyName = "equipSlaughterBracelet", section = slayerSection)
     default boolean equipSlaughterBracelet()
     {
         return false;
     }
 
-    @ConfigItem(name = "Equip Expeditious Bracelets", description = "Will equip any Expeditious Bracelets from your inventory when the current one disintegrates.", position = 8, keyName = "equipExpeditiousBracelet", section = slayerSection)
+    @ConfigItem(name = "Equip Expeditious Bracelets", description = "Will equip any Expeditious Bracelets from your inventory when the current one disintegrates.", position = 10, keyName = "equipExpeditiousBracelet", section = slayerSection)
     default boolean equipExpeditiousBracelet()
     {
         return false;
