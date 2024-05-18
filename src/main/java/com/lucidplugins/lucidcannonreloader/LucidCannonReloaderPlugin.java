@@ -114,7 +114,7 @@ public class LucidCannonReloaderPlugin extends Plugin
             }
         }
 
-        if (!(InventoryUtils.contains("Cannonball")) || InventoryUtils.contains("Granite cannonball"))
+        if (!(InventoryUtils.contains("Cannonball") || InventoryUtils.contains("Granite cannonball")))
         {
             if (ticksSinceLastReloadAttempt() > 15 && client.getGameState() == GameState.LOGGED_IN)
             {
