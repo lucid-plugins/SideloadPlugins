@@ -88,6 +88,18 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
+    @ConfigItem(name = "Ticks Until Idle", description = "How many ticks until the plugin considers you idle and stops your boosts and thralls upkeep and deactivates prayers. (100 ticks in 1 minute) HP and Pray upkeep will still work regardless of idleness.", position = 13, keyName = "inactiveTicks", section = autoCombatSection)
+    default int inactiveTicks()
+    {
+        return 200;
+    }
+
+    @ConfigItem(name = "Deactivate all prayers on idle", description = "Deactiates any active prayers if you go idle", position = 14, keyName = "deactivatePrayersOnIdle", section = autoCombatSection)
+    default boolean deactivatePrayersOnIdle()
+    {
+        return false;
+    }
+
     @ConfigSection(name = "Loot Settings", description = "Control loot settings for auto-combat", position = 1, closedByDefault = true)
     String lootSection = "Loot Settings";
 

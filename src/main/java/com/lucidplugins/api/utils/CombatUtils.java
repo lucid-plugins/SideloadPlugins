@@ -58,6 +58,11 @@ public class CombatUtils
 
     public static void deactivatePrayers(boolean protectionOnly)
     {
+        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0)
+        {
+            return;
+        }
+
         if (protectionOnly)
         {
             if (EthanApiPlugin.getClient().isPrayerActive(Prayer.PROTECT_FROM_MISSILES))

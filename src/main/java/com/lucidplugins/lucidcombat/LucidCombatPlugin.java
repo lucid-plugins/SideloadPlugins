@@ -371,9 +371,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         boolean actionTakenThisTick = restorePrimaries();
 
         // Stop other upkeep besides HP if we haven't animated in the last minute
-        if (getInactiveTicks() > 200)
+        if (getInactiveTicks() > config.inactiveTicks())
         {
-            secondaryStatus = "Idle for > 2 min";
+            if (config.deactivatePrayersOnIdle())
+            {
+                CombatUtils.deactivatePrayers(false);
+            }
+
+            secondaryStatus = "Idle for > " + config.inactiveTicks() + " ticks";
             return;
         }
 
