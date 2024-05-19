@@ -1,6 +1,7 @@
 package com.lucidplugins.lucidcombat;
 
 import com.example.EthanApiPlugin.Collections.ETileItem;
+import com.example.EthanApiPlugin.Collections.TileItems;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.Packets.MousePackets;
 import com.google.inject.Provides;
@@ -782,7 +783,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 lastTarget = client.getLocalPlayer().getInteracting();
             }
 
-            InteractionUtils.interactWithTileItem(nearest.getTileItem().getId(), "Take");
+            InteractionUtils.interactWithTileItem(nearest, "Take");
 
             if (!client.getLocalPlayer().getLocalLocation().equals(LocalPoint.fromWorld(client, nearest.getLocation())))
             {
@@ -875,7 +876,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 antiLureActivated = InteractionUtils.distanceTo2DHypotenuse(tileItem.getLocation(), startLocation) > (config.maxRange() + 3);
             }
 
-            boolean ours = tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_GROUP || tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_SELF;
+            final int accountType = client.getVarbitValue(Varbits.ACCOUNT_TYPE);
+            boolean isGim = accountType >= 4 && accountType <= 6; // ~is_group_iron
+
+            boolean ours = tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_SELF || (isGim && (tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_SELF || tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_GROUP));
 
             boolean inAnExpectedLocation = config.lootGoblin() || ours;
 
