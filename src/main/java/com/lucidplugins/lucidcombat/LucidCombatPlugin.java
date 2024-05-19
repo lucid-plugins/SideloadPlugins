@@ -799,7 +799,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 lastTarget = client.getLocalPlayer().getInteracting();
             }
 
-            MessageUtils.addMessage(client, "Trying to loot item: " + nearest.getTileItem().getOwnership() + " private: " + nearest.getTileItem().isPrivate());
             currentLootTarget = nearest;
             InteractionUtils.interactWithTileItem(nearest, "Take");
 
