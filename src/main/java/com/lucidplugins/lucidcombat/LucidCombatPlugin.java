@@ -1,7 +1,6 @@
 package com.lucidplugins.lucidcombat;
 
 import com.example.EthanApiPlugin.Collections.ETileItem;
-import com.example.EthanApiPlugin.Collections.TileItems;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.Packets.MousePackets;
 import com.google.inject.Provides;
@@ -94,6 +93,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     @Getter
     private Actor lastTarget = null;
+
+    @Getter
+    private List<ETileItem> itemIgnoreList = new ArrayList<>();
+
+    @Getter
+    private ETileItem currentLootTarget = null;
 
     @Getter
     private boolean autoCombatRunning = false;
@@ -334,6 +339,15 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
         }
 
+        if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("can't take items"))
+        {
+            if (currentLootTarget != null)
+            {
+                itemIgnoreList.add(currentLootTarget);
+                currentLootTarget = null;
+            }
+        }
+
         if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("can't reach that"))
         {
             lastTarget = null;
@@ -356,6 +370,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         updatePluginVars();
+
+        itemIgnoreList.removeIf(tileItem -> tileItem == null || tileItem.getTileItem() == null);
 
         if (hpFull() && eatingToMaxHp)
         {
@@ -783,6 +799,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 lastTarget = client.getLocalPlayer().getInteracting();
             }
 
+            MessageUtils.addMessage(client, "Trying to loot item: " + nearest.getTileItem().getOwnership() + " private: " + nearest.getTileItem().isPrivate());
+            currentLootTarget = nearest;
             InteractionUtils.interactWithTileItem(nearest, "Take");
 
             if (!client.getLocalPlayer().getLocalLocation().equals(LocalPoint.fromWorld(client, nearest.getLocation())))
@@ -877,9 +895,20 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
 
             final int accountType = client.getVarbitValue(Varbits.ACCOUNT_TYPE);
-            boolean isGim = accountType >= 4 && accountType <= 6; // ~is_group_iron
+            boolean isGim = accountType >= 4 && accountType <= 6;
 
-            boolean ours = tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_SELF || (isGim && (tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_SELF || tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_GROUP));
+            boolean ignored = false;
+            for (ETileItem tileItem1 : itemIgnoreList)
+            {
+                if (tileItem1.getTileItem().equals(tileItem.getTileItem()))
+                {
+                    ignored = true;
+                    break;
+                }
+            }
+
+            boolean ours = !ignored && tileItem.getTileItem().getVisibleTime() > 0 && tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_SELF ||
+                    (isGim && (tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_SELF || tileItem.getTileItem().getOwnership() == TileItem.OWNERSHIP_GROUP));
 
             boolean inAnExpectedLocation = config.lootGoblin() || ours;
 
