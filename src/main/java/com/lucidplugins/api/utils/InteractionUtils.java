@@ -12,13 +12,16 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class InteractionUtils
 {
+    private static int lastLoadedBaseX = -1;
+    private static int lastLoadedBaseY = -1;
+    private static int lastLoadedPlane = -1;
+    private static List<WorldPoint> checkedTiles = new ArrayList<>();
+
     public static boolean isRunEnabled()
     {
         return EthanApiPlugin.getClient().getVarpValue(173) == 1;
@@ -457,9 +460,70 @@ public class InteractionUtils
         return target.getWorldArea().isInMeleeDistance(location);
     }
 
+    public static List<WorldPoint> reachableTiles() {
+        MessageUtils.addMessage(EthanApiPlugin.getClient(), "Checking tiles...");
+        checkedTiles.clear();
+        boolean[][] visited = new boolean[104][104];
+        int[][] flags = EthanApiPlugin.getClient().getCollisionMaps()[EthanApiPlugin.getClient().getPlane()].getFlags();
+        WorldPoint playerLoc = EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation();
+        int firstPoint = (playerLoc.getX()-EthanApiPlugin.getClient().getBaseX() << 16) | playerLoc.getY()-EthanApiPlugin.getClient().getBaseY();
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        queue.add(firstPoint);
+        while (!queue.isEmpty()) {
+            int point = queue.poll();
+            short x =(short)(point >> 16);
+            short y = (short)point;
+            if (y < 0 || x < 0 || y > 104 || x > 104) {
+                continue;
+            }
+            if ((flags[x][y] & CollisionDataFlag.BLOCK_MOVEMENT_SOUTH) == 0 && (flags[x][y - 1] & CollisionDataFlag.BLOCK_MOVEMENT_FULL) == 0 && !visited[x][y - 1]) {
+                queue.add((x << 16) | (y - 1));
+                visited[x][y - 1] = true;
+            }
+            if ((flags[x][y] & CollisionDataFlag.BLOCK_MOVEMENT_NORTH) == 0 && (flags[x][y + 1] & CollisionDataFlag.BLOCK_MOVEMENT_FULL) == 0 && !visited[x][y + 1]) {
+                queue.add((x << 16) | (y + 1));
+                visited[x][y + 1] = true;
+            }
+            if ((flags[x][y] & CollisionDataFlag.BLOCK_MOVEMENT_WEST) == 0 && (flags[x - 1][y] & CollisionDataFlag.BLOCK_MOVEMENT_FULL) == 0 && !visited[x - 1][y]) {
+                queue.add(((x - 1) << 16) | y);
+                visited[x - 1][y] = true;
+            }
+            if ((flags[x][y] & CollisionDataFlag.BLOCK_MOVEMENT_EAST) == 0 && (flags[x + 1][y] & CollisionDataFlag.BLOCK_MOVEMENT_FULL) == 0 && !visited[x + 1][y]) {
+                queue.add(((x + 1) << 16) | y);
+                visited[x + 1][y] = true;
+            }
+        }
+
+        int baseX = EthanApiPlugin.getClient().getBaseX();
+        int baseY = EthanApiPlugin.getClient().getBaseY();
+        int plane = EthanApiPlugin.getClient().getPlane();
+        lastLoadedBaseX = baseX;
+        lastLoadedBaseY = baseY;
+        lastLoadedPlane = plane;
+
+        for (int x = 0; x < 104; ++x) {
+            for (int y = 0; y < 104; ++y) {
+                if (visited[x][y]) {
+                    checkedTiles.add(new WorldPoint(baseX + x, baseY + y, plane));
+                }
+            }
+        }
+
+        return checkedTiles;
+    }
+
     public static boolean isWalkable(WorldPoint point)
     {
-        return EthanApiPlugin.reachableTiles().contains(point);
+        int baseX = EthanApiPlugin.getClient().getBaseX();
+        int baseY = EthanApiPlugin.getClient().getBaseY();
+        int plane = EthanApiPlugin.getClient().getPlane();
+
+        if (baseX == lastLoadedBaseX && baseY == lastLoadedBaseY && plane == lastLoadedPlane)
+        {
+            return checkedTiles.contains(point);
+        }
+
+        return reachableTiles().contains(point);
     }
 
     public static int approxDistanceTo(WorldPoint point1, WorldPoint point2)

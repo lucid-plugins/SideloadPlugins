@@ -592,8 +592,11 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
 
         if (action.getParamsNeeded() != actionParams.length)
         {
-            debugMessage("Invalid param length for action: " + actionText);
-            return;
+            if (action != Action.SEND_CLIENTSCRIPT || actionParams.length < 2)
+            {
+                debugMessage("Invalid param length for action: " + actionText);
+                return;
+            }
         }
 
         List<Object> params = new ArrayList<>();
@@ -1086,6 +1089,10 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             case INVOKE_MENU_ACTION:
                 MousePackets.queueClickPacket();
                 EthanApiPlugin.invoke((int) params.get(0), (int) params.get(1), (int) params.get(2), (int) params.get(3), -1, "", "", -1, -1);
+                break;
+            case SEND_CLIENTSCRIPT:
+                debugMessage("Running script : " + params.get(0));
+                client.runScript(params.toArray());
                 break;
         }
     }
