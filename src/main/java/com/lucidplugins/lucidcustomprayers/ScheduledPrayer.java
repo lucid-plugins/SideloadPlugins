@@ -2,6 +2,7 @@ package com.lucidplugins.lucidcustomprayers;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.runelite.api.NPC;
 import net.runelite.api.Prayer;
 
 @Data
@@ -14,4 +15,6 @@ public class ScheduledPrayer
     private int activationTick;
 
     private boolean toggle;
+
+    private NPC attached;
 }

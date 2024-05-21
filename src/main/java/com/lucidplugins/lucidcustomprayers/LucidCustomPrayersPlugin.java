@@ -103,6 +103,8 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
     private static boolean disableQuickPrayers = false;
 
+    private final NPC DUMMY_NPC = new DummyNPC();
+
     @Provides
     LucidCustomPrayersConfig getConfig(final ConfigManager configManager)
     {
@@ -138,7 +140,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
             if (event.getActor() instanceof NPC)
             {
                 final NPC npc = (NPC) event.getActor();
-                eventFired(EventType.ANIMATION_CHANGED, animId, npc.getInteracting() == client.getLocalPlayer());
+                eventFired(EventType.ANIMATION_CHANGED, animId, npc.getInteracting() == client.getLocalPlayer(), npc);
             }
             else
             {
@@ -161,7 +163,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
         if (!npcsSpawnedThisTick.contains(npcId))
         {
-            eventFired(EventType.NPC_SPAWNED, npcId, false);
+            eventFired(EventType.NPC_SPAWNED, npcId, false, event.getNpc());
             npcsSpawnedThisTick.add(npcId);
         }
     }
@@ -195,7 +197,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
         if (!npcsChangedThisTick.contains(npcId))
         {
-            eventFired(EventType.NPC_CHANGED, npcId, event.getNpc().getInteracting() == client.getLocalPlayer());
+            eventFired(EventType.NPC_CHANGED, npcId, event.getNpc().getInteracting() == client.getLocalPlayer(), event.getNpc());
             npcsChangedThisTick.add(npcId);
         }
     }
@@ -258,7 +260,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
             final NPC npc = (NPC) source;
             if (!npcsInteractingWithYouThisTick.contains(npc.getId()))
             {
-                eventFired(EventType.OTHER_INTERACT_YOU, npc.getId(), true);
+                eventFired(EventType.OTHER_INTERACT_YOU, npc.getId(), true, npc);
                 npcsInteractingWithYouThisTick.add(npc.getId());
             }
         }
@@ -268,7 +270,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
             final NPC interactingNpc = (NPC) interacting;
             if (!npcsYouInteractedWithThisTick.contains(interactingNpc.getId()))
             {
-                eventFired(EventType.YOU_INTERACT_OTHER, interactingNpc.getId(), interacting.getInteracting() == client.getLocalPlayer());
+                eventFired(EventType.YOU_INTERACT_OTHER, interactingNpc.getId(), interacting.getInteracting() == client.getLocalPlayer(), interactingNpc);
                 npcsYouInteractedWithThisTick.add(interactingNpc.getId());
             }
         }
@@ -314,7 +316,8 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
 
         for (ScheduledPrayer prayer : scheduledPrayers)
         {
-            if (client.getTickCount() == prayer.getActivationTick())
+            boolean ignore = config.ignoreDeadNpcEvents() && (prayer.getAttached() == null || prayer.getAttached().isDead());
+            if (client.getTickCount() == prayer.getActivationTick() && !ignore)
             {
                 activatePrayer(client, prayer.getPrayer(), prayer.isToggle());
             }
@@ -631,7 +634,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    private void eventFired(EventType type, int id, boolean isTargetingPlayer)
+    private void eventFired(EventType type, int id, boolean isTargetingPlayer, NPC attached)
     {
         if (config.debugMode() && isEventDebugged(type))
         {
@@ -659,9 +662,14 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
                     }
                 }
 
-                scheduledPrayers.add(new ScheduledPrayer(prayer.getPrayerToActivate(), client.getTickCount() + prayer.getTickDelay(), prayer.isToggle()));
+                scheduledPrayers.add(new ScheduledPrayer(prayer.getPrayerToActivate(), client.getTickCount() + prayer.getTickDelay(), prayer.isToggle(), attached));
             }
         }
+    }
+
+    private void eventFired(EventType type, int id, boolean isTargetingPlayer)
+    {
+        eventFired(type, id, isTargetingPlayer, DUMMY_NPC);
     }
 
     public boolean listsMatch(List<String> list1, List<String> list2)

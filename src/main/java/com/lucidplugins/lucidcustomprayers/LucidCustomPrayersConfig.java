@@ -130,6 +130,18 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
+    @ConfigItem(
+            name = "Ignore Events From Dead NPCs",
+            description = "The plugin will ignore events from an NPC if it's dead.",
+            position = 4,
+            keyName = "ignoreDeadNpcEvents",
+            section = generalSection
+    )
+    default boolean ignoreDeadNpcEvents()
+    {
+        return false;
+    }
+
     // Debug Section
 
     @ConfigItem(
