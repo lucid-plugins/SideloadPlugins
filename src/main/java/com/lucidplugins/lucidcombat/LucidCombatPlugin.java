@@ -1095,7 +1095,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         secondaryStatus = "Combat";
 
-        if (targetDeadOrNoTarget())
+        if (targetDeadOrNoTarget() || (config.multipleTargets() && getEligibleTarget() != null))
         {
             NPC target = getEligibleTarget();
             if (target != null)
@@ -1396,15 +1396,23 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return null;
         }
 
-        return NpcUtils.getNearestNpc(npc ->
-            (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
-            (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
-            (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
-            (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
-            Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
-            (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
-            InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange()
-        );
+        Predicate<NPC> multiTargetFilter = npc ->
+                ((npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
+                (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc)));
+
+        Predicate<NPC> singleTargetFilter = npc ->
+                (npc.getInteracting() == client.getLocalPlayer() ||
+                (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
+                (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc)));
+
+        Predicate<NPC> restOfFilter = npc ->
+                (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
+                npc.getHealthRatio() != 0 &&
+                Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
+                (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
+                InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();
+
+        return NpcUtils.getNearestNpc(config.multipleTargets() ? multiTargetFilter.and(restOfFilter) : singleTargetFilter.and(restOfFilter));
     }
 
     private boolean isNpcEligible(NPC npc)

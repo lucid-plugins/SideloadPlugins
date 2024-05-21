@@ -88,13 +88,19 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
-    @ConfigItem(name = "Ticks Until Idle", description = "How many ticks until the plugin considers you idle and stops your boosts and thralls upkeep and deactivates prayers. (100 ticks in 1 minute) HP and Pray upkeep will still work regardless of idleness.", position = 13, keyName = "inactiveTicks", section = autoCombatSection)
+    @ConfigItem(name = "Multiple Targets", description = "The plugin will tag as many eligible targets instead of focusing on a single one", position = 13, keyName = "multipleTargets", section = autoCombatSection)
+    default boolean multipleTargets()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Ticks Until Idle", description = "How many ticks until the plugin considers you idle and stops your boosts and thralls upkeep and deactivates prayers. (100 ticks in 1 minute) HP and Pray upkeep will still work regardless of idleness.", position = 14, keyName = "inactiveTicks", section = autoCombatSection)
     default int inactiveTicks()
     {
         return 200;
     }
 
-    @ConfigItem(name = "Deactivate all prayers on idle", description = "Deactiates any active prayers if you go idle", position = 14, keyName = "deactivatePrayersOnIdle", section = autoCombatSection)
+    @ConfigItem(name = "Deactivate all prayers on idle", description = "Deactiates any active prayers if you go idle", position = 15, keyName = "deactivatePrayersOnIdle", section = autoCombatSection)
     default boolean deactivatePrayersOnIdle()
     {
         return false;
