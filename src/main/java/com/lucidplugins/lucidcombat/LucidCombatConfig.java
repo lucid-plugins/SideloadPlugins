@@ -290,43 +290,49 @@ public interface LucidCombatConfig extends Config
         return false;
     }
 
-    @ConfigItem(name = "Food Blacklist", description = "Will not attempt to eat any of these item named when looking for food. Multiple values should be separated by commas. Uses names only, no IDs", position = 2, keyName = "foodBlacklist", section = hpUpkeepSection)
+    @ConfigItem(name = "Use Item When Out Of Food", description = "Will use an item if out of food. Uses the item names/actions from the 'use item on task complete' config", position = 2, keyName = "useItemIfOutOfFood", section = hpUpkeepSection)
+    default boolean useItemIfOutOfFood()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Food Blacklist", description = "Will not attempt to eat any of these item named when looking for food. Multiple values should be separated by commas. Uses names only, no IDs", position = 3, keyName = "foodBlacklist", section = hpUpkeepSection)
     default String foodBlacklist()
     {
         return "";
     }
 
-    @ConfigItem(name = "Enable Double Eat", description = "Enables 1-tick double-eating with main food item + karambwan if applicable", position = 3, keyName = "enableDoubleEat", section = hpUpkeepSection)
+    @ConfigItem(name = "Enable Double Eat", description = "Enables 1-tick double-eating with main food item + karambwan if applicable", position = 4, keyName = "enableDoubleEat", section = hpUpkeepSection)
     default boolean enableDoubleEat()
     {
         return false;
     }
 
-    @ConfigItem(name = "Enable Triple Eat", description = "Enables 1-tick triple-eating with main food item + brew + karambwan if applicable", position = 4, keyName = "enableTripleEat", section = hpUpkeepSection)
+    @ConfigItem(name = "Enable Triple Eat", description = "Enables 1-tick triple-eating with main food item + brew + karambwan if applicable", position = 5, keyName = "enableTripleEat", section = hpUpkeepSection)
     default boolean enableTripleEat()
     {
         return false;
     }
 
-    @ConfigItem(name = "Minimum HP", description = "Will eat once your HP goes below this level", position = 5, keyName = "minHp", section = hpUpkeepSection)
+    @ConfigItem(name = "Minimum HP", description = "Will eat once your HP goes below this level", position = 6, keyName = "minHp", section = hpUpkeepSection)
     default int minHp()
     {
         return 30;
     }
 
-    @ConfigItem(name = "Min Restore Buffer", description = "Will add this random buffer range onto the minimum HP needed before restore to make the restoration a bit more random", position = 6, keyName = "minHpBuffer", section = hpUpkeepSection)
+    @ConfigItem(name = "Min Restore Buffer", description = "Will add this random buffer range onto the minimum HP needed before restore to make the restoration a bit more random", position = 7, keyName = "minHpBuffer", section = hpUpkeepSection)
     default int minHpBuffer()
     {
         return 4;
     }
 
-    @ConfigItem(name = "Restore To Max", description = "Will keep eating until Max HP minus the buffer amount", position = 7, keyName = "restoreHpToMax", section = hpUpkeepSection)
+    @ConfigItem(name = "Restore To Max", description = "Will keep eating until Max HP minus the buffer amount", position = 8, keyName = "restoreHpToMax", section = hpUpkeepSection)
     default boolean restoreHpToMax()
     {
         return false;
     }
 
-    @ConfigItem(name = "Max Buffer", description = "Adds a buffer to check if your HP is within range of max minus this amount. E.g. Your HP is 99 and the buffer is 5, it will consider 94+ HP 'max'", position = 8, keyName = "maxHpBuffer", section = hpUpkeepSection)
+    @ConfigItem(name = "Max Buffer", description = "Adds a buffer to check if your HP is within range of max minus this amount. E.g. Your HP is 99 and the buffer is 5, it will consider 94+ HP 'max'", position = 9, keyName = "maxHpBuffer", section = hpUpkeepSection)
     default int maxHpBuffer()
     {
         return 0;

@@ -116,6 +116,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean tabbed = true;
 
+    private int lastTabAttempt = 0;
+
     private int lastCannonAttempt = 0;
 
     private final List<String> prayerRestoreNames = List.of("Prayer potion", "Super restore", "Sanfew serum", "Blighted super restore", "Moonlight potion");
@@ -1686,6 +1688,15 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             {
                 secondaryStatus = "Ran out of food";
                 autoCombatRunning = false;
+            }
+        }
+
+        if (config.useItemIfOutOfFood() && config.enableHpRestore() && needToRestoreHp() && !ateFood && !brewed && !karambwanned)
+        {
+            if (client.getTickCount() - lastTabAttempt > 15 && client.getTickCount() - lastTickActive < 7)
+            {
+                useTeleportItem();
+                lastTabAttempt = client.getTickCount();
             }
         }
 
