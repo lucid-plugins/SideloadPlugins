@@ -1095,7 +1095,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         secondaryStatus = "Combat";
 
-        if (targetDeadOrNoTarget() || (config.multipleTargets() && getEligibleTarget() != null))
+        if (targetDeadOrNoTarget() || (config.multipleTargets() && getEligibleTarget() != null && client.getLocalPlayer().getInteracting() != getEligibleTarget()))
         {
             NPC target = getEligibleTarget();
             if (target != null)
