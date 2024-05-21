@@ -1580,7 +1580,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 SlottedItem itemToUse = InventoryUtils.getAllSlotted(item -> {
                     ItemComposition composition = client.getItemDefinition(item.getItem().getId());
                     return Arrays.asList(composition.getInventoryActions()).contains(action) && composition.getName().contains(name);
-                }).stream().findFirst().orElseGet(null);
+                }).stream().findFirst().orElse(null);
 
                 if (itemToUse != null)
                 {
