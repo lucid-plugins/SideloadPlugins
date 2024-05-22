@@ -52,7 +52,7 @@ public class Reachable
         }
     }
 
-    private static Point getComparisonPoint(WorldArea first, WorldArea other)
+    public static Point getComparisonPoint(WorldArea first, WorldArea other)
     {
         int x;
         if (other.getX() <= first.getX())
