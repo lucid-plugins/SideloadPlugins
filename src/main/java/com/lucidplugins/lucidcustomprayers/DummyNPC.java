@@ -374,6 +374,12 @@ public class DummyNPC implements NPC
     }
 
     @Override
+    public WorldView getWorldView()
+    {
+        return null;
+    }
+
+    @Override
     public int getCombatLevel()
     {
         return 0;
@@ -426,12 +432,6 @@ public class DummyNPC implements NPC
 
     @Override
     public void setModelHeight(int modelHeight)
-    {
-
-    }
-
-    @Override
-    public void draw(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, long hash)
     {
 
     }

@@ -5,43 +5,64 @@ import net.runelite.api.hooks.DrawCallbacks;
 
 public class DisableRenderCallbacks implements DrawCallbacks
 {
-    public DisableRenderCallbacks()
+
+    @Override
+    public void draw(Projection projection, Scene scene, Renderable renderable, int orientation, int x, int y, int z, long hash)
     {
+
     }
 
-    public void draw(Renderable renderable, int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, long hash)
+    @Override
+    public void drawScenePaint(Scene scene, SceneTilePaint paint, int plane, int tileX, int tileZ)
     {
+
     }
 
-    public void drawScenePaint(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, SceneTilePaint paint, int tileZ, int tileX, int tileY, int zoom, int centerX, int centerY)
+    @Override
+    public void drawSceneTileModel(Scene scene, SceneTileModel model, int tileX, int tileZ)
     {
+
     }
 
-    public void drawSceneModel(int orientation, int pitchSin, int pitchCos, int yawSin, int yawCos, int x, int y, int z, SceneTileModel model, int tileZ, int tileX, int tileY, int zoom, int centerX, int centerY)
-    {
-    }
-
+    @Override
     public void draw(int overlayColor)
     {
+
     }
 
-    public void drawScene(int cameraX, int cameraY, int cameraZ, int cameraPitch, int cameraYaw, int plane)
+    @Override
+    public void drawScene(double cameraX, double cameraY, double cameraZ, double cameraPitch, double cameraYaw, int plane)
     {
+
     }
 
+    @Override
     public void postDrawScene()
     {
+
     }
 
+    @Override
     public void animate(Texture texture, int diff)
     {
+
     }
 
+    @Override
     public void loadScene(Scene scene)
     {
+
     }
 
+    @Override
     public void swapScene(Scene scene)
     {
+
+    }
+
+    @Override
+    public boolean tileInFrustum(Scene scene, int pitchSin, int pitchCos, int yawSin, int yawCos, int cameraX, int cameraY, int cameraZ, int plane, int msx, int msy)
+    {
+        return false;
     }
 }

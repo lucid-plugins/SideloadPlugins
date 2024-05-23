@@ -6,7 +6,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
 @ConfigGroup("lucid-gear-swapper")
-public interface LucidMuspahConfig extends Config
+public interface LucidMuspahHelperConfig extends Config
 {
     @ConfigSection(
             name = "General",

@@ -1,7 +1,7 @@
 package com.lucidplugins.lucidmuspah.overlay;
 
-import com.lucidplugins.lucidmuspah.LucidMuspahConfig;
-import com.lucidplugins.lucidmuspah.LucidMuspahPlugin;
+import com.lucidplugins.lucidmuspah.LucidMuspahHelperConfig;
+import com.lucidplugins.lucidmuspah.LucidMuspahHelperPlugin;
 import net.runelite.api.Client;
 import net.runelite.api.Perspective;
 import net.runelite.api.Player;
@@ -18,11 +18,11 @@ public class OverlayMuspah extends Overlay
 {
 
     private final Client client;
-    private final LucidMuspahPlugin plugin;
-    private final LucidMuspahConfig config;
+    private final LucidMuspahHelperPlugin plugin;
+    private final LucidMuspahHelperConfig config;
     private Player player;
     @Inject
-    OverlayMuspah(final Client client, final LucidMuspahPlugin plugin, final LucidMuspahConfig config)
+    OverlayMuspah(final Client client, final LucidMuspahHelperPlugin plugin, final LucidMuspahHelperConfig config)
     {
         super(plugin);
         this.client = client;

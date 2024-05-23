@@ -92,7 +92,7 @@ class InfernoNPC
 			return safeSpotCache.get(target) == 2;
 		}
 
-		boolean hasLos = new WorldArea(target, 1, 1).hasLineOfSightTo(client, this.getNpc().getWorldArea());
+		boolean hasLos = new WorldArea(target, 1, 1).hasLineOfSightTo(client.getWorldView(client.getTopLevelWorldView().getId()), this.getNpc().getWorldArea());
 		boolean hasRange = this.getType().getDefaultAttack() == Attack.MELEE ? this.getNpc().getWorldArea().isInMeleeDistance(target)
 			: this.getNpc().getWorldArea().distanceTo(target) <= this.getType().getRange();
 
@@ -176,23 +176,23 @@ class InfernoNPC
 			// When it needs to stop at melee distance, it will only attempt
 			// to travel along the x axis when it is standing diagonally
 			// from the target
-			if (travelling.canTravelInDirection(client, dxSig, 0, extraCondition))
+			if (travelling.canTravelInDirection(client.getWorldView(client.getTopLevelWorldView().getId()), dxSig, 0, extraCondition))
 			{
 				return new WorldArea(travelling.getX() + dxSig, travelling.getY(), travelling.getWidth(), travelling.getHeight(), travelling.getPlane());
 			}
 		}
 		else
 		{
-			if (travelling.canTravelInDirection(client, dxSig, dySig, extraCondition))
+			if (travelling.canTravelInDirection(client.getWorldView(client.getTopLevelWorldView().getId()), dxSig, dySig, extraCondition))
 			{
 				return new WorldArea(travelling.getX() + dxSig, travelling.getY() + dySig, travelling.getWidth(), travelling.getHeight(), travelling.getPlane());
 			}
-			else if (dx != 0 && travelling.canTravelInDirection(client, dxSig, 0, extraCondition))
+			else if (dx != 0 && travelling.canTravelInDirection(client.getWorldView(client.getTopLevelWorldView().getId()), dxSig, 0, extraCondition))
 			{
 				return new WorldArea(travelling.getX() + dxSig, travelling.getY(), travelling.getWidth(), travelling.getHeight(), travelling.getPlane());
 			}
 			else if (dy != 0 && Math.max(Math.abs(dx), Math.abs(dy)) > 1 &&
-					travelling.canTravelInDirection(client, 0, dy, extraCondition))
+					travelling.canTravelInDirection(client.getWorldView(client.getTopLevelWorldView().getId()), 0, dy, extraCondition))
 			{
 				// Note that NPCs don't attempts to travel along the y-axis
 				// if the target is <= 1 tile distance away
@@ -267,7 +267,7 @@ class InfernoNPC
 				return false;
 			}
 
-			boolean hasLos = new WorldArea(target, 1, 1).hasLineOfSightTo(client, predictedWorldArea);
+			boolean hasLos = new WorldArea(target, 1, 1).hasLineOfSightTo(client.getWorldView(client.getTopLevelWorldView().getId()), predictedWorldArea);
 			boolean hasRange = this.getType().getDefaultAttack() == Attack.MELEE ? predictedWorldArea.isInMeleeDistance(target)
 				: predictedWorldArea.distanceTo(target) <= this.getType().getRange();
 
@@ -283,7 +283,7 @@ class InfernoNPC
 
 	private boolean couldAttackPrevTick(Client client, WorldPoint lastPlayerLocation)
 	{
-		return new WorldArea(lastPlayerLocation, 1, 1).hasLineOfSightTo(client, this.getNpc().getWorldArea());
+		return new WorldArea(lastPlayerLocation, 1, 1).hasLineOfSightTo(client.getWorldView(client.getTopLevelWorldView().getId()), this.getNpc().getWorldArea());
 	}
 
 	void gameTick(Client client, WorldPoint lastPlayerLocation, boolean finalPhase, int ticksSinceFinalPhase)

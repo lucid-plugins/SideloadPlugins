@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PluginDescriptor(
-        name = "<html><font color=\"#32CD32\">Lucid </font>Muspah</html>",
+        name = "<html><font color=\"#32CD32\">Lucid </font>Muspah Helper</html>",
         description = "Helper plugin for the Phantom Muspah (still in development)",
         enabledByDefault = false,
-        tags = {"muspah"}
+        tags = {"muspah", "helper"}
 )
-public class LucidMuspahPlugin extends Plugin
+public class LucidMuspahHelperPlugin extends Plugin
 {
 
     @Inject
@@ -39,7 +39,7 @@ public class LucidMuspahPlugin extends Plugin
     private ClientThread clientThread;
 
     @Inject
-    private LucidMuspahConfig config;
+    private LucidMuspahHelperConfig config;
 
     @Inject
     private OverlayManager overlayManager;
@@ -59,9 +59,9 @@ public class LucidMuspahPlugin extends Plugin
     private List<ScheduledPrayer> scheduledPrayers = new ArrayList<>();
 
     @Provides
-    LucidMuspahConfig getConfig(final ConfigManager configManager)
+    LucidMuspahHelperConfig getConfig(final ConfigManager configManager)
     {
-        return configManager.getConfig(LucidMuspahConfig.class);
+        return configManager.getConfig(LucidMuspahHelperConfig.class);
     }
 
     private void pluginEnabled()
