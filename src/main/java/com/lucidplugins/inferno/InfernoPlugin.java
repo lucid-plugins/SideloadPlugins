@@ -25,6 +25,8 @@
 package com.lucidplugins.inferno;
 
 import com.google.inject.Provides;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.lucidplugins.api.utils.CombatUtils;
+import com.lucidplugins.api.utils.MessageUtils;
 import com.lucidplugins.inferno.displaymodes.InfernoPrayerDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoSafespotDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoWaveDisplayMode;
@@ -39,12 +42,7 @@ import com.lucidplugins.inferno.displaymodes.InfernoZukShieldDisplayMode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.ItemID;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
+import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -52,6 +50,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -301,19 +300,73 @@ public class InfernoPlugin extends Plugin
 			return;
 		}
 
-		if (getClosestAttack() != null)
+		Prayer bestPrayer = null;
+
+		for (Integer tick : getUpcomingAttacks().keySet())
 		{
-			if (config.oneTickPray() && client.isPrayerActive(getClosestAttack().getPrayer()))
+			if (tick != 1)
 			{
-				CombatUtils.deactivatePrayer(getClosestAttack().getPrayer());
-				CombatUtils.activatePrayer(getClosestAttack().getPrayer());
+				continue;
 			}
-			else
+
+			final Map<InfernoNPC.Attack, Integer> attackPriority = getUpcomingAttacks().get(tick);
+			int bestPriority = 999;
+			InfernoNPC.Attack bestAttack = null;
+
+			for (Map.Entry<InfernoNPC.Attack, Integer> attackEntry : attackPriority.entrySet())
 			{
-				CombatUtils.activatePrayer(getClosestAttack().getPrayer());
+				if (attackEntry.getValue() < bestPriority)
+				{
+					bestAttack = attackEntry.getKey();
+					bestPriority = attackEntry.getValue();
+				}
+			}
+
+			if (bestAttack != null)
+			{
+				bestPrayer = bestAttack.getPrayer();
+			}
+		}
+
+		if (config.autoPray())
+		{
+			if (config.oneTickPray())
+			{
+				final Prayer active = getActiveOverhead();
+				if (active != null)
+				{
+					CombatUtils.deactivatePrayer(active);
+				}
+
+				if (bestPrayer != null || active != null)
+				{
+					CombatUtils.activatePrayer(bestPrayer != null ? bestPrayer : active);
+				}
+			}
+			else if (bestPrayer != null)
+			{
+				CombatUtils.activatePrayer(bestPrayer);
 			}
 		}
 	}
+
+	public Prayer getActiveOverhead()
+	{
+		if (client.isPrayerActive(Prayer.PROTECT_FROM_MELEE))
+		{
+			return Prayer.PROTECT_FROM_MELEE;
+		}
+		else if(client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
+		{
+			return Prayer.PROTECT_FROM_MAGIC;
+		}
+		else if (client.isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
+		{
+			return Prayer.PROTECT_FROM_MISSILES;
+		}
+		return null;
+	}
+
 
 	@Subscribe
 	private void onNpcSpawned(NpcSpawned event)
