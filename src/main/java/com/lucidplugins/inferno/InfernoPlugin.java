@@ -1002,7 +1002,7 @@ public class InfernoPlugin extends Plugin
 
 	private void calculateObstacles()
 	{
-		for (NPC npc : client.getNpcs())
+		for (NPC npc : client.getTopLevelWorldView().npcs())
 		{
 			obstacles.addAll(npc.getWorldArea().toWorldPointList());
 		}

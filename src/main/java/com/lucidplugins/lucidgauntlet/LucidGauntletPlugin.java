@@ -1005,7 +1005,7 @@ public class LucidGauntletPlugin extends Plugin
             onGameObjectSpawned(gameObjectSpawned);
         }
 
-        for (final NPC npc : client.getNpcs())
+        for (final NPC npc : client.getTopLevelWorldView().npcs())
         {
             onNpcSpawned(new NpcSpawned(npc));
         }
