@@ -461,7 +461,6 @@ public class InteractionUtils
     }
 
     public static List<WorldPoint> reachableTiles() {
-        MessageUtils.addMessage(EthanApiPlugin.getClient(), "Checking tiles...");
         checkedTiles.clear();
         boolean[][] visited = new boolean[104][104];
         int[][] flags = EthanApiPlugin.getClient().getCollisionMaps()[EthanApiPlugin.getClient().getPlane()].getFlags();
