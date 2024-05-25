@@ -35,7 +35,7 @@ public class CombatUtils
     }
     public static void activatePrayer(Prayer prayer)
     {
-        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0)
+        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 || prayer == null)
         {
             return;
         }
@@ -48,7 +48,7 @@ public class CombatUtils
 
     public static void deactivatePrayer(Prayer prayer)
     {
-        if (EthanApiPlugin.getClient() == null || EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 || !EthanApiPlugin.getClient().isPrayerActive(prayer))
+        if (EthanApiPlugin.getClient() == null || prayer == null || EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 || !EthanApiPlugin.getClient().isPrayerActive(prayer))
         {
             return;
         }
@@ -94,6 +94,11 @@ public class CombatUtils
 
     public static void togglePrayer(Prayer prayer)
     {
+        if (prayer == null)
+        {
+            return;
+        }
+
         if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 && !EthanApiPlugin.getClient().isPrayerActive(prayer))
         {
             return;

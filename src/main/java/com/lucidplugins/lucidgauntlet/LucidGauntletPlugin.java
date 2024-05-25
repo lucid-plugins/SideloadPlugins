@@ -892,6 +892,11 @@ public class LucidGauntletPlugin extends Plugin
 
         final Actor actor = event.getActor();
 
+        if (actor == null)
+        {
+            return;
+        }
+
         final int animationId = actor.getAnimation();
 
         if (actor instanceof Player)
@@ -1062,23 +1067,30 @@ public class LucidGauntletPlugin extends Plugin
         {
             SlottedItem wep = InventoryUtils.getFirstItemSlotted(RANGE_WEAPONS);
 
-            InventoryUtils.wieldItem(wep.getItem().getId());
+            if (wep != null)
+            {
+                InventoryUtils.wieldItem(wep.getItem().getId());
+            }
 
             lastSwitchTick = client.getTickCount();
         }
         else if (InventoryUtils.contains(MAGE_WEAPONS))
         {
             SlottedItem wep = InventoryUtils.getFirstItemSlotted(MAGE_WEAPONS);
-
-            InventoryUtils.wieldItem(wep.getItem().getId());
+            if (wep != null)
+            {
+                InventoryUtils.wieldItem(wep.getItem().getId());
+            }
 
             lastSwitchTick = client.getTickCount();
         }
         else if (InventoryUtils.contains(MELEE_WEAPONS))
         {
             SlottedItem wep = InventoryUtils.getFirstItemSlotted(MELEE_WEAPONS);
-
-            InventoryUtils.wieldItem(wep.getItem().getId());
+            if (wep != null)
+            {
+                InventoryUtils.wieldItem(wep.getItem().getId());
+            }
 
             lastSwitchTick = client.getTickCount();
         }
@@ -1099,8 +1111,10 @@ public class LucidGauntletPlugin extends Plugin
                 if (InventoryUtils.contains(MELEE_WEAPONS))
                 {
                     SlottedItem wep = InventoryUtils.getFirstItemSlotted(MELEE_WEAPONS);
-
-                    InventoryUtils.wieldItem(wep.getItem().getId());
+                    if (wep != null)
+                    {
+                        InventoryUtils.wieldItem(wep.getItem().getId());
+                    }
                 }
                 else
                 {
@@ -1116,8 +1130,10 @@ public class LucidGauntletPlugin extends Plugin
                     if (InventoryUtils.contains(RANGE_WEAPONS))
                     {
                         SlottedItem wep = InventoryUtils.getFirstItemSlotted(RANGE_WEAPONS);
-
-                        InventoryUtils.wieldItem(wep.getItem().getId());
+                        if (wep != null)
+                        {
+                            InventoryUtils.wieldItem(wep.getItem().getId());
+                        }
 
                         lastSwitchTick = client.getTickCount();
                     }
@@ -1127,8 +1143,10 @@ public class LucidGauntletPlugin extends Plugin
                     if (InventoryUtils.contains(MAGE_WEAPONS))
                     {
                         SlottedItem wep = InventoryUtils.getFirstItemSlotted(MAGE_WEAPONS);
-
-                        InventoryUtils.wieldItem(wep.getItem().getId());
+                        if (wep != null)
+                        {
+                            InventoryUtils.wieldItem(wep.getItem().getId());
+                        }
 
                         lastSwitchTick = client.getTickCount();
                     }
@@ -1143,8 +1161,10 @@ public class LucidGauntletPlugin extends Plugin
                 if (InventoryUtils.contains(MAGE_WEAPONS))
                 {
                     SlottedItem wep = InventoryUtils.getFirstItemSlotted(MAGE_WEAPONS);
-
-                    InventoryUtils.wieldItem(wep.getItem().getId());
+                    if (wep != null)
+                    {
+                        InventoryUtils.wieldItem(wep.getItem().getId());
+                    }
 
                     lastSwitchTick = client.getTickCount();
                 }
@@ -1155,8 +1175,10 @@ public class LucidGauntletPlugin extends Plugin
                 if (InventoryUtils.contains(RANGE_WEAPONS))
                 {
                     SlottedItem wep = InventoryUtils.getFirstItemSlotted(RANGE_WEAPONS);
-
-                    InventoryUtils.wieldItem(wep.getItem().getId());
+                    if (wep != null)
+                    {
+                        InventoryUtils.wieldItem(wep.getItem().getId());
+                    }
 
                     lastSwitchTick = client.getTickCount();
                 }
@@ -1167,7 +1189,7 @@ public class LucidGauntletPlugin extends Plugin
 
     private void attackHunllef()
     {
-        final NPC hunllef = NpcUtils.getNearestNpc(npc -> npc.getName().contains("Hunllef"));
+        final NPC hunllef = NpcUtils.getNearestNpc(npc -> npc.getName() != null && npc.getName().contains("Hunllef"));
         if (hunllef == null)
         {
             return;
