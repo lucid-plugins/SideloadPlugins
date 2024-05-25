@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.lucidplugins.api.utils.CombatUtils;
+import com.lucidplugins.api.utils.MessageUtils;
 import com.lucidplugins.inferno.displaymodes.InfernoPrayerDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoSafespotDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoWaveDisplayMode;
@@ -41,6 +42,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -567,7 +569,8 @@ public class InfernoPlugin extends Plugin
 
 	private boolean isInInferno()
 	{
-		return client.getLocalPlayer().getWorldLocation().getRegionID() == INFERNO_REGION;
+
+		return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID()  == INFERNO_REGION;
 	}
 
 	int getNextWaveNumber()
