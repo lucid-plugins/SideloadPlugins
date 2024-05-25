@@ -3,14 +3,11 @@ package com.lucidplugins.api.utils;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
-import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 public class DialogUtils
 {
@@ -29,7 +26,7 @@ public class DialogUtils
         }
         else
         {
-            List<String> out = new ArrayList();
+            List<String> out = new ArrayList<>();
             Widget[] children = widget.getChildren();
             if (children == null)
             {

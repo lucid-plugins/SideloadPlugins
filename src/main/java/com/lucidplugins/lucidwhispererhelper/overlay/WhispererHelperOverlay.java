@@ -23,7 +23,7 @@ public class WhispererHelperOverlay extends Overlay
     private final Client client;
     private final WhispererHelperPlugin plugin;
     private final WhispererHelperConfig config;
-    private Player player;
+
     @Inject
     WhispererHelperOverlay(final Client client, final WhispererHelperPlugin plugin, final WhispererHelperConfig config)
     {
@@ -41,7 +41,7 @@ public class WhispererHelperOverlay extends Overlay
     public Dimension render(Graphics2D graphics2D)
     {
 
-        player = client.getLocalPlayer();
+        Player player = client.getLocalPlayer();
 
         if (player == null)
         {
@@ -156,13 +156,13 @@ public class WhispererHelperOverlay extends Overlay
             return;
         }
 
-        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client, wp), graphics2D, text, color);
+        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client.getTopLevelWorldView(), wp), graphics2D, text, color);
     }
 
     private WorldPoint getLocalInstancePoint(int regionX, int regionY)
     {
         WorldPoint wp = WorldPoint.fromRegion(10595, regionX, regionY, client.getLocalPlayer().getWorldLocation().getPlane());
-        Collection<WorldPoint> localInstanceWp = WorldPoint.toLocalInstance(client, wp);
+        Collection<WorldPoint> localInstanceWp = WorldPoint.toLocalInstance(client.getTopLevelWorldView(), wp);
         Optional<WorldPoint> instanceWp = localInstanceWp.stream().findFirst();
 
         return instanceWp.orElse(null);

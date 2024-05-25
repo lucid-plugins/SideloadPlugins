@@ -4,7 +4,6 @@ import net.runelite.api.Client;
 import net.runelite.api.hooks.DrawCallbacks;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -64,7 +64,7 @@ public class LucidCombatPanelOverlay extends OverlayPanel
         panelComponent.getChildren().add(LineComponent.builder()
                 .left("Next Loot Attempt In:")
                 .leftColor(Color.WHITE)
-                .right(plugin.ticksUntilNextLootAttempt() >= 0 ? + plugin.ticksUntilNextLootAttempt() + "" : (config.maxTicksBetweenLooting() + plugin.ticksUntilNextLootAttempt()) + "")
+                .right(plugin.ticksUntilNextLootAttempt() >= 0 ? plugin.ticksUntilNextLootAttempt() + "" : (config.maxTicksBetweenLooting() + plugin.ticksUntilNextLootAttempt()) + "")
                 .build());
         return super.render(graphics2D);
     }

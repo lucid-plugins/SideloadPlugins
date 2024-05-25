@@ -68,7 +68,7 @@ public class TileMarkersOverlay extends Overlay
         {
             final WorldPoint worldPoint = entry.getKey();
             final String text = entry.getValue();
-            if (worldPoint != null && worldPoint.isInScene(client))
+            if (worldPoint != null && WorldPoint.isInScene(client.getTopLevelWorldView(), worldPoint.getX(), worldPoint.getY()))
             {
                 renderTileMarkerWorldPoint(worldPoint, graphics2D, text, Color.BLUE);
             }
@@ -133,6 +133,6 @@ public class TileMarkersOverlay extends Overlay
             return;
         }
 
-        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client, wp), graphics2D, text, color);
+        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client.getTopLevelWorldView(), wp), graphics2D, text, color);
     }
 }

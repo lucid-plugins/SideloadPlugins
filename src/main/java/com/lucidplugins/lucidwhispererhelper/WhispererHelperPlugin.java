@@ -253,9 +253,9 @@ public class WhispererHelperPlugin extends Plugin
             final WorldPoint nextMostHealthPoint = nextMostHealth.getWorldLocation().dy(2);
             final WorldPoint leastHealthPoint = leastHealth.getWorldLocation().dy(2);
 
-            mostHealthPillar = LocalPoint.fromWorld(client, mostHealthPoint);
-            nextMostHealthPillar = LocalPoint.fromWorld(client, nextMostHealthPoint);;
-            leastHealthPillar = LocalPoint.fromWorld(client, leastHealthPoint);;
+            mostHealthPillar = LocalPoint.fromWorld(client.getTopLevelWorldView(), mostHealthPoint);
+            nextMostHealthPillar = LocalPoint.fromWorld(client.getTopLevelWorldView(), nextMostHealthPoint);
+            leastHealthPillar = LocalPoint.fromWorld(client.getTopLevelWorldView(), leastHealthPoint);
             activateFragment = true;
             pillarSpawnTick = client.getTickCount();
         }
@@ -387,7 +387,7 @@ public class WhispererHelperPlugin extends Plugin
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    final LocalPoint fromWorld = LocalPoint.fromWorld(client, event.getNpc().getWorldLocation().dx(dx * i).dy(dy * i).dx(1).dy(1));
+                    final LocalPoint fromWorld = LocalPoint.fromWorld(client.getTopLevelWorldView(), event.getNpc().getWorldLocation().dx(dx * i).dy(dy * i).dx(1).dy(1));
                     unsafeTiles.put(fromWorld, client.getTickCount() + (getTicksSinceEnrageStarted() < 200 ? 3 : 2));
                 }
             }
@@ -396,7 +396,7 @@ public class WhispererHelperPlugin extends Plugin
 
     private void dodgeUnsafeTiles()
     {
-        NPC whisperer = NpcUtils.getNearestNpc(npc -> npc != null && npc.getName().contains("Whisperer"));
+        NPC whisperer = NpcUtils.getNearestNpc(npc -> npc != null && npc.getName() != null && npc.getName().contains("Whisperer"));
 
         if (!unsafeTiles.isEmpty())
         {

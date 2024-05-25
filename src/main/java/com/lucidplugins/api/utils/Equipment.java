@@ -2,7 +2,6 @@ package com.lucidplugins.api.utils;
 
 import com.lucidplugins.api.utils.query.EquipmentItemQuery;
 import net.runelite.api.Client;
-import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.widgets.Widget;

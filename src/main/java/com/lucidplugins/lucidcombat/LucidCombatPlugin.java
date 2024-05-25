@@ -804,7 +804,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             currentLootTarget = nearest;
             InteractionUtils.interactWithTileItem(nearest, "Take");
 
-            if (!client.getLocalPlayer().getLocalLocation().equals(LocalPoint.fromWorld(client, nearest.getLocation())))
+            if (!client.getLocalPlayer().getLocalLocation().equals(LocalPoint.fromWorld(client.getTopLevelWorldView(), nearest.getLocation())))
             {
                 if (config.onlyLootWithNoTarget())
                 {

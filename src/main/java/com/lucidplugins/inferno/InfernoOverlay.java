@@ -1,7 +1,6 @@
 package com.lucidplugins.inferno;
 
 import com.example.PacketUtils.WidgetInfoExtended;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -27,7 +26,6 @@ import net.runelite.api.Prayer;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -172,7 +170,7 @@ public class InfernoOverlay extends Overlay
 	{
 		for (WorldPoint worldPoint : plugin.getObstacles())
 		{
-			final LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+			final LocalPoint localPoint = LocalPoint.fromWorld(client.getTopLevelWorldView(), worldPoint);
 
 			if (localPoint == null)
 			{
@@ -246,7 +244,7 @@ public class InfernoOverlay extends Overlay
 
 			for (WorldPoint worldPoint : plugin.getSafeSpotAreas().get(safeSpotId))
 			{
-				final LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+				final LocalPoint localPoint = LocalPoint.fromWorld(client.getTopLevelWorldView(), worldPoint);
 
 				if (localPoint == null)
 				{
@@ -391,7 +389,7 @@ public class InfernoOverlay extends Overlay
 				continue;
 			}
 
-			final LocalPoint localPoint = LocalPoint.fromWorld(client, worldPoint);
+			final LocalPoint localPoint = LocalPoint.fromWorld(client.getTopLevelWorldView(), worldPoint);
 
 			if (localPoint == null)
 			{
@@ -453,7 +451,7 @@ public class InfernoOverlay extends Overlay
 
 	private void renderNpcLocation(Graphics2D graphics, InfernoNPC infernoNPC)
 	{
-		final LocalPoint localPoint = LocalPoint.fromWorld(client, infernoNPC.getNpc().getWorldLocation());
+		final LocalPoint localPoint = LocalPoint.fromWorld(client.getTopLevelWorldView(), infernoNPC.getNpc().getWorldLocation());
 
 		if (localPoint != null)
 		{

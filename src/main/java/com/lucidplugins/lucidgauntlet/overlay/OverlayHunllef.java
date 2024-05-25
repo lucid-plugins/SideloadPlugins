@@ -1,10 +1,4 @@
 package com.lucidplugins.lucidgauntlet.overlay;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -256,7 +250,7 @@ public class OverlayHunllef extends Overlay
         final Font originalFont = graphics2D.getFont();
 
         graphics2D.setFont(new Font(Font.SANS_SERIF,
-                0, config.hunllefAttackCounterFontSize()));
+                Font.PLAIN, config.hunllefAttackCounterFontSize()));
 
         OverlayUtil.renderTextLocation(graphics2D, point, text, hunllef.getAttackPhase().getColor());
 
@@ -382,9 +376,9 @@ public class OverlayHunllef extends Overlay
 
         final Model model = projectile.getModel();
 
-        final LocalPoint localPoint = new LocalPoint((int) projectile.getX(), (int) projectile.getY());
+        final LocalPoint localPoint = new LocalPoint((int) projectile.getX(), (int) projectile.getY(), client.getTopLevelWorldView());
 
-        final int tileHeight = Perspective.getTileHeight(client, localPoint, client.getPlane());
+        final int tileHeight = Perspective.getTileHeight(client, localPoint, client.getTopLevelWorldView().getPlane());
 
         double angle = Math.atan(projectile.getVelocityY() / projectile.getVelocityX());
         angle = Math.toDegrees(angle) + (projectile.getVelocityX() < 0 ? 180 : 0);
@@ -398,10 +392,7 @@ public class OverlayHunllef extends Overlay
 
         final List<Vertex> vertices = getVertices(model);
 
-        for (int i = 0; i < vertices.size(); ++i)
-        {
-            vertices.set(i, vertices.get(i).rotate(orientation));
-        }
+        vertices.replaceAll(vertex -> vertex.rotate(orientation));
 
         final List<Point> list = new ArrayList<>();
 

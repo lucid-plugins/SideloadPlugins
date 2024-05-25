@@ -160,7 +160,7 @@ class InfernoNPC
 			return travelling;
 		}
 
-		LocalPoint lp = LocalPoint.fromWorld(client, travelling.getX(), travelling.getY());
+		LocalPoint lp = LocalPoint.fromWorld(client.getTopLevelWorldView(), travelling.getX(), travelling.getY());
 		if (lp == null ||
 				lp.getSceneX() + dx < 0 || lp.getSceneX() + dy >= Constants.SCENE_SIZE ||
 				lp.getSceneY() + dx < 0 || lp.getSceneY() + dy >= Constants.SCENE_SIZE)

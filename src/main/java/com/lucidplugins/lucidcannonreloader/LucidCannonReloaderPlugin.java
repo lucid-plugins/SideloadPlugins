@@ -173,10 +173,8 @@ public class LucidCannonReloaderPlugin extends Plugin
     @Subscribe
     private void onMenuOpened(MenuOpened event)
     {
-        final Optional<MenuEntry> fireEntry = Arrays.stream(event.getMenuEntries()).filter(menuEntry -> {
-            return (menuEntry.getOption().equals("Fire") || menuEntry.getOption().equals("Repair"))  &&
-                    (menuEntry.getTarget().contains("Dwarf multicannon") || menuEntry.getTarget().contains("Broken multicannon"));
-        }).findFirst();
+        final Optional<MenuEntry> fireEntry = Arrays.stream(event.getMenuEntries()).filter(menuEntry -> (menuEntry.getOption().equals("Fire") || menuEntry.getOption().equals("Repair"))  &&
+                (menuEntry.getTarget().contains("Dwarf multicannon") || menuEntry.getTarget().contains("Broken multicannon"))).findFirst();
 
         if (fireEntry.isEmpty())
         {
@@ -186,7 +184,7 @@ public class LucidCannonReloaderPlugin extends Plugin
         final int targetLocalX = fireEntry.get().getParam0();
         final int targetLocalY = fireEntry.get().getParam1();
 
-        final WorldPoint targetWorldPoint = WorldPoint.fromScene(client, targetLocalX, targetLocalY, client.getLocalPlayer().getWorldLocation().getPlane());
+        final WorldPoint targetWorldPoint = WorldPoint.fromScene(client.getTopLevelWorldView(), targetLocalX, targetLocalY, client.getLocalPlayer().getWorldLocation().getPlane());
 
         if (targetWorldPoint.equals(cannonLocation))
         {
@@ -201,12 +199,6 @@ public class LucidCannonReloaderPlugin extends Plugin
         }
         else
         {
-            if (cannonLocation != null)
-            {
-                MessageUtils.addMessage(client, "Cannon: " + cannonLocation + ", Target: " + targetWorldPoint);
-
-            }
-
             client.createMenuEntry(1)
                     .setOption("Claim Cannon")
                     .setTarget("<col=00ff00>Lucid Cannon Reloader</col>")

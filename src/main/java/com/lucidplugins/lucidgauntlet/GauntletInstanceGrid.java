@@ -121,10 +121,6 @@ public class GauntletInstanceGrid
             }
             return;
         }
-        else
-        {
-            MessageUtils.addMessage(client, "Initialized successfully.");
-        }
 
         GauntletRoom hunllefRoom = getHunllefRoomFromBarriers(barriers);
 
@@ -165,7 +161,6 @@ public class GauntletInstanceGrid
             }
         }
         initialized = true;
-        MessageUtils.addMessage(client, "Instance initialized. Starting in room: " + startingRoomPoint.getX() + ", " + startingRoomPoint.getY());
     }
 
     private void setPaths(Point startPoint)

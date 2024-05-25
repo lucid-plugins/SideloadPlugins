@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -729,7 +728,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 CombatUtils.toggleSpec();
                 break;
             case WALK_SCENE_LOCATION:
-                LocalPoint lp = LocalPoint.fromScene((int) params.get(0), (int) params.get(1));
+                LocalPoint lp = LocalPoint.fromScene((int) params.get(0), (int) params.get(1), client.getTopLevelWorldView());
                 InteractionUtils.walk(WorldPoint.fromLocalInstance(client, lp));
                 break;
             case INTERACT_INVENTORY_SLOT:
@@ -779,7 +778,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 break;
             case WALK_REGION_LOCATION:
                 WorldPoint wp = WorldPoint.fromRegion((int) params.get(0), (int) params.get(1), (int) params.get(2), client.getLocalPlayer().getWorldLocation().getPlane());
-                Collection<WorldPoint> localInstanceWp = WorldPoint.toLocalInstance(client, wp);
+                Collection<WorldPoint> localInstanceWp = WorldPoint.toLocalInstance(client.getTopLevelWorldView(), wp);
                 localInstanceWp.stream().findFirst().ifPresent(InteractionUtils::walk);
                 break;
             case ITEM_ON_ITEM:

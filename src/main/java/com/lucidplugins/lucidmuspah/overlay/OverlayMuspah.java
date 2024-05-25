@@ -71,7 +71,7 @@ public class OverlayMuspah extends Overlay
         }
 
         final Font originalFont = graphics2D.getFont();
-        graphics2D.setFont(new Font(Font.SANS_SERIF, 0, 12));
+        graphics2D.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 
         drawOutlineAndFill(graphics2D, plugin.getTicksUntilAttack() > 1 ? Color.GREEN : Color.RED, null, 1, polygon);
         OverlayUtil.renderTextLocation(graphics2D, point, text, plugin.getTicksUntilAttack() > 1 ? Color.GREEN : Color.RED);

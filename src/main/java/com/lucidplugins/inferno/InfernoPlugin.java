@@ -26,7 +26,6 @@ package com.lucidplugins.inferno;
 
 import com.google.inject.Provides;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import com.lucidplugins.api.utils.CombatUtils;
-import com.lucidplugins.api.utils.MessageUtils;
 import com.lucidplugins.inferno.displaymodes.InfernoPrayerDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoSafespotDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoWaveDisplayMode;
@@ -50,7 +48,6 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -570,7 +567,7 @@ public class InfernoPlugin extends Plugin
 
 	private boolean isInInferno()
 	{
-		return ArrayUtils.contains(client.getMapRegions(), INFERNO_REGION);
+		return client.getLocalPlayer().getWorldLocation().getRegionID() == INFERNO_REGION;
 	}
 
 	int getNextWaveNumber()
@@ -977,7 +974,7 @@ public class InfernoPlugin extends Plugin
 		{
 			for (int y = yCoord - 4; y <= yCoord - 2; y++)
 			{
-				safeSpotMap.put(new WorldPoint(x, y, client.getPlane()), colorSafeSpotId);
+				safeSpotMap.put(new WorldPoint(x, y, client.getTopLevelWorldView().getPlane()), colorSafeSpotId);
 			}
 		}
 	}

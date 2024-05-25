@@ -7,9 +7,7 @@ package com.lucidplugins.api.spells;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import static net.runelite.api.ItemID.*;
@@ -64,7 +62,7 @@ public enum Runes {
 
     public String getName() {
         String name = this.name();
-        name = name.substring(0, 1) + name.substring(1).toLowerCase();
+        name = name.charAt(0) + name.substring(1).toLowerCase();
         return name;
     }
 }

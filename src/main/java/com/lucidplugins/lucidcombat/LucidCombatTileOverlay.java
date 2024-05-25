@@ -35,7 +35,7 @@ public class LucidCombatTileOverlay extends OverlayPanel
     {
         if (config.highlightStartTile() && plugin.getStartLocation() != null)
         {
-            if (plugin.getStartLocation().isInScene(client))
+            if (WorldPoint.isInScene(client.getTopLevelWorldView(), plugin.getStartLocation().getX(), plugin.getStartLocation().getY()))
             {
                 renderTileMarkerWorldPoint(plugin.getStartLocation(), graphics2D, "(Start) Dist: " + String.format("%.1f", plugin.getDistanceToStart()), new Color(20, 210, 10, 100));
             }
@@ -49,7 +49,8 @@ public class LucidCombatTileOverlay extends OverlayPanel
             {
                 for (Tile t : edgeTiles)
                 {
-                    if (t.getWorldLocation().isInScene(client))
+                    t.getWorldLocation();
+                    if (WorldPoint.isInScene(client.getTopLevelWorldView(), t.getWorldLocation().getX(), t.getWorldLocation().getY()))
                     {
                         renderTileMarkerLocalPoint(t.getLocalLocation(), graphics2D, "", new Color(210, 20, 10, 100));
                     }
@@ -103,7 +104,7 @@ public class LucidCombatTileOverlay extends OverlayPanel
             return;
         }
 
-        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client, wp), graphics2D, text, color);
+        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client.getTopLevelWorldView(), wp), graphics2D, text, color);
     }
 
     static void drawOutlineAndFill(final Graphics2D graphics2D, final Color outlineColor, final Color fillColor, final float strokeWidth, final Shape shape)

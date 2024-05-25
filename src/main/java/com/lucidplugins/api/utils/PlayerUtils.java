@@ -5,7 +5,6 @@ import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PlayerInteractionHelper;
 import net.runelite.api.Player;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 

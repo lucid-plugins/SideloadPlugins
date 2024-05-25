@@ -40,11 +40,7 @@ public class DukeHelperOverlay extends OverlayPanel
             return null;
         }
 
-        if (plugin.dukeAwake())
-        {
-            // Track attacks and such
-        }
-        else
+        if (!plugin.dukeAwake())
         {
             // Track dangerous tiles
             renderFallingTiles(graphics2D);
@@ -65,7 +61,7 @@ public class DukeHelperOverlay extends OverlayPanel
         for (Map.Entry<WorldPoint, Integer> entry : plugin.getVentTiles().entrySet())
         {
             int ticksSinceSpawn = client.getTickCount() - entry.getValue();
-            LocalPoint centerLp = LocalPoint.fromWorld(client, entry.getKey().dx(1).dy(1));
+            LocalPoint centerLp = LocalPoint.fromWorld(client.getTopLevelWorldView(), entry.getKey().dx(1).dy(1));
             if (centerLp != null)
             {
                 final Polygon poly = Perspective.getCanvasTileAreaPoly(client, centerLp, 3);

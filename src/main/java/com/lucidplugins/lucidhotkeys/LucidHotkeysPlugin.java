@@ -1627,7 +1627,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 CombatUtils.toggleSpec();
                 break;
             case WALK_SCENE_LOCATION:
-                LocalPoint lp = LocalPoint.fromScene(param1Int, param2Int);
+                LocalPoint lp = LocalPoint.fromScene(param1Int, param2Int, client.getTopLevelWorldView());
                 InteractionUtils.walk(WorldPoint.fromLocalInstance(client, lp));
                 break;
             case INTERACT_INVENTORY_SLOT:
@@ -2135,7 +2135,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         int regionX = worldLocation.getRegionX();
         int regionY = worldLocation.getRegionY();
 
-        if (client.isInInstancedRegion())
+        if (client.getTopLevelWorldView().isInstance())
         {
             final WorldPoint fromInstance = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
             regionX = fromInstance.getRegionX();
@@ -2181,7 +2181,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             case "lastPlayerNameTargetedYou":
                 return String.valueOf(lastPlayerNameTargetedYou);
             case "regionId":
-                if (client.isInInstancedRegion())
+                if (client.getTopLevelWorldView().isInstance())
                 {
                     WorldPoint worldPoint = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation());
                     return String.valueOf(worldPoint.getRegionID());

@@ -21,7 +21,7 @@ public class OverlayUtil
     {
         Widget widget = client.getWidget(PrayerExtended.getPrayerWidgetId(prayer));
 
-        if (widget == null || client.getVar(VarClientInt.INVENTORY_TAB) != InterfaceTab.PRAYER.getId())
+        if (widget == null || client.getVarbitValue(VarClientInt.INVENTORY_TAB) != InterfaceTab.PRAYER.getId())
         {
             return null;
         }

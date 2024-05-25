@@ -18,9 +18,9 @@ public class GameObjectQuery {
     public Collection<GameObject> getGameObjectQuery(Client client)
     {
         List<Tile> tilesList = new ArrayList<>();
-        Scene scene = client.getScene();
+        Scene scene = client.getTopLevelWorldView().getScene();
         Tile[][][] tiles = scene.getTiles();
-        int z = client.getPlane();
+        int z = client.getTopLevelWorldView().getPlane();
         for (int x = 0; x < Constants.SCENE_SIZE; x++)
         {
             for (int y = 0; y < Constants.SCENE_SIZE; y++)

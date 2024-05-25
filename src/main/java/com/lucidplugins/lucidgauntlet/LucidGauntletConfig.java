@@ -100,7 +100,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceOverlay",
             section = resourcesSection
     )
-    public default boolean resourceOverlay()
+    default boolean resourceOverlay()
     {
         return false;
     }
@@ -134,7 +134,7 @@ public interface LucidGauntletConfig extends Config
             section = resourcesSection
     )
     @Units(Units.PIXELS)
-    public default int resourceTileOutlineWidth()
+    default int resourceTileOutlineWidth()
     {
         return 1;
     }
@@ -147,7 +147,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceTileOutlineColor",
             section = resourcesSection
     )
-    public default Color resourceTileOutlineColor()
+    default Color resourceTileOutlineColor()
     {
         return Color.YELLOW;
     }
@@ -160,7 +160,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceTileFillColor",
             section = resourcesSection
     )
-    public default Color resourceTileFillColor()
+    default Color resourceTileFillColor()
     {
         return new Color(255, 255, 255, 50);
     }
@@ -172,7 +172,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceOutline",
             section = resourcesSection
     )
-    public default boolean resourceOutline()
+    default boolean resourceOutline()
     {
         return false;
     }
@@ -189,7 +189,7 @@ public interface LucidGauntletConfig extends Config
             section = resourcesSection
     )
     @Units(Units.PIXELS)
-    public default int resourceOutlineWidth()
+    default int resourceOutlineWidth()
     {
         return 1;
     }
@@ -202,7 +202,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceOutlineColor",
             section = resourcesSection
     )
-    public default Color resourceOutlineColor()
+    default Color resourceOutlineColor()
     {
         return Color.YELLOW;
     }
@@ -214,7 +214,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceTracker",
             section = resourcesSection
     )
-    public default ResourceFilter resourceTracker()
+    default ResourceFilter resourceTracker()
     {
         return ResourceFilter.OFF;
     }
@@ -226,7 +226,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceOre",
             section = resourcesSection
     )
-    public default int resourceOre()
+    default int resourceOre()
     {
         return 3;
     }
@@ -238,7 +238,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceBark",
             section = resourcesSection
     )
-    public default int resourceBark()
+    default int resourceBark()
     {
         return 3;
     }
@@ -250,7 +250,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceTirinum",
             section = resourcesSection
     )
-    public default int resourceTirinum()
+    default int resourceTirinum()
     {
         return 3;
     }
@@ -262,7 +262,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceGrym",
             section = resourcesSection
     )
-    public default int resourceGrym()
+    default int resourceGrym()
     {
         return 2;
     }
@@ -274,7 +274,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceFrame",
             section = resourcesSection
     )
-    public default int resourceFrame()
+    default int resourceFrame()
     {
         return 2;
     }
@@ -286,7 +286,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourcePaddlefish",
             section = resourcesSection
     )
-    public default int resourcePaddlefish()
+    default int resourcePaddlefish()
     {
         return 20;
     }
@@ -298,7 +298,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceShard",
             section = resourcesSection
     )
-    public default int resourceShard()
+    default int resourceShard()
     {
         return 320;
     }
@@ -310,7 +310,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceBowstring",
             section = resourcesSection
     )
-    public default boolean resourceBowstring()
+    default boolean resourceBowstring()
     {
         return false;
     }
@@ -322,7 +322,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceSpike",
             section = resourcesSection
     )
-    public default boolean resourceSpike()
+    default boolean resourceSpike()
     {
         return false;
     }
@@ -334,7 +334,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceOrb",
             section = resourcesSection
     )
-    public default boolean resourceOrb()
+    default boolean resourceOrb()
     {
         return false;
     }
@@ -348,7 +348,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "utilitiesOutline",
             section = utilitiesSection
     )
-    public default boolean utilitiesOutline()
+    default boolean utilitiesOutline()
     {
         return false;
     }
@@ -365,7 +365,7 @@ public interface LucidGauntletConfig extends Config
             section = utilitiesSection
     )
     @Units(Units.PIXELS)
-    public default int utilitiesOutlineWidth()
+    default int utilitiesOutlineWidth()
     {
         return 4;
     }
@@ -378,7 +378,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "utilitiesOutlineColor",
             section = utilitiesSection
     )
-    public default Color utilitiesOutlineColor()
+    default Color utilitiesOutlineColor()
     {
         return Color.MAGENTA;
     }
@@ -392,7 +392,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "demibossOutline",
             section = npcSection
     )
-    public default boolean demibossOutline()
+    default boolean demibossOutline()
     {
         return false;
     }
@@ -409,7 +409,7 @@ public interface LucidGauntletConfig extends Config
             section = npcSection
     )
     @Units(Units.PIXELS)
-    public default int demibossOutlineWidth()
+    default int demibossOutlineWidth()
     {
         return 4;
     }
@@ -421,7 +421,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "strongNpcOutline",
             section = npcSection
     )
-    public default boolean strongNpcOutline()
+    default boolean strongNpcOutline()
     {
         return false;
     }
@@ -438,7 +438,7 @@ public interface LucidGauntletConfig extends Config
             section = npcSection
     )
     @Units(Units.PIXELS)
-    public default int strongNpcOutlineWidth()
+    default int strongNpcOutlineWidth()
     {
         return 2;
     }
@@ -451,7 +451,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "strongNpcOutlineColor",
             section = npcSection
     )
-    public default Color strongNpcOutlineColor()
+    default Color strongNpcOutlineColor()
     {
         return Color.CYAN;
     }
@@ -463,7 +463,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "weakNpcOutline",
             section = npcSection
     )
-    public default boolean weakNpcOutline()
+    default boolean weakNpcOutline()
     {
         return false;
     }
@@ -480,7 +480,7 @@ public interface LucidGauntletConfig extends Config
             section = npcSection
     )
     @Units(Units.PIXELS)
-    public default int weakNpcOutlineWidth()
+    default int weakNpcOutlineWidth()
     {
         return 2;
     }
@@ -493,7 +493,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "weakNpcOutlineColor",
             section = npcSection
     )
-    public default Color weakNpcOutlineColor()
+    default Color weakNpcOutlineColor()
     {
         return Color.CYAN;
     }
@@ -507,7 +507,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "hunllefOverlayAttackCounter",
             section = hunllefSection
     )
-    public default boolean hunllefOverlayAttackCounter()
+    default boolean hunllefOverlayAttackCounter()
     {
         return false;
     }
@@ -520,7 +520,7 @@ public interface LucidGauntletConfig extends Config
             section = hunllefSection,
             hidden = true
     )
-    public default FontStyle hunllefAttackCounterFontStyle()
+    default FontStyle hunllefAttackCounterFontStyle()
     {
         return FontStyle.BOLD;
     }
@@ -537,7 +537,7 @@ public interface LucidGauntletConfig extends Config
             section = hunllefSection
     )
     @Units(Units.PIXELS)
-    public default int hunllefAttackCounterFontSize()
+    default int hunllefAttackCounterFontSize()
     {
         return 22;
     }
@@ -549,7 +549,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "hunllefOverlayWrongPrayerOutline",
             section = hunllefSection
     )
-    public default boolean hunllefOverlayWrongPrayerOutline()
+    default boolean hunllefOverlayWrongPrayerOutline()
     {
         return false;
     }
@@ -566,7 +566,7 @@ public interface LucidGauntletConfig extends Config
             section = hunllefSection
     )
     @Units(Units.PIXELS)
-    public default int hunllefWrongPrayerOutlineWidth()
+    default int hunllefWrongPrayerOutlineWidth()
     {
         return 4;
     }
@@ -578,7 +578,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "hunllefOutlineTile",
             section = hunllefSection
     )
-    public default boolean hunllefOutlineTile()
+    default boolean hunllefOutlineTile()
     {
         return false;
     }
@@ -595,7 +595,7 @@ public interface LucidGauntletConfig extends Config
             section = hunllefSection
     )
     @Units(Units.PIXELS)
-    public default int hunllefTileOutlineWidth()
+    default int hunllefTileOutlineWidth()
     {
         return 1;
     }
@@ -608,7 +608,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "hunllefOutlineColor",
             section = hunllefSection
     )
-    public default Color hunllefOutlineColor()
+    default Color hunllefOutlineColor()
     {
         return Color.WHITE;
     }
@@ -621,7 +621,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "hunllefFillColor",
             section = hunllefSection
     )
-    public default Color hunllefFillColor()
+    default Color hunllefFillColor()
     {
         return new Color(255, 255, 255, 0);
     }
@@ -633,7 +633,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "hunllefOverlayAttackStyleIcon",
             section = hunllefSection
     )
-    public default boolean hunllefOverlayAttackStyleIcon()
+    default boolean hunllefOverlayAttackStyleIcon()
     {
         return false;
     }
@@ -676,7 +676,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "outlineProjectile",
             section = projectilesSection
     )
-    public default boolean outlineProjectile()
+    default boolean outlineProjectile()
     {
         return false;
     }
@@ -688,7 +688,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "overlayProjectileIcon",
             section = projectilesSection
     )
-    public default boolean overlayProjectileIcon()
+    default boolean overlayProjectileIcon()
     {
         return false;
     }
@@ -719,7 +719,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "tornadoTickCounter",
             section = tornadoesSection
     )
-    public default boolean tornadoTickCounter()
+    default boolean tornadoTickCounter()
     {
         return false;
     }
@@ -732,7 +732,7 @@ public interface LucidGauntletConfig extends Config
             section = tornadoesSection,
             hidden = true
     )
-    public default FontStyle tornadoFontStyle()
+    default FontStyle tornadoFontStyle()
     {
         return FontStyle.BOLD;
     }
@@ -744,7 +744,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "tornadoFontShadow",
             section = tornadoesSection
     )
-    public default boolean tornadoFontShadow()
+    default boolean tornadoFontShadow()
     {
         return true;
     }
@@ -761,7 +761,7 @@ public interface LucidGauntletConfig extends Config
             section = tornadoesSection
     )
     @Units(Units.PIXELS)
-    public default int tornadoFontSize()
+    default int tornadoFontSize()
     {
         return 16;
     }
@@ -774,7 +774,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "tornadoFontColor",
             section = tornadoesSection
     )
-    public default Color tornadoFontColor()
+    default Color tornadoFontColor()
     {
         return Color.WHITE;
     }
@@ -786,7 +786,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "tornadoTileOutline",
             section = tornadoesSection
     )
-    public default boolean tornadoTileOutline()
+    default boolean tornadoTileOutline()
     {
         return false;
     }
@@ -803,7 +803,7 @@ public interface LucidGauntletConfig extends Config
             section = tornadoesSection
     )
     @Units(Units.PIXELS)
-    public default int tornadoTileOutlineWidth()
+    default int tornadoTileOutlineWidth()
     {
         return 1;
     }
@@ -816,7 +816,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "tornadoOutlineColor",
             section = tornadoesSection
     )
-    public default Color tornadoOutlineColor()
+    default Color tornadoOutlineColor()
     {
         return Color.YELLOW;
     }
@@ -829,7 +829,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "tornadoFillColor",
             section = tornadoesSection
     )
-    public default Color tornadoFillColor()
+    default Color tornadoFillColor()
     {
         return new Color(255, 255, 0, 50);
     }
@@ -843,7 +843,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "prayerOverlay",
             section = playerSection
     )
-    public default PrayerHighlightMode prayerOverlay()
+    default PrayerHighlightMode prayerOverlay()
     {
         return PrayerHighlightMode.NONE;
     }
@@ -854,7 +854,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "autoPrayer",
             section = playerSection
     )
-    public default boolean autoPrayer()
+    default boolean autoPrayer()
     {
         return false;
     }
@@ -865,7 +865,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "autoWeapon",
             section = playerSection
     )
-    public default WeaponSwitchStyle weaponSwitchMode()
+    default WeaponSwitchStyle weaponSwitchMode()
     {
         return WeaponSwitchStyle.OFF;
     }
@@ -876,7 +876,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "autoOffensive",
             section = playerSection
     )
-    public default boolean autoOffense()
+    default boolean autoOffense()
     {
         return false;
     }
@@ -888,7 +888,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "autoAttack",
             section = playerSection
     )
-    public default boolean autoAttack()
+    default boolean autoAttack()
     {
         return false;
     }
@@ -901,7 +901,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "autoAttackMelee",
             section = playerSection
     )
-    public default boolean autoAttackMelee()
+    default boolean autoAttackMelee()
     {
         return false;
     }
@@ -913,7 +913,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "autoDodge",
             section = playerSection
     )
-    public default boolean autoDodge()
+    default boolean autoDodge()
     {
         return false;
     }
@@ -925,7 +925,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "flashOnWrongAttack",
             section = playerSection
     )
-    public default boolean flashOnWrongAttack()
+    default boolean flashOnWrongAttack()
     {
         return false;
     }
@@ -941,7 +941,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "flashOnWrongAttackDuration",
             section = playerSection
     )
-    public default int flashOnWrongAttackDuration()
+    default int flashOnWrongAttackDuration()
     {
         return 25;
     }
@@ -954,7 +954,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "flashOnWrongAttackColor",
             section = playerSection
     )
-    public default Color flashOnWrongAttackColor()
+    default Color flashOnWrongAttackColor()
     {
         return new Color(255, 0, 0, 70);
     }
@@ -966,7 +966,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "flashOn51Method",
             section = playerSection
     )
-    public default boolean flashOn51Method()
+    default boolean flashOn51Method()
     {
         return false;
     }
@@ -982,7 +982,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "flashOn51MethodDuration",
             section = playerSection
     )
-    public default int flashOn51MethodDuration()
+    default int flashOn51MethodDuration()
     {
         return 25;
     }
@@ -995,7 +995,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "flashOn51MethodColor",
             section = playerSection
     )
-    public default Color flashOn51MethodColor()
+    default Color flashOn51MethodColor()
     {
         return new Color(255, 190, 0, 50);
     }
@@ -1009,7 +1009,7 @@ public interface LucidGauntletConfig extends Config
             description = "Display an overlay that tracks your gauntlet time.",
             section = timerSection
     )
-    public default boolean timerOverlay()
+    default boolean timerOverlay()
     {
         return false;
     }
@@ -1021,7 +1021,7 @@ public interface LucidGauntletConfig extends Config
             description = "Display a chat message on death with your gauntlet time.",
             section = timerSection
     )
-    public default boolean timerChatMessage()
+    default boolean timerChatMessage()
     {
         return false;
     }
@@ -1035,7 +1035,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "resourceRenderDistance",
             section = otherSection
     )
-    public default RenderDistance resourceRenderDistance()
+    default RenderDistance resourceRenderDistance()
     {
         return RenderDistance.FAR;
     }
@@ -1047,7 +1047,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "discoMode",
             section = otherSection
     )
-    public default boolean discoMode()
+    default boolean discoMode()
     {
         return false;
     }
@@ -1061,7 +1061,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "offenseRangePrayer",
             section = prayerSection
     )
-    public default RangedPrayer offenseRangePrayer()
+    default RangedPrayer offenseRangePrayer()
     {
         return RangedPrayer.EAGLE_EYE;
     }
@@ -1072,7 +1072,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "offenseMagicPrayer",
             section = prayerSection
     )
-    public default MagicPrayer offenseMagicPrayer()
+    default MagicPrayer offenseMagicPrayer()
     {
         return MagicPrayer.MYSTIC_MIGHT;
     }
@@ -1083,7 +1083,7 @@ public interface LucidGauntletConfig extends Config
             keyName = "offenseMeleePrayer",
             section = prayerSection
     )
-    public default MeleePrayer offenseMeleePrayer()
+    default MeleePrayer offenseMeleePrayer()
     {
         return MeleePrayer.PIETY;
     }
@@ -1092,7 +1092,7 @@ public interface LucidGauntletConfig extends Config
 
     @Getter
     @AllArgsConstructor
-    public enum RenderDistance
+    enum RenderDistance
     {
         SHORT("Short", 2350),
         MEDIUM("Medium", 3525),
@@ -1128,7 +1128,7 @@ public interface LucidGauntletConfig extends Config
     }
 
     @AllArgsConstructor
-    public enum PrayerHighlightMode
+    enum PrayerHighlightMode
     {
         WIDGET("Widget"),
         BOX("Box"),
@@ -1144,14 +1144,14 @@ public interface LucidGauntletConfig extends Config
         }
     }
 
-    public enum ResourceFilter
+    enum ResourceFilter
     {
         ALL, BASIC, CUSTOM, OFF
     }
 
-    public enum WeaponSwitchStyle
+    enum WeaponSwitchStyle
     {
-        OFF, NORMAL, RANGED_5_1, MAGE_5_1;
+        OFF, NORMAL, RANGED_5_1, MAGE_5_1
     }
 
     enum RangedPrayer

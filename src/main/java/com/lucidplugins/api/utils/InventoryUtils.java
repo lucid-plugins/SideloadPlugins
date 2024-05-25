@@ -301,9 +301,7 @@ public class InventoryUtils
         else
         {
             Widget[] children = inventoryWidget.getChildren();
-            return children == null ? -1 : (Integer) Arrays.stream(children).filter((x) -> {
-                return x.getItemId() == item.getId();
-            }).findFirst().map(Widget::getId).orElse(-1);
+            return children == null ? -1 : Arrays.stream(children).filter((x) -> x.getItemId() == item.getId()).findFirst().map(Widget::getId).orElse(-1);
         }
     }
 

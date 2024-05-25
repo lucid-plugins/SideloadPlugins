@@ -247,7 +247,7 @@ public class ResourceManager
 
     private Region getRegion()
     {
-        final int regionId = client.getMapRegions()[0];
+        final int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
 
         if (regionId == CORRUPTED_GAUNTLET_REGION_ID)
         {

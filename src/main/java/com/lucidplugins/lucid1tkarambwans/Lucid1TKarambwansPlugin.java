@@ -244,7 +244,7 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
 
             if (nextBreakTick == 0)
             {
-                int randomChunk = random.nextInt((int)(config.breakAfter() / 10));
+                int randomChunk = random.nextInt(config.breakAfter() / 10);
                 nextBreakTick = client.getTickCount() + config.breakAfter() + (random.nextInt(2) == 0 ? randomChunk : -randomChunk);
             }
         }
@@ -286,7 +286,7 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
         {
             if (config.takeBreaks() && client.getTickCount() > nextBreakTick && breakTicks == 0)
             {
-                int randomChunk = random.nextInt((int)(config.breakFor() / 10));
+                int randomChunk = random.nextInt(config.breakFor() / 10);
                 breakTicks = config.breakFor() + (random.nextInt(2) == 0 ? randomChunk : -randomChunk);
                 return;
             }

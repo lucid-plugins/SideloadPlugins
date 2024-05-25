@@ -480,7 +480,7 @@ public class LucidGauntletPlugin extends Plugin
 
         boolean tooCloseToTornados = tooCloseToTornado(client.getLocalPlayer().getWorldLocation(), 3);
 
-        if (!isTileSafe)
+        /*if (!isTileSafe)
         {
             MessageUtils.addMessage(client, "Need to move from unsafe tile!");
         }
@@ -493,7 +493,7 @@ public class LucidGauntletPlugin extends Plugin
         if (tooCloseToTornados)
         {
             MessageUtils.addMessage(client,"There's a tornado about to fuck us up");
-        }
+        }*/
 
         return !isTileSafe || underHunllef || (checkTornados && tooCloseToTornados);
     }
@@ -656,18 +656,14 @@ public class LucidGauntletPlugin extends Plugin
 
         List<Predicate<TileObject>> filters = List.of(filter1, filter2, filter3, filter4, filter5, filter6, filter7, filter8, filter9, filter10, filter11, filter12);
 
-        int i = 1;
         for (Predicate<TileObject> filter : filters)
         {
             TileObject nearest = GameObjectUtils.nearest(filter);
 
             if (nearest != null)
             {
-                MessageUtils.addMessage(client, "Filter " + i + " used to dodge.");
                 return nearest.getWorldLocation();
             }
-
-            i++;
         }
 
         return null;

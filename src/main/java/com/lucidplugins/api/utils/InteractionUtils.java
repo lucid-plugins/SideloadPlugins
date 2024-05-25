@@ -439,7 +439,7 @@ public class InteractionUtils
         {
             for (int y = 0; y < Constants.SCENE_SIZE; y++)
             {
-                Tile tile = EthanApiPlugin.getClient().getScene().getTiles()[EthanApiPlugin.getClient().getPlane()][x][y];
+                Tile tile = EthanApiPlugin.getClient().getTopLevelWorldView().getScene().getTiles()[EthanApiPlugin.getClient().getTopLevelWorldView().getPlane()][x][y];
                 if (tile != null && filter.test(tile))
                 {
                     out.add(tile);
@@ -463,9 +463,9 @@ public class InteractionUtils
     public static List<WorldPoint> reachableTiles() {
         checkedTiles.clear();
         boolean[][] visited = new boolean[104][104];
-        int[][] flags = EthanApiPlugin.getClient().getCollisionMaps()[EthanApiPlugin.getClient().getPlane()].getFlags();
+        int[][] flags = EthanApiPlugin.getClient().getTopLevelWorldView().getCollisionMaps()[EthanApiPlugin.getClient().getTopLevelWorldView().getPlane()].getFlags();
         WorldPoint playerLoc = EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation();
-        int firstPoint = (playerLoc.getX()-EthanApiPlugin.getClient().getBaseX() << 16) | playerLoc.getY()-EthanApiPlugin.getClient().getBaseY();
+        int firstPoint = (playerLoc.getX()-EthanApiPlugin.getClient().getTopLevelWorldView().getBaseX() << 16) | playerLoc.getY()-EthanApiPlugin.getClient().getTopLevelWorldView().getBaseY();
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         queue.add(firstPoint);
         while (!queue.isEmpty()) {
@@ -493,9 +493,9 @@ public class InteractionUtils
             }
         }
 
-        int baseX = EthanApiPlugin.getClient().getBaseX();
-        int baseY = EthanApiPlugin.getClient().getBaseY();
-        int plane = EthanApiPlugin.getClient().getPlane();
+        int baseX = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseX();
+        int baseY = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseY();
+        int plane = EthanApiPlugin.getClient().getTopLevelWorldView().getPlane();
         lastLoadedBaseX = baseX;
         lastLoadedBaseY = baseY;
         lastLoadedPlane = plane;
@@ -513,9 +513,9 @@ public class InteractionUtils
 
     public static boolean isWalkable(WorldPoint point)
     {
-        int baseX = EthanApiPlugin.getClient().getBaseX();
-        int baseY = EthanApiPlugin.getClient().getBaseY();
-        int plane = EthanApiPlugin.getClient().getPlane();
+        int baseX = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseX();
+        int baseY = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseY();
+        int plane = EthanApiPlugin.getClient().getTopLevelWorldView().getPlane();
 
         if (baseX == lastLoadedBaseX && baseY == lastLoadedBaseY && plane == lastLoadedPlane)
         {
@@ -578,22 +578,14 @@ public class InteractionUtils
 
     public static void interactWithTileItem(int itemId, String action)
     {
-        ETileItem item = TileItems.search().withId(itemId).nearestToPlayer().orElse(null);
+        TileItems.search().withId(itemId).nearestToPlayer().ifPresent(item -> TileItemPackets.queueTileItemAction(item, false));
 
-        if (item != null)
-        {
-            TileItemPackets.queueTileItemAction(item, false);
-        }
     }
 
     public static void interactWithTileItem(String name, String action)
     {
-        ETileItem item = TileItems.search().nameContains(name).nearestToPlayer().orElse(null);
+        TileItems.search().nameContains(name).nearestToPlayer().ifPresent(item -> TileItemPackets.queueTileItemAction(item, false));
 
-        if (item != null)
-        {
-            TileItemPackets.queueTileItemAction(item, false);
-        }
     }
 
     public static void interactWithTileItem(ETileItem item, String action)
@@ -611,9 +603,7 @@ public class InteractionUtils
         pane.setMessage(message);
         JDialog dialog = pane.createDialog(pane, title);
 
-        pane.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, ignored -> {
-            dialog.dispose();
-        });
+        pane.addPropertyChangeListener(JOptionPane.VALUE_PROPERTY, ignored -> dialog.dispose());
 
         dialog.setModal(false);
         dialog.setVisible(true);

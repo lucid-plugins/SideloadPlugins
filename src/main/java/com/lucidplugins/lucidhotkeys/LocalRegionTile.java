@@ -12,9 +12,9 @@ public class LocalRegionTile
 {
 
     private LocalPoint localTile;
-    private int regionId;
-    private int lpX;
-    private int lpY;
+    private final int regionId;
+    private final int lpX;
+    private final int lpY;
 
     public LocalRegionTile(int regionId, int x, int y)
     {
@@ -26,7 +26,7 @@ public class LocalRegionTile
 
     public static LocalPoint getInstanceLocalPoint(int regionId, int x, int y)
     {
-        final Collection<WorldPoint> worldPoints = WorldPoint.toLocalInstance(EthanApiPlugin.getClient(),
+        final Collection<WorldPoint> worldPoints = WorldPoint.toLocalInstance(EthanApiPlugin.getClient().getTopLevelWorldView(),
                 WorldPoint.fromRegion(regionId, x, y, EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation().getPlane()));
 
         final WorldPoint worldPoint = worldPoints.stream().findFirst().orElse(null);
@@ -36,7 +36,7 @@ public class LocalRegionTile
             return null;
         }
 
-        return LocalPoint.fromWorld(EthanApiPlugin.getClient(), worldPoint);
+        return LocalPoint.fromWorld(EthanApiPlugin.getClient().getTopLevelWorldView(), worldPoint);
     }
 
     public LocalPoint getLocalTile()

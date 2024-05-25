@@ -387,7 +387,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
                 WorldPoint safeTile1 = WorldPoint.fromRegion(4405, 38, 28, client.getLocalPlayer().getWorldLocation().getPlane());
                 WorldPoint safeTile2 = WorldPoint.fromRegion(4405, 37, 28, client.getLocalPlayer().getWorldLocation().getPlane());
 
-                if (!unsafeSpikeyPoints.contains(LocalPoint.fromWorld(client, safeTile1)))
+                if (!unsafeSpikeyPoints.contains(LocalPoint.fromWorld(client.getTopLevelWorldView(), safeTile1)))
                 {
                     if (!WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).equals(safeTile1))
                     {
@@ -395,7 +395,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
                         lastReturnTick = client.getTickCount();
                     }
                 }
-                else if (!unsafeSpikeyPoints.contains(LocalPoint.fromWorld(client, safeTile2)))
+                else if (!unsafeSpikeyPoints.contains(LocalPoint.fromWorld(client.getTopLevelWorldView(), safeTile2)))
                 {
                     if (!WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).equals(safeTile2))
                     {
@@ -507,7 +507,7 @@ public class LucidVardorvisHelperPlugin extends Plugin
     private void walkRegionLocation(int regionX, int regionY)
     {
         WorldPoint wp = WorldPoint.fromRegion(4405, regionX, regionY, client.getLocalPlayer().getWorldLocation().getPlane());
-        Collection<WorldPoint> localInstanceWp = WorldPoint.toLocalInstance(client, wp);
+        Collection<WorldPoint> localInstanceWp = WorldPoint.toLocalInstance(client.getTopLevelWorldView(), wp);
         localInstanceWp.stream().findFirst().ifPresent(InteractionUtils::walk);
     }
 
