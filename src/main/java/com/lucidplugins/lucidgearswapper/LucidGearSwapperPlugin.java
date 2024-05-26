@@ -139,7 +139,7 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
                     continue;
                 }
 
-                String itemString = configList.get(0).trim();
+                String itemString = configList.get(0).strip();
                 List<SlottedItem> firstItem = EquipmentUtils.getAll().stream().filter(item -> client.getItemDefinition(item.getItem().getId()).getName().contains(itemString)).collect(Collectors.toList());
 
                 if (firstItem.size() > 0)
@@ -488,7 +488,7 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
         List<SlottedItem> validItems = new ArrayList<>();
         for (String item : itemList)
         {
-            Optional<SlottedItem> slottedItem = Inventory.search().nameContains(item.trim()).result().stream().map(widget -> new SlottedItem(widget.getItemId(), widget.getItemQuantity(), widget.getIndex())).findFirst();
+            Optional<SlottedItem> slottedItem = Inventory.search().nameContains(item.strip()).result().stream().map(widget -> new SlottedItem(widget.getItemId(), widget.getItemQuantity(), widget.getIndex())).findFirst();
             slottedItem.ifPresent(validItems::add);
         }
 

@@ -378,6 +378,24 @@ public interface LucidCombatConfig extends Config
         return 5;
     }
 
+    @ConfigItem(name = "Upkeep Anti-fire protection", description = "Re-applies antifire protection when you run out", position = 6, keyName = "enableAntiFireUpkeep", section = boostUpkeepSection)
+    default boolean enableAntiFireUpkeep()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Upkeep Anti-poison/venom protection", description = "Re-applies antipoison protection when you run out", position = 7, keyName = "enablePoisonUpkeep", section = boostUpkeepSection)
+    default boolean enablePoisonUpkeep()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Only Remove Poison/Venom", description = "Will only apply anti-poison/venom protection to remove active poison/venom but will not upkeep protection beyond that.", position = 8, keyName = "onlyRemovePoison", section = boostUpkeepSection)
+    default boolean onlyRemovePoison()
+    {
+        return false;
+    }
+
 
     // Auto-spec
     @ConfigSection(name = "Auto-Spec Settings", description = "Control settings for Auto-Spec", position = 6, closedByDefault = true)

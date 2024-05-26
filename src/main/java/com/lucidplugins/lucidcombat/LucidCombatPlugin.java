@@ -122,6 +122,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private final List<String> prayerRestoreNames = List.of("Prayer potion", "Super restore", "Sanfew serum", "Blighted super restore", "Moonlight potion");
 
+    private final List<String> antiFireNames = List.of("Extended super antifire", "Super antifire", "Extended antifire", "Antifire potion");
+
+    private final List<String> antiPoisonNames = List.of("Antidote+", "Superantipoison", "Antipoison");
+
+    private final List<String> antiVenomNames = List.of("Anti-venom+", "Anti-venom", "Antidote++");
     private int lastAlchTick = 0;
 
     private int lastThrallTick = 0;
@@ -246,14 +251,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean isNameInNpcsToFight(String name)
     {
-        if (config.npcToFight().trim().isEmpty())
+        if (config.npcToFight().strip().isEmpty())
         {
             return false;
         }
 
         for (String npcName : config.npcToFight().split(","))
         {
-            npcName = npcName.trim();
+            npcName = npcName.strip();
 
             if (name.contains(npcName))
             {
@@ -266,14 +271,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean idInNpcBlackList(int id)
     {
-        if (config.idBlacklist().trim().isEmpty())
+        if (config.idBlacklist().strip().isEmpty())
         {
             return false;
         }
 
         for (String stringId : config.idBlacklist().split(","))
         {
-            String idTrimmed = stringId.trim();
+            String idTrimmed = stringId.strip();
             int npcId = Integer.parseInt(idTrimmed);
 
             if (id == npcId)
@@ -921,14 +926,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean nameInLootWhiteList(String name)
     {
-        if (config.lootNames().trim().isEmpty())
+        if (config.lootNames().strip().isEmpty())
         {
             return true;
         }
 
         for (String itemName : config.lootNames().split(","))
         {
-            itemName = itemName.trim();
+            itemName = itemName.strip();
 
             if (name.length() > 0 && name.contains(itemName))
             {
@@ -941,14 +946,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean nameInLootBlackList(String name)
     {
-        if (config.lootBlacklist().trim().isEmpty())
+        if (config.lootBlacklist().strip().isEmpty())
         {
             return false;
         }
 
         for (String itemName : config.lootBlacklist().split(","))
         {
-            itemName = itemName.trim();
+            itemName = itemName.strip();
 
             if (name.length() > 0 && name.contains(itemName))
             {
@@ -1293,7 +1298,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private List<SlottedItem> getAlchableItems()
     {
-        if (config.alchNames().trim().isEmpty())
+        if (config.alchNames().strip().isEmpty())
         {
             return List.of();
         }
@@ -1304,7 +1309,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             boolean nameContains = false;
             for (String itemName : config.alchNames().split(","))
             {
-                itemName = itemName.trim();
+                itemName = itemName.strip();
 
                 if (composition.getName() != null && composition.getName().contains(itemName))
                 {
@@ -1314,11 +1319,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
 
             boolean inBlacklist = false;
-            if (!config.lootBlacklist().trim().isEmpty())
+            if (!config.alchBlacklist().strip().isEmpty())
             {
                 for (String itemName : config.alchBlacklist().split(","))
                 {
-                    itemName = itemName.trim();
+                    itemName = itemName.strip();
 
                     if (itemName.length() < 2)
                     {
@@ -1781,9 +1786,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean restoreBoosts()
     {
-        boolean meleeBoosted = false;
-        boolean rangedBoosted = false;
-        boolean magicBoosted = false;
+        boolean boosted = false;
 
         final int attackBoost = client.getBoostedSkillLevel(Skill.ATTACK) - client.getRealSkillLevel(Skill.ATTACK);
         final int strengthBoost = client.getBoostedSkillLevel(Skill.STRENGTH) - client.getRealSkillLevel(Skill.STRENGTH);
@@ -1835,23 +1838,23 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         {
             InventoryUtils.itemInteract(meleePotionToUse.getId(), "Drink");
             nextPotionTick = client.getTickCount() + 3;
-            meleeBoosted = true;
+            boosted = true;
         }
 
         final int rangedBoost = client.getBoostedSkillLevel(Skill.RANGED) - client.getRealSkillLevel(Skill.RANGED);
-        if (rangedBoost < config.minRangedBoost() && !meleeBoosted)
+        if (rangedBoost < config.minRangedBoost() && !boosted)
         {
             Item rangedPotion = getRangedBoostingItem();
             if (config.enableRangedUpkeep() && rangedPotion != null && canPotUp())
             {
                 InventoryUtils.itemInteract(rangedPotion.getId(), "Drink");
                 nextPotionTick = client.getTickCount() + 3;
-                rangedBoosted = true;
+                boosted = true;
             }
         }
 
         final int magicBoost = client.getBoostedSkillLevel(Skill.MAGIC) - client.getRealSkillLevel(Skill.MAGIC);
-        if (magicBoost < config.minMagicBoost() && !meleeBoosted && !rangedBoosted)
+        if (magicBoost < config.minMagicBoost() && !boosted)
         {
             Item magicPotion = getMagicBoostingPotion();
             Item imbuedHeart = InventoryUtils.getFirstItem("Imbued heart");
@@ -1862,16 +1865,93 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             {
                 InventoryUtils.itemInteract(magicPotion.getId(), "Drink");
                 nextPotionTick = client.getTickCount() + 3;
-                magicBoosted = true;
+                boosted = true;
             }
             else if (config.enableMagicUpkeep() && imbuedHeartTicksLeft() == 0 && heart != null)
             {
                 InventoryUtils.itemInteract(heart.getId(), "Invigorate");
-                magicBoosted = true;
+                boosted = true;
             }
         }
 
-        return meleeBoosted || rangedBoosted || magicBoosted;
+
+        if (client.getVarbitValue(Varbits.ANTIFIRE) == 0 && !boosted)
+        {
+            Item anti = getLowestDoseAntifire();
+            if (config.enableAntiFireUpkeep() && anti != null && canPotUp())
+            {
+                InventoryUtils.itemInteract(anti.getId(), "Drink");
+                boosted = true;
+            }
+        }
+
+        if (!config.onlyRemovePoison())
+        {
+            if (!activeVenomProtection())
+            {
+                Item anti = getLowestDoseAntiVenom();
+                if (config.enablePoisonUpkeep() && anti != null && canPotUp())
+                {
+                    InventoryUtils.itemInteract(anti.getId(), "Drink");
+                    boosted = true;
+                }
+            }
+            else if (!activePoisonProtection())
+            {
+                Item anti = getLowestDoseAntiPoison();
+                if (config.enablePoisonUpkeep() && anti != null && canPotUp())
+                {
+                    InventoryUtils.itemInteract(anti.getId(), "Drink");
+                    boosted = true;
+                }
+            }
+        }
+        else if (isVenomed() || isPoisoned())
+        {
+            Item antivenom = getLowestDoseAntiVenom();
+            Item antipoison = getLowestDoseAntiPoison();
+            Item sanfew = getLowestDosePotion("Sanfew serum");
+            if (config.enablePoisonUpkeep() && canPotUp())
+            {
+                if (antivenom != null)
+                {
+                    InventoryUtils.itemInteract(antivenom.getId(), "Drink");
+                    boosted = true;
+                }
+                else if (antipoison != null)
+                {
+                    InventoryUtils.itemInteract(antipoison.getId(), "Drink");
+                    boosted = true;
+                }
+                else if (sanfew != null)
+                {
+                    InventoryUtils.itemInteract(sanfew.getId(), "Drink");
+                    boosted = true;
+                }
+            }
+        }
+
+        return boosted;
+    }
+
+    private boolean activeVenomProtection()
+    {
+        return client.getVarpValue(VarPlayer.POISON) < -38;
+    }
+
+    private boolean activePoisonProtection()
+    {
+        return client.getVarpValue(VarPlayer.POISON) < 0;
+    }
+
+    private boolean isVenomed()
+    {
+        return client.getVarpValue(VarPlayer.POISON) > 100;
+    }
+
+    private boolean isPoisoned()
+    {
+        return client.getVarpValue(VarPlayer.POISON) > 0;
     }
 
     private boolean canRestoreHp()
@@ -2111,6 +2191,87 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         for (int i = 1; i < 5; i++)
         {
             for (String restoreItem : prayerRestoreNames)
+            {
+                String fullName = restoreItem + "(" + i + ")";
+
+                if (config.foodBlacklist().contains(fullName))
+                {
+                    continue;
+                }
+
+                Item r = InventoryUtils.getFirstItem(fullName);
+                if (r != null)
+                {
+                    ItemComposition itemComposition = client.getItemDefinition(r.getId());
+                    if ((Arrays.asList(itemComposition.getInventoryActions()).contains("Drink")))
+                    {
+                        return r;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private Item getLowestDoseAntifire()
+    {
+        for (int i = 1; i < 5; i++)
+        {
+            for (String restoreItem : antiFireNames)
+            {
+                String fullName = restoreItem + "(" + i + ")";
+
+                if (config.foodBlacklist().contains(fullName))
+                {
+                    continue;
+                }
+
+                Item r = InventoryUtils.getFirstItem(fullName);
+                if (r != null)
+                {
+                    ItemComposition itemComposition = client.getItemDefinition(r.getId());
+                    if ((Arrays.asList(itemComposition.getInventoryActions()).contains("Drink")))
+                    {
+                        return r;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private Item getLowestDoseAntiPoison()
+    {
+        for (int i = 1; i < 5; i++)
+        {
+            for (String restoreItem : antiPoisonNames)
+            {
+                String fullName = restoreItem + "(" + i + ")";
+
+                if (config.foodBlacklist().contains(fullName))
+                {
+                    continue;
+                }
+
+                Item r = InventoryUtils.getFirstItem(fullName);
+                if (r != null)
+                {
+                    ItemComposition itemComposition = client.getItemDefinition(r.getId());
+                    if ((Arrays.asList(itemComposition.getInventoryActions()).contains("Drink")))
+                    {
+                        return r;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private Item getLowestDoseAntiVenom()
+    {
+        for (int i = 1; i < 5; i++)
+        {
+            for (String restoreItem : antiVenomNames)
             {
                 String fullName = restoreItem + "(" + i + ")";
 
