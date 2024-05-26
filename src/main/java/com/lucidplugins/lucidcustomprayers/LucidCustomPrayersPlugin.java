@@ -312,6 +312,20 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
                 CombatUtils.toggleQuickPrayers();
                 disableQuickPrayers = false;
             }
+            else if (config.flickOnActivate())
+            {
+                if (CombatUtils.isQuickPrayersEnabled())
+                {
+                    CombatUtils.toggleQuickPrayers();
+                    CombatUtils.toggleQuickPrayers();
+                }
+                else if (getActiveOverhead() != null)
+                {
+                    final Prayer overhead = getActiveOverhead();
+                    CombatUtils.deactivatePrayer(overhead);
+                    CombatUtils.activatePrayer(overhead);
+                }
+            }
         }
 
         for (ScheduledPrayer prayer : scheduledPrayers)
@@ -336,6 +350,23 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         npcsYouInteractedWithThisTick.clear();
 
         validProjectiles.removeIf(proj -> proj.getRemainingCycles() < 1);
+    }
+
+    public Prayer getActiveOverhead()
+    {
+        if (client.isPrayerActive(Prayer.PROTECT_FROM_MELEE))
+        {
+            return Prayer.PROTECT_FROM_MELEE;
+        }
+        else if(client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
+        {
+            return Prayer.PROTECT_FROM_MAGIC;
+        }
+        else if (client.isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
+        {
+            return Prayer.PROTECT_FROM_MISSILES;
+        }
+        return null;
     }
 
     private void getEquipmentChanges()

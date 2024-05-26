@@ -17,9 +17,17 @@ public interface LucidCustomPrayersConfig extends Config
     String generalSection = "General";
 
     @ConfigSection(
+            name = "1Tick Flicking",
+            description = "Settings for 1 tick flicking",
+            position = 1,
+            closedByDefault = true
+    )
+    String flickingSection = "1Tick Flicking";
+
+    @ConfigSection(
             name = "Debug",
             description = "Debug settings",
-            position = 1,
+            position = 2,
             closedByDefault = true
     )
     String debugSection = "Debug";
@@ -27,7 +35,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Preset Loading/Saving",
             description = "Save/Load a custom preset",
-            position = 2,
+            position = 3,
             closedByDefault = true
     )
     String presetSection = "Preset Loading/Saving";
@@ -35,7 +43,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 1",
             description = "Custom Prayer 1",
-            position = 3,
+            position = 4,
             closedByDefault = true
     )
     String prayer1Section = "Custom Prayer 1";
@@ -43,7 +51,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 2",
             description = "Custom Prayer 2",
-            position = 4,
+            position = 5,
             closedByDefault = true
     )
     String prayer2Section = "Custom Prayer 2";
@@ -51,7 +59,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 3",
             description = "Custom Prayer 3",
-            position = 5,
+            position = 6,
             closedByDefault = true
     )
     String prayer3Section = "Custom Prayer 3";
@@ -59,7 +67,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 4",
             description = "Custom Prayer 4",
-            position = 6,
+            position = 7,
             closedByDefault = true
     )
     String prayer4Section = "Custom Prayer 4";
@@ -67,7 +75,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 5",
             description = "Custom Prayer 5",
-            position = 7,
+            position = 8,
             closedByDefault = true
     )
     String prayer5Section = "Custom Prayer 5";
@@ -75,19 +83,18 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigSection(
             name = "Custom Prayer 6",
             description = "Custom Prayer 6",
-            position = 8,
+            position = 9,
             closedByDefault = true
     )
     String prayer6Section = "Custom Prayer 6";
 
-    // General Section
-
+    // Flicking section
     @ConfigItem(
             name = "1-Tick Quick Prayer Toggle Hotkey",
             description = "Toggles 1-tick flicking your quick prayers on/off",
             position = 0,
             keyName = "toggle1tickQuickPrayersHotkey",
-            section = generalSection
+            section = flickingSection
     )
     default Keybind toggle1tickQuickPrayersHotkey()
     {
@@ -95,9 +102,23 @@ public interface LucidCustomPrayersConfig extends Config
     }
 
     @ConfigItem(
+            name = "1-Tick Flick On activation",
+            description = "If you toggle an overhead prayer on or quick prayers it will auto flick them until you turn off the prayers",
+            position = 1,
+            keyName = "flickOnActivate",
+            section = flickingSection
+    )
+    default boolean flickOnActivate()
+    {
+        return false;
+    }
+
+    // General Section
+
+    @ConfigItem(
             name = "Allow Duplicate Animation Events",
             description = "The plugin will not filter out duplicate animation changed events that happen on the same tick.",
-            position = 1,
+            position = 0,
             keyName = "allowDuplicateAnimationEvents",
             section = generalSection
     )
@@ -109,7 +130,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Allow Duplicate Projectile Events",
             description = "The plugin will not filter out duplicate projectile spawned events that happen on the same tick.",
-            position = 2,
+            position = 1,
             keyName = "allowDuplicateProjectileEvents",
             section = generalSection
     )
@@ -121,7 +142,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Allow Duplicate Graphics Events",
             description = "The plugin will not filter out duplicate graphics spawned events that happen on the same tick.",
-            position = 3,
+            position = 2,
             keyName = "allowDuplicateGraphicsEvents",
             section = generalSection
     )
@@ -133,7 +154,7 @@ public interface LucidCustomPrayersConfig extends Config
     @ConfigItem(
             name = "Ignore Events From Dead NPCs",
             description = "The plugin will ignore events from an NPC if it's dead.",
-            position = 4,
+            position = 3,
             keyName = "ignoreDeadNpcEvents",
             section = generalSection
     )
