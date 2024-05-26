@@ -13,6 +13,7 @@ import com.lucidplugins.api.utils.*;
 import com.lucidplugins.lucidhotkeys2.overlay.TileMarkersOverlay;
 import lombok.Getter;
 import net.runelite.api.*;
+import net.runelite.api.Deque;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
@@ -123,6 +124,9 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
     private int lastPlayerAnimationTick = 0;
     private int lastPlayerAnimationId = -1;
 
+    private Random random = new Random();
+
+
     // Search settings NPCs
     private boolean nPartialMatching = false;
     private boolean nHasTarget = false;
@@ -167,7 +171,19 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
     private boolean tiIsNotNoted = false;
     private boolean tiIsStackable = false;
     private boolean tiIsNotStackable = false;
-    private Random random = new Random();
+
+    // Search settings Tiles
+
+    private int tFurtherThanDistance = 0;
+    private int tWithinDistance = 50;
+    private Object tNotUnderNpcs = "null";
+    private Object tNotHavingSpotAnimIds = "null";
+    private Object tNotHavingProjectileIds = "null";
+    private Object tNpcsToDistanceCheck = "null";
+    private int tFurtherThanNpcDistance = 0;
+    private int tWithinNpcDistance = 50;
+
+
 
     @Provides
     LucidHotkeys2Config getConfig(final ConfigManager configManager)
@@ -185,6 +201,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         resetNpcFilter();
         resetItemFilter();
         resetTItemFilter();
+        resetTileFilter();
         resetTrackedPlayers();
         resetTrackedNpcs();
     }
@@ -1093,6 +1110,12 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 debugMessage("Running script : " + params.get(0));
                 client.runScript(params.toArray());
                 break;
+            case SET_TILE_FILTER:
+                setTileFilter((int) params.get(0), (int) params.get(1), params.get(2), params.get(3), params.get(4), params.get(5), (int) params.get(6), (int) params.get(7));
+                break;
+            case RESET_TILE_FILTER:
+                resetTileFilter();
+                break;
         }
     }
 
@@ -1299,6 +1322,187 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     (!iIsStackable || comp.isStackable()) &&
                     (!iIsNotStackable || !comp.isStackable()) &&
                     (iHasAction.equals("Any") || InventoryUtils.itemHasAction(item.getItem().getId(), iHasAction));
+        };
+    }
+
+    private void resetTileFilter()
+    {
+        tFurtherThanDistance = 0;
+        tWithinDistance = 50;
+        tNotUnderNpcs = "null";
+        tNotHavingSpotAnimIds = "null";
+        tNotHavingProjectileIds = "null";
+        tNpcsToDistanceCheck = "null";
+        tFurtherThanNpcDistance = 0;
+        tWithinNpcDistance = 50;
+    }
+
+    private void setTileFilter(int tFurtherThanDistance, int tWithinDistance, Object tNotUnderNpcs, Object tNotHavingSpotAnimIds, Object tNotHavingProjectileIds, Object npcsToDistanceCheck, int tFurtherThanNpcDistance, int tWithinNpcDistance)
+    {
+        this.tFurtherThanDistance = tFurtherThanDistance;
+        this.tWithinDistance = tWithinDistance;
+        this.tNotUnderNpcs = tNotUnderNpcs;
+        this.tNotHavingSpotAnimIds = tNotHavingSpotAnimIds;
+        this.tNotHavingProjectileIds = tNotHavingProjectileIds;
+        this.tNpcsToDistanceCheck = npcsToDistanceCheck;
+        this.tFurtherThanNpcDistance = tFurtherThanNpcDistance;
+        this.tWithinNpcDistance = tWithinNpcDistance;
+    }
+
+    private WorldPoint closestTile()
+    {
+        return InteractionUtils.getClosestFiltered(tileFilter());
+    }
+
+    private Predicate<Tile> tileFilter()
+    {
+        Deque<Projectile> projectiles = client.getTopLevelWorldView().getProjectiles();
+        Deque<GraphicsObject> graphicsObjects = client.getTopLevelWorldView().getGraphicsObjects();
+        List<NPC> notUnderNpcs;
+        List<NPC> distanceNpcs;
+
+        if (!tNotUnderNpcs.equals("null"))
+        {
+            notUnderNpcs = NpcUtils.getAll(npcFilter(tNotUnderNpcs));
+        }
+        else
+        {
+            notUnderNpcs = null;
+        }
+
+        if (!tNpcsToDistanceCheck.equals("null"))
+        {
+            distanceNpcs = NpcUtils.getAll(npcFilter(tNpcsToDistanceCheck));
+        }
+        else
+        {
+            distanceNpcs = null;
+        }
+
+        return (tile) -> {
+            boolean furtherThanDistance = InteractionUtils.approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) > tFurtherThanDistance;
+            boolean withinDistance = InteractionUtils.approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < tWithinDistance;
+
+            boolean notUnderAnyNpcs = true;
+            if (notUnderNpcs != null)
+            {
+                for (NPC npc : notUnderNpcs)
+                {
+                    if (npc.getWorldArea().contains(tile.getWorldLocation()))
+                    {
+                        notUnderAnyNpcs = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!notUnderAnyNpcs)
+            {
+                return false;
+            }
+
+            boolean distanceToNpcsGood = false;
+            if (distanceNpcs != null)
+            {
+                for (NPC npc : distanceNpcs)
+                {
+                    int distance = (int) InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), tile.getWorldLocation(), npc.getWorldArea().getWidth(), 1);
+                    if (distance < tWithinNpcDistance && distance > tFurtherThanNpcDistance)
+                    {
+                        MessageUtils.addMessage(client, "NPC " + npc.getName() + " Dist: " + distance);
+                        distanceToNpcsGood = true;
+                        break;
+                    }
+
+                }
+            }
+
+            if (!distanceToNpcsGood)
+            {
+                return false;
+            }
+
+            boolean notContainingSpotAnims = true;
+            if (graphicsObjects != null)
+            {
+                for (GraphicsObject graphicsObject : graphicsObjects)
+                {
+                    if (graphicsObject.getLocation() == null)
+                    {
+                        continue;
+                    }
+
+                    String toAvoid = String.valueOf(tNotHavingSpotAnimIds);
+                    String[] split = toAvoid.split(",");
+                    boolean match = false;
+                    for (String s : split)
+                    {
+                        if (isInteger(s.strip()))
+                        {
+                            int id = Integer.parseInt(s.strip());
+                            if (graphicsObject.getLocation().equals(LocalPoint.fromWorld(client.getTopLevelWorldView(), tile.getWorldLocation())) && graphicsObject.getId() == id)
+                            {
+                                match = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (match)
+                    {
+                        notContainingSpotAnims = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!notContainingSpotAnims)
+            {
+                return false;
+            }
+
+            boolean notContainingProjectiles = true;
+            if (projectiles != null)
+            {
+                for (Projectile projectile : projectiles)
+                {
+                    if (projectile.getTarget() == null)
+                    {
+                        continue;
+                    }
+
+                    String toAvoid = String.valueOf(tNotHavingProjectileIds);
+                    String[] split = toAvoid.split(",");
+                    boolean match = false;
+                    for (String s : split)
+                    {
+                        if (isInteger(s.strip()))
+                        {
+                            int id = Integer.parseInt(s.strip());
+                            if (projectile.getTarget().equals(LocalPoint.fromWorld(client.getTopLevelWorldView(), tile.getWorldLocation())) && projectile.getId() == id)
+                            {
+                                match = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (match)
+                    {
+                        notContainingProjectiles = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!notContainingProjectiles)
+            {
+                return false;
+            }
+
+            return InteractionUtils.isWalkable(tile.getWorldLocation()) &&
+                    furtherThanDistance &&
+                    withinDistance;
         };
     }
 
@@ -2000,7 +2204,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         "targetAnimId", "projsTargetYou", "projsTargetYourTile", "lastNpcYouTargeted", "lastPlayerYouTargeted",
         "lastNpcTargetedYou", "lastPlayerTargetedYou", "numNpcsTargetYou", "numPlayersTargetYou", "numProjsTargetYou",
         "numProjsTargetYourTile", "equipNames", "invNames", "equipIds", "invIds", "hintArrowWLoc", "hintArrowRLoc",
-        "hintArrowNpcWLoc", "hintArrowNpcRLoc"
+        "hintArrowNpcWLoc", "hintArrowNpcRLoc", "filteredTile", "distToFilteredTile"
     );
 
     private String getGlobalVariableValue(String varName)
@@ -2359,6 +2563,20 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     return "null";
                 }
                 return harn.getWorldLocation().getRegionX() + "|" + harn.getWorldLocation().getRegionY() + "|" + harn.getWorldLocation().getPlane();
+            case "filteredTile":
+                WorldPoint closest = closestTile();
+                if (closest == null)
+                {
+                    return "null";
+                }
+                return closest.getX() + "|" + closest.getY() + "|" + closest.getPlane();
+            case "distToFilteredTile":
+                WorldPoint closest2 = closestTile();
+                if (closest2 == null)
+                {
+                    return "9999";
+                }
+                return intAsString(InteractionUtils.approxDistanceTo(closest2, client.getLocalPlayer().getWorldLocation()));
             default:
                 return getDynamicGlobalVariableValue(varName);
         }
@@ -3337,7 +3555,15 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             {
                 configManager.setConfiguration(GROUP_NAME, "hotkey" + (i + 1), loadedConfig.getHotkey()[i]);
                 configManager.setConfiguration(GROUP_NAME, "hotkeyExpression" + (i + 1), loadedConfig.getHotkeyExpressions()[i]);
-                configManager.setConfiguration(GROUP_NAME, "useAsBot" + (i + 1), loadedConfig.getUseAsBot()[i]);
+                if (!config.disableRunAsBot())
+                {
+                    configManager.setConfiguration(GROUP_NAME, "useAsBot" + (i + 1), loadedConfig.getUseAsBot()[i]);
+                }
+                else
+                {
+                    configManager.setConfiguration(GROUP_NAME, "useAsBot" + (i + 1), false);
+
+                }
             }
 
             InteractionUtils.showNonModalMessageDialog("Successfully loaded preset '" + presetNameFormatted + "'", "Preset Load Success");

@@ -393,6 +393,20 @@ public class InteractionUtils
         return null;
     }
 
+    public static WorldPoint getClosestFiltered(Predicate<Tile> filter)
+    {
+        List<Tile> safeTiles = getAll(filter);
+
+        Tile closestTile = getClosestTile(safeTiles);
+
+        if (closestTile != null)
+        {
+            return closestTile.getWorldLocation();
+        }
+
+        return null;
+    }
+
     public static WorldPoint getClosestSafeLocationFiltered(List<LocalPoint> list, Predicate<Tile> filter)
     {
         List<Tile> safeTiles = getAll(

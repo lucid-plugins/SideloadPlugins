@@ -459,6 +459,12 @@ public interface LucidCombatConfig extends Config
         return "";
     }
 
+    @ConfigItem(name = "Don't Alch Untradables", description = "Will not attempt to alch any untradable items", position = 3, keyName = "ignoreUntradables", section = alchemySection)
+    default boolean ignoreUntradables()
+    {
+        return false;
+    }
+
     // Auto-thralls
     @ConfigSection(name = "Thrall Settings", description = "Control settings for Thrall Summoning", position = 8, closedByDefault = true)
     String thrallSection = "Thrall Settings";

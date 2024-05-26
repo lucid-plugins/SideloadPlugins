@@ -82,7 +82,10 @@ public enum Action
     WIDGET_CC_OP_1(76, 3, "ccOp1"),
     WIDGET_CC_OP_2(77, 3, "ccOp2"),
     INVOKE_MENU_ACTION(78, 5, "menuAction"),
-    SEND_CLIENTSCRIPT(79, 2, "cs2")
+    SEND_CLIENTSCRIPT(79, 2, "cs2"),
+    SET_TILE_FILTER(80, 9, "setTileFilter"),
+    RESET_TILE_FILTER(81, 1, "resetTileFilter")
+
     ;
 
     int id;

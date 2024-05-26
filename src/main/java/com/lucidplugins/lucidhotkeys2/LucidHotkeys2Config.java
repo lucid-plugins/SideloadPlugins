@@ -67,6 +67,12 @@ public interface LucidHotkeys2Config extends Config
         return false;
     }
 
+    @ConfigItem(name = "Disable Use As Bot On Import", description = "Will set the Use As Bot option to false on all hotkeys to prevent them from auto-running when imported", position = 1, keyName = "disableRunAsBot", section = generalSection)
+    default boolean disableRunAsBot()
+    {
+        return false;
+    }
+
     // Preset Loading/Saving
 
     @ConfigItem(name = "Preset Name", description = "Name of the preset (replaces all non-alphanumerical characters with a space)", position = 0, keyName = "presetName", section = presetSection)

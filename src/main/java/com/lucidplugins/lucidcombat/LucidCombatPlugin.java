@@ -1306,10 +1306,21 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         return InventoryUtils.getAllSlotted(item ->
         {
             ItemComposition composition = client.getItemDefinition(item.getItem().getId());
+
+            if (config.ignoreUntradables() && !composition.isTradeable())
+            {
+                return false;
+            }
+
             boolean nameContains = false;
             for (String itemName : config.alchNames().split(","))
             {
                 itemName = itemName.strip();
+
+                if (itemName.isBlank())
+                {
+                    continue;
+                }
 
                 if (composition.getName() != null && composition.getName().contains(itemName))
                 {
@@ -1324,6 +1335,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 for (String itemName : config.alchBlacklist().split(","))
                 {
                     itemName = itemName.strip();
+
+                    if (itemName.isBlank())
+                    {
+                        continue;
+                    }
 
                     if (itemName.length() < 2)
                     {
