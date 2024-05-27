@@ -12,8 +12,8 @@ import java.util.List;
 
 public class DialogUtils
 {
-    private static List<Integer> continueParentIds = List.of(193, 229, 231, 217);
-    private static List<Integer> continueChildIds = List.of(   0,   0,   5,   5);
+    private static List<Integer> continueParentIds = List.of(193, 229, 229, 231, 217);
+    private static List<Integer> continueChildIds = List.of(   0,   0,   2,   5,   5);
 
     public static void queueResumePauseDialog(int widgetId, int childId)
     {

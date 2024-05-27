@@ -1561,7 +1561,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         {
             if (client.getTickCount() - lastCannonAttempt > 2)
             {
-                if (InventoryUtils.getFreeSlots() < 3)
+                if (InventoryUtils.getFreeSlots() < 4)
                 {
                     List<SlottedItem> food = getFoodItemsNotInBlacklist();
                     List<SlottedItem> karams = InventoryUtils.getAllSlotted(karambwanFilter);
@@ -1734,7 +1734,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
         }
 
-        if (config.stopIfNoFood() && config.enableHpRestore() && needToRestoreHp() && !ateFood && !brewed && !karambwanned)
+        final List<SlottedItem> foodItems = getFoodItemsNotInBlacklist();
+        final SlottedItem karambwan = InventoryUtils.getAllSlotted(karambwanFilter).stream().findFirst().orElse(null);
+
+        if (config.stopIfNoFood() && config.enableHpRestore() && needToRestoreHp() && foodItems.isEmpty() && karambwan == null)
         {
             if (autoCombatRunning)
             {
@@ -1744,10 +1747,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
         }
 
-        if (config.useItemIfOutOfFood() && config.enableHpRestore() && needToRestoreHp() && !ateFood && !brewed && !karambwanned)
+        if (config.useItemIfOutOfFood() && config.enableHpRestore() && needToRestoreHp() && foodItems.isEmpty() && karambwan == null)
         {
             if (client.getTickCount() - lastTabAttempt > 15 && client.getTickCount() - lastTickActive < 7)
             {
+                secondaryStatus = "Ran out of food";
                 useTeleportItem();
                 lastTabAttempt = client.getTickCount();
             }
