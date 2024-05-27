@@ -1116,7 +1116,63 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             case RESET_TILE_FILTER:
                 resetTileFilter();
                 break;
+            case SET_AUTO_COMBAT:
+                setAutoCombat((int) params.get(0) == 1, (int) params.get(1) == 1, (int) params.get(2) == 1, (int) params.get(3) == 1, (int) params.get(4) == 1, String.valueOf(params.get(5)), String.valueOf(params.get(6)));
+                break;
+            case SET_PLUGIN_CONFIG:
+                boolean isBool = params.get(2) instanceof Integer && ((int)params.get(2) == 1 || (int)params.get(2) == 0);
+                boolean isInt = isInteger(String.valueOf(params.get(2)));
+                configManager.setConfiguration(String.valueOf(params.get(0)), String.valueOf(params.get(1)), isBool ? (int) params.get(2) == 1 : isInt ? (int) params.get(2) : String.valueOf(params.get(1)));
+                debugMessage("Set config: Group: " + params.get(0) + ", key: " + params.get(1) + ", value: " + params.get(2));
+                break;
+            case CLAIM_CLOSEST_CANNON:
+                claimClosestCannon();
+                break;
+            case UNCLAIM_CANNON:
+                unclaimCannon();
+                break;
         }
+    }
+
+    private void claimClosestCannon()
+    {
+        TileObject closestCannon = GameObjectUtils.nearest("Dwarf multicannon");
+        if (closestCannon != null)
+        {
+            String formattedLocation = (closestCannon.getWorldLocation().getX() - 1) + "|" + (closestCannon.getWorldLocation().getY() - 1) + "|" + closestCannon.getPlane();
+            configManager.setConfiguration("lucid-cannon-reloader", "cannonLocation", formattedLocation);
+        }
+        else
+        {
+            unclaimCannon();
+        }
+    }
+
+    private void unclaimCannon()
+    {
+        configManager.setConfiguration("lucid-cannon-reloader", "cannonLocation", "-1|-1|-1");
+    }
+
+    private void setAutoCombat(boolean running, boolean safespot, boolean looting, boolean alching, boolean thralls, String npcNames, String lootNames)
+    {
+        String group = "lucid-combat";
+        configManager.setConfiguration(group, "autocombatEnabled", running);
+        configManager.setConfiguration(group, "useSafespot", safespot);
+        configManager.setConfiguration(group, "enableLooting", looting);
+        configManager.setConfiguration(group, "alchStuff", alching);
+        configManager.setConfiguration(group, "enableThralls", thralls);
+        configManager.setConfiguration(group, "npcToFight", npcNames.equals("null") ? "" : npcNames);
+        configManager.setConfiguration(group, "lootNames", lootNames.equals("null") ? "" : lootNames);
+    }
+
+    private boolean isAutoCombatEnabled()
+    {
+        return configManager.getConfiguration("lucid-combat", "autocombatEnabled") != null && Boolean.parseBoolean(configManager.getConfiguration("lucid-combat", "autocombatEnabled"));
+    }
+
+    private boolean isCannonClaimed()
+    {
+        return configManager.getConfiguration("lucid-cannon-reloader", "cannonLocation") != null && !configManager.getConfiguration("lucid-cannon-reloader", "cannonLocation").equals("-1|-1|-1");
     }
 
     private void resetNpcFilter()
@@ -2204,7 +2260,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         "targetAnimId", "projsTargetYou", "projsTargetYourTile", "lastNpcYouTargeted", "lastPlayerYouTargeted",
         "lastNpcTargetedYou", "lastPlayerTargetedYou", "numNpcsTargetYou", "numPlayersTargetYou", "numProjsTargetYou",
         "numProjsTargetYourTile", "equipNames", "invNames", "equipIds", "invIds", "hintArrowWLoc", "hintArrowRLoc",
-        "hintArrowNpcWLoc", "hintArrowNpcRLoc", "filteredTile", "distToFilteredTile"
+        "hintArrowNpcWLoc", "hintArrowNpcRLoc", "filteredTile", "distToFilteredTile", "isAutoCombatEnabled", "isCannonClaimed"
     );
 
     private String getGlobalVariableValue(String varName)
@@ -2577,6 +2633,10 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     return "9999";
                 }
                 return intAsString(InteractionUtils.approxDistanceTo(closest2, client.getLocalPlayer().getWorldLocation()));
+            case "isAutoCombatEnabled":
+                return booleanAsString(isAutoCombatEnabled());
+            case "isCannonClaimed":
+                return booleanAsString(isCannonClaimed());
             default:
                 return getDynamicGlobalVariableValue(varName);
         }

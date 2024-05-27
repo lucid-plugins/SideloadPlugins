@@ -84,8 +84,12 @@ public enum Action
     INVOKE_MENU_ACTION(78, 5, "menuAction"),
     SEND_CLIENTSCRIPT(79, 2, "cs2"),
     SET_TILE_FILTER(80, 9, "setTileFilter"),
-    RESET_TILE_FILTER(81, 1, "resetTileFilter")
+    RESET_TILE_FILTER(81, 1, "resetTileFilter"),
 
+    SET_AUTO_COMBAT(82, 8, "setAutoCombat"),
+    SET_PLUGIN_CONFIG(83, 4, "setPluginConfig"),
+    CLAIM_CLOSEST_CANNON(84, 1, "claimClosestCannon"),
+    UNCLAIM_CANNON(85, 1, "unclaimCannon")
     ;
 
     int id;

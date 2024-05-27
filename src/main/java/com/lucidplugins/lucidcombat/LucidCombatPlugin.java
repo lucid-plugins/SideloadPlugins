@@ -156,6 +156,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         keyManager.registerKeyListener(this);
 
+        if (configManager.getConfiguration("lucid-combat", "autocombatEnabled") == null)
+        {
+            configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+        }
+
         if (!overlayManager.anyMatch(p -> p == overlay))
         {
             overlayManager.add(overlay);
@@ -174,6 +179,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     protected void shutDown()
     {
         keyManager.unregisterKeyListener(this);
+        configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
         autoCombatRunning = false;
 
         if (overlayManager.anyMatch(p -> p == overlay))
@@ -215,13 +221,15 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             .setTarget("<col=ffff00>" + attackEntry.get().getNpc().getName() + "</col>")
             .setType(MenuAction.RUNELITE)
             .onClick((entry) -> {
-                clientThread.invoke(() -> configManager.setConfiguration("lucid-combat", "npcToFight", attackEntry.get().getNpc().getName()));
+                clientThread.invoke(() ->
+                configManager.setConfiguration("lucid-combat", "npcToFight", attackEntry.get().getNpc().getName()));
+                configManager.setConfiguration("lucid-combat", "autocombatEnabled", true);
+                autoCombatRunning = true;
                 lastTickActive = client.getTickCount();
                 lastAlchTick = client.getTickCount();
                 taskEnded = false;
                 tabbed = false;
                 startLocation = client.getLocalPlayer().getWorldLocation();
-                autoCombatRunning = true;
             });
         }
         else
@@ -238,6 +246,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 .setTarget("<col=ffff00>" + attackEntry.get().getNpc().getName() + "</col>")
                 .setType(MenuAction.RUNELITE)
                 .onClick((entry) -> {
+                    configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
                     autoCombatRunning = false;
                     lastTickActive = client.getTickCount();
                     lastTarget = null;
@@ -297,6 +306,27 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return;
         }
 
+        if (event.getKey().equals("autocombatEnabled"))
+        {
+            boolean enabled = Boolean.parseBoolean(event.getNewValue());
+            clientThread.invoke(() -> {
+                MessageUtils.addMessage(client, "Auto combat state changed externally.");
+                lastTickActive = client.getTickCount();
+                autoCombatRunning = enabled;
+                tabbed = false;
+                taskEnded = false;
+
+                if (autoCombatRunning)
+                {
+                    startLocation = client.getLocalPlayer().getWorldLocation();
+                }
+                else
+                {
+                    startLocation = null;
+                }
+            });
+        }
+
         clientThread.invoke(() -> {
             lastTickActive = client.getTickCount();
             taskEnded = false;
@@ -335,6 +365,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             {
                 secondaryStatus = "Slayer Task Done";
                 startLocation = null;
+                configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
                 autoCombatRunning = false;
                 taskEnded = true;
                 lastTarget = null;
@@ -1708,6 +1739,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             if (autoCombatRunning)
             {
                 secondaryStatus = "Ran out of food";
+                configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
                 autoCombatRunning = false;
             }
         }
@@ -2344,6 +2376,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             clientThread.invoke(() -> {
                 lastTickActive = client.getTickCount();
                 autoCombatRunning = !autoCombatRunning;
+                configManager.setConfiguration("lucid-combat", "autocombatEnabled", autoCombatRunning);
                 tabbed = false;
                 taskEnded = false;
 

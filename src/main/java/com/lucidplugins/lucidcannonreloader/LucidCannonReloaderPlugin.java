@@ -57,6 +57,9 @@ public class LucidCannonReloaderPlugin extends Plugin
 
     private boolean goodReloadRange;
 
+    @Inject
+    private ConfigManager configManager;
+
     private Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     private Random rand = new Random();
@@ -69,6 +72,11 @@ public class LucidCannonReloaderPlugin extends Plugin
     public void startUp()
     {
         log.info(getName() + " Started");
+
+        if (configManager.getConfiguration("lucid-cannon-reloader", "cannonLocation") == null)
+        {
+            configManager.setConfiguration("lucid-cannon-reloader", "cannonLocation", "-1|-1|-1");
+        }
 
         this.clientThread.invoke(() -> this.cballsLeft = client.getVarpValue(VarPlayer.CANNON_AMMO));
 
@@ -147,6 +155,7 @@ public class LucidCannonReloaderPlugin extends Plugin
         if (event.getMessage().contains("That isn't your cannon") && ticksSinceLastReloadAttempt() < 10)
         {
             cannonLocation = null;
+            configManager.setConfiguration("lucid-cannon-reloader", "cannonLocation", "-1|-1|-1");
         }
     }
 
@@ -159,6 +168,30 @@ public class LucidCannonReloaderPlugin extends Plugin
         }
 
         checkConfigRanges();
+
+
+        if (event.getKey().equals("cannonLocation"))
+        {
+            if (event.getNewValue() != null)
+            {
+                String location = event.getNewValue();
+                String[] split = location.split("\\|");
+                int x = Integer.parseInt(split[0]);
+                int y = Integer.parseInt(split[1]);
+                int z = Integer.parseInt(split[2]);
+
+                if (x == -1 && y == -1 && z == -1)
+                {
+                    MessageUtils.addMessage(client, "Cannon externally unclaimed");
+                    cannonLocation = null;
+                }
+                else
+                {
+                    cannonLocation = new WorldPoint(x, y, z);
+                    MessageUtils.addMessage(client, "Cannon location externally set to, X:" + cannonLocation.getX() + ", Y:" + cannonLocation.getY());
+                }
+            }
+        }
     }
 
     @Subscribe
@@ -194,6 +227,7 @@ public class LucidCannonReloaderPlugin extends Plugin
                     .setType(MenuAction.RUNELITE)
                     .onClick((entry) -> {
                         cannonLocation = null;
+                        configManager.setConfiguration("lucid-cannon-reloader", "cannonLocation", "-1|-1|-1");
                         MessageUtils.addMessage(client, "Cannon un-claimed");
                     });
         }
@@ -205,6 +239,8 @@ public class LucidCannonReloaderPlugin extends Plugin
                     .setType(MenuAction.RUNELITE)
                     .onClick((entry) -> {
                         cannonLocation = targetWorldPoint;
+                        String formattedLocation = cannonLocation.getX() + "|" + cannonLocation.getY() + "|" + cannonLocation.getPlane();
+                        configManager.setConfiguration("lucid-cannon-reloader", "cannonLocation", formattedLocation);
                         MessageUtils.addMessage(client, "Cannon claimed");
                     });
         }
