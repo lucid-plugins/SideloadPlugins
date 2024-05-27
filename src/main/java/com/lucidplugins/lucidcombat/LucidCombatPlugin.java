@@ -2074,9 +2074,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         Item itemToUse = null;
 
-        final Item defensePot = getLowestDosePotion("Defense potion");
-        final Item superDefensePot = getLowestDosePotion("Super defense");
-        final Item divineSuperDefense = getLowestDosePotion("Divine super defense potion");
+        final Item defensePot = getLowestDosePotion("Defence potion");
+        final Item superDefensePot = getLowestDosePotion("Super defence");
+        final Item divineSuperDefense = getLowestDosePotion("Divine super defence potion");
 
         if (defensePot != null)
         {
