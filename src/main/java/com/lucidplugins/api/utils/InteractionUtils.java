@@ -44,7 +44,7 @@ public class InteractionUtils
         Widget target = EthanApiPlugin.getClient().getWidget(parentId, childId);
         if (grandchildId != -1)
         {
-            if (target == null || target.isSelfHidden())
+            if (target == null || target.isHidden())
             {
                 return true;
             }
@@ -52,13 +52,13 @@ public class InteractionUtils
             Widget subTarget = target.getChild(grandchildId);
             if (subTarget != null)
             {
-                return subTarget.isSelfHidden();
+                return subTarget.isHidden();
             }
         }
 
         if (target != null)
         {
-            return target.isSelfHidden();
+            return target.isHidden();
         }
 
         return true;
