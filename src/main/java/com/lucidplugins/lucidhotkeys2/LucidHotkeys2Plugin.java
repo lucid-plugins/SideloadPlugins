@@ -1303,11 +1303,6 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
     private Predicate<TileObject> objectFilter(Object nameOrId)
     {
         return (obj) -> {
-            if (!(obj instanceof GameObject))
-            {
-                return false;
-            }
-
             boolean any = nameOrId instanceof String && String.valueOf(nameOrId).equals("Any");
             ObjectComposition objComp = client.getObjectDefinition(obj.getId());
             if (objComp != null && objComp.getImpostorIds() != null)
@@ -1315,12 +1310,20 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 objComp = objComp.getImpostor();
             }
 
+            int sizeX = 1;
+            int sizeY = 1;
+            if (obj instanceof GameObject)
+            {
+                sizeX = ((GameObject) obj).sizeX();
+                sizeY = ((GameObject) obj).sizeY();
+            }
+
             boolean idMatches = !(nameOrId instanceof Integer) || (obj.getId() == (int) nameOrId);
             boolean nameMatches = !(nameOrId instanceof String) || any || (oPartialMatching ? objComp != null && objComp.getName() != null && objComp.getName().contains(String.valueOf(nameOrId)) : objComp != null && objComp.getName() != null && objComp.getName().equals(String.valueOf(nameOrId)));
             return  nameMatches &&
                     idMatches &&
-                    InteractionUtils.distanceTo2DHypotenuse(obj.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), ((GameObject) obj).sizeX(), ((GameObject) obj).sizeY(), 1) > oFurtherThanDistance &&
-                    InteractionUtils.distanceTo2DHypotenuse(obj.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), ((GameObject) obj).sizeX(), ((GameObject) obj).sizeY(), 1) < oWithinDistance &&
+                    InteractionUtils.distanceTo2DHypotenuse(obj.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), sizeX, sizeY, 1) > oFurtherThanDistance &&
+                    InteractionUtils.distanceTo2DHypotenuse(obj.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), sizeX, sizeY, 1) < oWithinDistance &&
                     (oHasAction.equals("Any") || GameObjectUtils.hasAction(objComp != null ? objComp.getId() : obj.getId(), oHasAction));
         };
     }
