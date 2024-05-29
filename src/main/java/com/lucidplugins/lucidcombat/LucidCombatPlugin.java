@@ -1861,8 +1861,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 meleePotionToUse = combatBoostPotion;
             }
         }
-        else if (strengthBoost < config.minMeleeBoost())
+
+        if (strengthBoost < config.minMeleeBoost())
         {
+
             final Item strengthBoostingItem = getStrengthBoostingItem();
             if (strengthBoostingItem != null)
             {
@@ -1873,7 +1875,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 meleePotionToUse = combatBoostPotion;
             }
         }
-        else if (defenseBoost < config.minMeleeBoost())
+
+        if (defenseBoost < config.minMeleeBoost())
         {
             final Item defenseBoostingItem = getDefenseBoostingItem();
             if (defenseBoostingItem != null)
