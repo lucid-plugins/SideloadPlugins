@@ -117,7 +117,7 @@ public class LucidAutoDialogPlugin extends Plugin
                 return config.dismissCountCheck();
             case "Sergeant Damien":
                 return config.dismissDrillDemon();
-            case "Drunken dwarf":
+            case "Drunken Dwarf":
                 return config.dismissDrunkenDwarf();
             case "Evil Bob":
                 return config.dismissEvilBob();
