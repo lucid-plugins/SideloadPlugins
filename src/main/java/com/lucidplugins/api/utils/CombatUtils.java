@@ -139,7 +139,7 @@ public class CombatUtils
 
     public static int getSpecEnergy()
     {
-        return EthanApiPlugin.getClient().getVarpValue(300) / 10;
+        return EquipmentUtils.contains("Soulreaper axe") ? EthanApiPlugin.getClient().getVarpValue(3784)  : EthanApiPlugin.getClient().getVarpValue(300) / 10;
     }
 
     public static void toggleSpec()
