@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import com.example.EthanApiPlugin.EthanApiPlugin;
+import com.lucidplugins.api.utils.MessageUtils;
 import com.lucidplugins.api.utils.Reachable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -295,11 +297,10 @@ class InfernoNPC
 		{
 			this.ticksTillNextAttack--;
 		}
-
 		//Jad animation detection
-		if (this.getType() == Type.JAD && this.getNpc().getAnimation() != -1 && this.getNpc().getAnimation() != this.lastAnimation)
+		if (this.getType() == Type.JAD && getAnimation() != -1 && getAnimation() != this.lastAnimation)
 		{
-			final Attack currentAttack = Attack.attackFromId(this.getNpc().getAnimation());
+			final Attack currentAttack = Attack.attackFromId(getAnimation());
 
 			if (currentAttack != null && currentAttack != Attack.UNKNOWN)
 			{
@@ -312,7 +313,7 @@ class InfernoNPC
 			switch (this.getType())
 			{
 				case ZUK:
-					if (this.getNpc().getAnimation() == TZKAL_ZUK)
+					if (getAnimation() == TZKAL_ZUK)
 					{
 						if (finalPhase)
 						{
@@ -347,7 +348,7 @@ class InfernoNPC
 						this.updateNextAttack(Attack.UNKNOWN, 4);
 					}
 					//This will activate another attack cycle
-					else if (this.getNpc().getAnimation() != -1)
+					else if (getAnimation() != -1)
 					{
 						this.updateNextAttack(this.getType().getDefaultAttack(), this.getType().getTicksAfterAnimation());
 					}
@@ -355,7 +356,7 @@ class InfernoNPC
 				case BAT:
 					// Range + LOS check for bat because it suffers from the defense animation bug, also dont activate on "stand" animation
 					if (this.canAttack(client, client.getLocalPlayer().getWorldLocation())
-						&& this.getNpc().getAnimation() != JAL_MEJRAH_STAND && this.getNpc().getAnimation() != -1)
+						&& getAnimation() != JAL_MEJRAH_STAND && getAnimation() != -1)
 					{
 						this.updateNextAttack(this.getType().getDefaultAttack(), this.getType().getTicksAfterAnimation());
 					}
@@ -365,25 +366,25 @@ class InfernoNPC
 				case MAGE:
 					// For the meleer, ranger and mage the attack animation is always prioritized so only check for those
 					// Normal attack animation, doesnt suffer from defense animation bug. Activate usual attack cycle
-					if (this.getNpc().getAnimation() == JAL_IMKOT
-						|| this.getNpc().getAnimation() == JAL_XIL_RANGE_ATTACK || this.getNpc().getAnimation() == JAL_XIL_MELEE_ATTACK
-						|| this.getNpc().getAnimation() == JAL_ZEK_MAGE_ATTACK || this.getNpc().getAnimation() == JAL_ZEK_MELEE_ATTACK)
+					if (getAnimation() == JAL_IMKOT
+						|| getAnimation() == JAL_XIL_RANGE_ATTACK || getAnimation() == JAL_XIL_MELEE_ATTACK
+						|| getAnimation() == JAL_ZEK_MAGE_ATTACK || getAnimation() == JAL_ZEK_MELEE_ATTACK)
 					{
 						this.updateNextAttack(this.getType().getDefaultAttack(), this.getType().getTicksAfterAnimation());
 					}
 					// Burrow into ground animation for meleer
-					else if (this.getNpc().getAnimation() == 7600)
+					else if (getAnimation() == 7600)
 					{
 						this.updateNextAttack(this.getType().getDefaultAttack(), 12);
 					}
 					// Respawn enemy animation for mage
-					else if (this.getNpc().getAnimation() == 7611)
+					else if (getAnimation() == 7611)
 					{
 						this.updateNextAttack(this.getType().getDefaultAttack(), 8);
 					}
 					break;
 				default:
-					if (this.getNpc().getAnimation() != -1)
+					if (getAnimation() != -1)
 					{
 						// This will activate another attack cycle
 						this.updateNextAttack(this.getType().getDefaultAttack(), this.getType().getTicksAfterAnimation());
@@ -410,9 +411,14 @@ class InfernoNPC
 		}
 
 		// This is for jad (jad's animation lasts till after the attack is launched, which fucks up the attack cycle)
-		lastAnimation = this.getNpc().getAnimation();
+		lastAnimation = getAnimation();
 		// This is for blob (to check if player just came out of safespot)
 		lastCanAttack = this.canAttack(client, client.getLocalPlayer().getWorldLocation());
+	}
+
+	private int getAnimation()
+	{
+		return EthanApiPlugin.getAnimation(this.getNpc());
 	}
 
 	@Getter(AccessLevel.PACKAGE)

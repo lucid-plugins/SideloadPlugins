@@ -24,6 +24,7 @@
  */
 package com.lucidplugins.inferno;
 
+import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.google.inject.Provides;
 
 import java.util.ArrayList;
@@ -42,7 +43,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -485,15 +485,14 @@ public class InfernoPlugin extends Plugin
 		if (event.getActor() instanceof NPC)
 		{
 			final NPC npc = (NPC) event.getActor();
-
+			final int animId = EthanApiPlugin.getAnimation(npc);
 			if (ArrayUtils.contains(InfernoNPC.Type.NIBBLER.getNpcIds(), npc.getId())
-				&& npc.getAnimation() == 7576)
+				&& animId == 7576)
 			{
 				infernoNpcs.removeIf(infernoNPC -> infernoNPC.getNpc() == npc);
 			}
 
-
-			if (config.indicateBlobDeathLocation() && InfernoNPC.Type.typeFromId(npc.getId()) == InfernoNPC.Type.BLOB && npc.getAnimation() == InfernoBlobDeathSpot.BLOB_DEATH_ANIMATION)
+			if (config.indicateBlobDeathLocation() && InfernoNPC.Type.typeFromId(npc.getId()) == InfernoNPC.Type.BLOB && animId == InfernoBlobDeathSpot.BLOB_DEATH_ANIMATION)
 			{
 				// Remove from list so the ticks overlay doesn't compete
 				// with the tile overlay.
@@ -569,8 +568,8 @@ public class InfernoPlugin extends Plugin
 
 	private boolean isInInferno()
 	{
-
-		return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID()  == INFERNO_REGION;
+		return true;
+		//return WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID()  == INFERNO_REGION;
 	}
 
 	int getNextWaveNumber()
