@@ -76,8 +76,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private Random random = new Random();
 
+    @Getter
     private int nextHpToRestoreAt = 0;
 
+    @Getter
     private int nextPrayerLevelToRestoreAt = 0;
 
     private int lastTickActive = 0;
@@ -645,16 +647,29 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
+        if (InventoryUtils.contains("Fungicide spray 0") && InventoryUtils.contains(ItemID.FUNGICIDE))
+        {
+            Item spray = InventoryUtils.getFirstItem(ItemID.FUNGICIDE_SPRAY_0);
+            Item refill = InventoryUtils.getFirstItem(ItemID.FUNGICIDE);
+            InventoryUtils.itemOnItem(refill, spray);
+            return false;
+        }
+
         NPC npcTarget = (NPC) target;
         int ratio = npcTarget.getHealthRatio();
         int scale = npcTarget.getHealthScale();
 
         double targetHpPercent = Math.floor((double) ratio  / (double) scale * 100);
-        if (targetHpPercent < config.slayerFinisherHpPercent() && targetHpPercent >= 0)
+        if (targetHpPercent < config.slayerFinisherHpPercent() && targetHpPercent >= 0 && npcTarget.getAnimation() != config.slayerFinisherItem().getDeathAnimation())
         {
+            if (config.slayerFinisherItem() == LucidCombatConfig.SlayerFinisher.NONE)
+            {
+                return false;
+            }
+
             Item slayerFinisher = InventoryUtils.getFirstItem(config.slayerFinisherItem().getItemName());
             if (config.autoSlayerFinisher() && slayerFinisher != null &&
-                    client.getTickCount() - lastFinisherAttempt > 5)
+                    client.getTickCount() - lastFinisherAttempt > 6)
             {
                 InteractionUtils.useItemOnNPC(slayerFinisher.getId(), npcTarget);
                 lastFinisherAttempt = client.getTickCount();
@@ -1151,9 +1166,22 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             }
             else
             {
-                secondaryStatus = "Nothing to murder";
-                nextReactionTick = client.getTickCount() + getReaction();
-                return false;
+                if (config.npcToFight().contains("Zygomite"))
+                {
+                    NPC fungi = NpcUtils.getNearestNpc("Ancient Fungi");
+                    if (fungi != null)
+                    {
+                        NpcUtils.interact(fungi, "Pick");
+                        nextReactionTick = client.getTickCount() + getReaction();
+                        return true;
+                    }
+                }
+                else
+                {
+                    secondaryStatus = "Nothing to murder";
+                    nextReactionTick = client.getTickCount() + getReaction();
+                    return false;
+                }
             }
         }
         else
@@ -1461,7 +1489,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         Predicate<NPC> restOfFilter = npc ->
                 (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
-                npc.getHealthRatio() != 0 &&
+                (npc.getHealthRatio() != 0 && (!npc.getName().contains(config.slayerFinisherItem().getMonsterName()) || (npc.getName().contains(config.slayerFinisherItem().getMonsterName()) && npc.getAnimation() != config.slayerFinisherItem().getDeathAnimation()))) &&
                 Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
                 (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
                 InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();

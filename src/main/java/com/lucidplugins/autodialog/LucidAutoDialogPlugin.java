@@ -131,7 +131,7 @@ public class LucidAutoDialogPlugin extends Plugin
                 return config.dismissGravedigger();
             case "Dr Jekyll":
                 return config.dismissJekyllAndHyde();
-            case "Frogs":
+            case "Frog":
                 return config.dismissKissTheFrog();
             case "Mysterious Old Man":
                 return config.dismissMysteriousOldMan();

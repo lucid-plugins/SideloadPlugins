@@ -66,6 +66,18 @@ public class LucidCombatPanelOverlay extends OverlayPanel
                 .leftColor(Color.WHITE)
                 .right(plugin.ticksUntilNextLootAttempt() >= 0 ? plugin.ticksUntilNextLootAttempt() + "" : (config.maxTicksBetweenLooting() + plugin.ticksUntilNextLootAttempt()) + "")
                 .build());
+
+        panelComponent.getChildren().add(LineComponent.builder()
+                .left("Restore HP Below:")
+                .leftColor(Color.WHITE)
+                .right(plugin.getNextHpToRestoreAt() + "")
+                .build());
+
+        panelComponent.getChildren().add(LineComponent.builder()
+                .left("Restore Prayer Below:")
+                .leftColor(Color.WHITE)
+                .right(plugin.getNextPrayerLevelToRestoreAt() + "")
+                .build());
         return super.render(graphics2D);
     }
 }

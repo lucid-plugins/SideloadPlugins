@@ -503,15 +503,22 @@ public interface LucidCombatConfig extends Config
 
     enum SlayerFinisher
     {
-        BAG_OF_SALT("Bag of salt"), ICE_COOLER("Ice cooler"), FUNGICIDE_SPRAY("Fungicide spray"), ROCK_HAMMER("Rock hammer"), ROCK_THROWNHAMMER("Rock thrownhammer"), NONE("n/a");
+        BAG_OF_SALT("Bag of salt", 1568, "Rockslug"), ICE_COOLER("Ice cooler", 2778, "Lizard"), FUNGICIDE_SPRAY("Fungicide spray", 3327, "Zygomite"), ROCK_HAMMER("Rock hammer", 1520, "Gargoyle"), ROCK_THROWNHAMMER("Rock thrownhammer", 1520, "Gargoyle"), NONE("n/a", -1, "n/a");
 
         @Getter
-        final
-        String itemName;
+        final String itemName;
 
-        SlayerFinisher(String itemName)
+        @Getter
+        final int deathAnimation;
+
+        @Getter
+        final String monsterName;
+
+        SlayerFinisher(String itemName, int deathAnimation, String monsterName)
         {
             this.itemName = itemName;
+            this.deathAnimation = deathAnimation;
+            this.monsterName = monsterName;
         }
 
     }
