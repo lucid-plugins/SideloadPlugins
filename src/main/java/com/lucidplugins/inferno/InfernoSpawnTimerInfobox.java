@@ -39,6 +39,8 @@ class InfernoSpawnTimerInfobox extends InfoBox
 	private static final long SPAWN_DURATION_WARNING = 120; // 2 minutes before next respawn
 	private static final long SPAWN_DURATION_DANGER = 30; // 30 seconds before next respawn
 
+	private final InfernoPlugin plugin;
+
 	private long timeRemaining;
 	private long startTime;
 
@@ -51,18 +53,25 @@ class InfernoSpawnTimerInfobox extends InfoBox
 		setPriority(InfoBoxPriority.HIGH);
 		running = false;
 		timeRemaining = SPAWN_DURATION;
+		this.plugin = plugin;
+
+		plugin.spawnDebug("Spawn Timer created");
 	}
 
 	void run()
 	{
 		startTime = Instant.now().getEpochSecond();
 		running = true;
+
+		plugin.spawnDebug("Spawn Timer created. Start time: " + startTime);
 	}
 
 	void reset()
 	{
 		running = false;
 		timeRemaining = SPAWN_DURATION;
+
+		plugin.spawnDebug("Spawn Timer reset. Time remaining: " + timeRemaining);
 	}
 
 	void pause()
@@ -79,6 +88,8 @@ class InfernoSpawnTimerInfobox extends InfoBox
 		timeRemaining = Math.max(0, timeRemaining - timeElapsed);
 
 		timeRemaining += SPAWN_DURATION_INCREMENT;
+
+		plugin.spawnDebug("Spawn Timer paused. Time remaining: " + timeRemaining);
 	}
 
 	@Override

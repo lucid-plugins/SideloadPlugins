@@ -367,6 +367,18 @@ public interface InfernoConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 2,
+			keyName = "spawnTimerDebug",
+			name = "Spawn Timer Debug",
+			description = "Log debug information for spawn sets",
+			section = ExtraSection
+	)
+	default boolean spawnTimerDebug()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		position = 0,
 		keyName = "indicateNibblers",
 		name = "Indicate Nibblers",

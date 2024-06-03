@@ -1486,7 +1486,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 (npc.getInteracting() == client.getLocalPlayer() ||
                 (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
                 (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc)));
-
+        boolean multiway = InteractionUtils.getWidgetSpriteId(161, 20) == 442;
         Predicate<NPC> restOfFilter = npc ->
                 (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
                 (npc.getHealthRatio() != 0 && (!npc.getName().contains(config.slayerFinisherItem().getMonsterName()) || (npc.getName().contains(config.slayerFinisherItem().getMonsterName()) && npc.getAnimation() != config.slayerFinisherItem().getDeathAnimation()))) &&
@@ -1494,7 +1494,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
                 InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();
 
-        return NpcUtils.getNearestNpc(config.multipleTargets() ? multiTargetFilter.and(restOfFilter) : singleTargetFilter.and(restOfFilter));
+        return NpcUtils.getNearestNpc(config.multipleTargets() && multiway ? multiTargetFilter.and(restOfFilter) : singleTargetFilter.and(restOfFilter));
     }
 
     private boolean isNpcEligible(NPC npc)

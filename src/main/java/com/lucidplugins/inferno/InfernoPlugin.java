@@ -1069,7 +1069,7 @@ public class InfernoPlugin extends Plugin
 		final int pauseHp = 600;
 		final int resumeHp = 480;
 
-		int hp = calculateNpcHp(zuk.getHealthRatio(), zuk.getHealthScale(), npcManager.getHealth(zuk.getId()));
+		int hp = calculateNpcHp(zuk.getHealthRatio(), zuk.getHealthScale(), 1200);
 
 		if (hp <= 0)
 		{
@@ -1223,5 +1223,22 @@ public class InfernoPlugin extends Plugin
 			default:
 				return false;
 		}
+	}
+
+	public void spawnDebug(String message)
+	{
+		log.debug(message);
+
+		if (!config.spawnTimerDebug())
+		{
+			return;
+		}
+
+		if (client.getGameState() != GameState.LOGGED_IN)
+		{
+			return;
+		}
+
+		MessageUtils.addMessage(client, message);
 	}
 }
