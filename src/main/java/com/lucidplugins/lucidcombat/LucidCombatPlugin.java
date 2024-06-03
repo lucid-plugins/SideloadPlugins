@@ -673,6 +673,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             {
                 InteractionUtils.useItemOnNPC(slayerFinisher.getId(), npcTarget);
                 lastFinisherAttempt = client.getTickCount();
+                int distance = (int) InteractionUtils.distanceTo2DHypotenuse(npcTarget.getWorldLocation(), client.getLocalPlayer().getWorldLocation(), npcTarget.getWorldArea().getWidth(), 1);
+                nextReactionTick = client.getTickCount() + (distance / 2) + 2;
                 return true;
             }
         }
