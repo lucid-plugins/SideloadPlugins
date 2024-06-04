@@ -2439,10 +2439,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         if (config.autocombatHotkey().matches(e))
         {
             clientThread.invoke(() -> {
-                lastTickActive = client.getTickCount();
                 autoCombatRunning = !autoCombatRunning;
+                final boolean activate = autoCombatRunning;
                 resetAutoCombat();
-                if (autoCombatRunning)
+
+                if (activate)
                 {
                     startAutoCombat();
                 }
