@@ -126,7 +126,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private final List<String> prayerRestoreNames = List.of("Prayer potion", "Super restore", "Sanfew serum", "Blighted super restore", "Moonlight potion");
 
-    private final List<String> antiFireNames = List.of("Extended super antifire", "Super antifire", "Extended antifire", "Antifire potion");
+    private final List<String> antiFireNames = List.of("Extended super antifire", "Super antifire potion", "Extended antifire", "Antifire potion");
 
     private final List<String> antiPoisonNames = List.of("Antidote+", "Superantipoison", "Antipoison");
 
@@ -323,7 +323,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         startLocation = client.getLocalPlayer().getWorldLocation();
         safeSpotLocation = client.getLocalPlayer().getWorldLocation();
     }
-
     private void resetAutoCombat()
     {
         autoCombatRunning = false;
