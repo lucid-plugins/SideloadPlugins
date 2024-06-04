@@ -111,6 +111,8 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     @Getter
     private WorldPoint startLocation = null;
 
+    @Getter
+    private WorldPoint safeSpotLocation = null;
 
     private int nextLootAttempt = 0;
 
@@ -182,7 +184,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         keyManager.unregisterKeyListener(this);
         configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
-        autoCombatRunning = false;
+        resetAutoCombat();
 
         if (overlayManager.anyMatch(p -> p == overlay))
         {
@@ -224,14 +226,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             .setType(MenuAction.RUNELITE)
             .onClick((entry) -> {
                 clientThread.invoke(() ->
-                configManager.setConfiguration("lucid-combat", "npcToFight", attackEntry.get().getNpc().getName()));
-                configManager.setConfiguration("lucid-combat", "autocombatEnabled", true);
-                autoCombatRunning = true;
-                lastTickActive = client.getTickCount();
-                lastAlchTick = client.getTickCount();
-                taskEnded = false;
-                tabbed = false;
-                startLocation = client.getLocalPlayer().getWorldLocation();
+                {
+                    configManager.setConfiguration("lucid-combat", "npcToFight", attackEntry.get().getNpc().getName());
+                    configManager.setConfiguration("lucid-combat", "autocombatEnabled", true);
+                    resetAutoCombat();
+                    startAutoCombat();
+                });
+
             });
         }
         else
@@ -248,13 +249,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 .setTarget("<col=ffff00>" + attackEntry.get().getNpc().getName() + "</col>")
                 .setType(MenuAction.RUNELITE)
                 .onClick((entry) -> {
-                    configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
-                    autoCombatRunning = false;
-                    lastTickActive = client.getTickCount();
-                    lastTarget = null;
-                    taskEnded = false;
-                    tabbed = false;
-                    startLocation = null;
+                    resetAutoCombat();
                 });
             }
         }
@@ -313,29 +308,34 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             boolean enabled = Boolean.parseBoolean(event.getNewValue());
             clientThread.invoke(() -> {
                 MessageUtils.addMessage(client, "Auto combat state changed externally.");
-                lastTickActive = client.getTickCount();
-                autoCombatRunning = enabled;
-                tabbed = false;
-                taskEnded = false;
-
-                if (autoCombatRunning)
+                resetAutoCombat();
+                if (enabled)
                 {
-                    startLocation = client.getLocalPlayer().getWorldLocation();
-                }
-                else
-                {
-                    startLocation = null;
+                    startAutoCombat();
                 }
             });
         }
+    }
 
-        clientThread.invoke(() -> {
-            lastTickActive = client.getTickCount();
-            taskEnded = false;
-            tabbed = false;
-            nextHpToRestoreAt = Math.max(1, config.minHp() + (config.minHpBuffer() > 0 ? random.nextInt(config.minHpBuffer() + 1) : 0));
-            nextPrayerLevelToRestoreAt = Math.max(1, config.prayerPointsMin() + (config.prayerRestoreBuffer() > 0 ? random.nextInt(config.prayerRestoreBuffer() + 1) : 0));
-        });
+    private void startAutoCombat()
+    {
+        autoCombatRunning = true;
+        startLocation = client.getLocalPlayer().getWorldLocation();
+        safeSpotLocation = client.getLocalPlayer().getWorldLocation();
+    }
+
+    private void resetAutoCombat()
+    {
+        autoCombatRunning = false;
+        startLocation = null;
+        safeSpotLocation = null;
+        lastTickActive = client.getTickCount();
+        lastAlchTick = client.getTickCount();
+        tabbed = false;
+        taskEnded = false;
+        lastTarget = null;
+        nextHpToRestoreAt = Math.max(1, config.minHp() + (config.minHpBuffer() > 0 ? random.nextInt(config.minHpBuffer() + 1) : 0));
+        nextPrayerLevelToRestoreAt = Math.max(1, config.prayerPointsMin() + (config.prayerRestoreBuffer() > 0 ? random.nextInt(config.prayerRestoreBuffer() + 1) : 0));
     }
 
     @Subscribe
@@ -368,6 +368,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 secondaryStatus = "Slayer Task Done";
                 startLocation = null;
                 configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+                configManager.setConfiguration("lucid-combat", "npcToFight", "");
                 autoCombatRunning = false;
                 taskEnded = true;
                 lastTarget = null;
@@ -511,9 +512,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         if (!actionTakenThisTick)
         {
-            actionTakenThisTick = handleAutoCombat();
+            actionTakenThisTick = waitingForFinisher();
         }
 
+        if (!actionTakenThisTick)
+        {
+            actionTakenThisTick = handleAutoCombat();
+        }
     }
 
     public boolean isMoving()
@@ -1116,6 +1121,28 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         return false;
     }
 
+    private boolean waitingForFinisher()
+    {
+        if (client.getLocalPlayer().getInteracting() instanceof NPC)
+        {
+            NPC target = (NPC) client.getLocalPlayer().getInteracting();
+            int ratio = target.getHealthRatio();
+            int scale = target.getHealthScale();
+
+            double targetHpPercent = Math.floor((double) ratio  / (double) scale * 100);
+            if (targetHpPercent < config.slayerFinisherHpPercent() && targetHpPercent >= 0 && target.getAnimation() != config.slayerFinisherItem().getDeathAnimation())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     private boolean handleAutoCombat()
     {
         if (!autoCombatRunning)
@@ -1123,9 +1150,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return false;
         }
 
-        if (config.useSafespot() && !startLocation.equals(client.getLocalPlayer().getWorldLocation()) && !isMoving())
+        if (config.useSafespot() && !safeSpotLocation.equals(client.getLocalPlayer().getWorldLocation()) && !isMoving())
         {
-            InteractionUtils.walk(startLocation);
+            InteractionUtils.walk(safeSpotLocation);
             nextReactionTick = client.getTickCount() + getReaction();
             return false;
         }
@@ -1774,6 +1801,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 secondaryStatus = "Ran out of food";
                 configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
                 autoCombatRunning = false;
+                lastTarget = null;
             }
         }
 
@@ -2413,19 +2441,22 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             clientThread.invoke(() -> {
                 lastTickActive = client.getTickCount();
                 autoCombatRunning = !autoCombatRunning;
-                configManager.setConfiguration("lucid-combat", "autocombatEnabled", autoCombatRunning);
-                tabbed = false;
-                taskEnded = false;
-
+                resetAutoCombat();
                 if (autoCombatRunning)
                 {
-                    startLocation = client.getLocalPlayer().getWorldLocation();
-                }
-                else
-                {
-                    startLocation = null;
+                    startAutoCombat();
                 }
             });
+        }
+
+        if (config.resetTargetRangeHotkey().matches(e))
+        {
+            clientThread.invoke(() -> startLocation = client.getLocalPlayer().getWorldLocation());
+        }
+
+        if (config.resetSafeSpotHotkey().matches(e))
+        {
+            clientThread.invoke(() -> safeSpotLocation = client.getLocalPlayer().getWorldLocation());
         }
     }
 

@@ -26,7 +26,7 @@ public class LucidCombatTileOverlay extends OverlayPanel
         this.config = config;
 
         setPosition(OverlayPosition.DYNAMIC);
-        setPriority(OverlayPriority.HIGH);
+        setPriority(Overlay.PRIORITY_HIGH);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
     }
 
@@ -37,7 +37,12 @@ public class LucidCombatTileOverlay extends OverlayPanel
         {
             if (WorldPoint.isInScene(client.getTopLevelWorldView(), plugin.getStartLocation().getX(), plugin.getStartLocation().getY()))
             {
-                renderTileMarkerWorldPoint(plugin.getStartLocation(), graphics2D, "(Start) Dist: " + String.format("%.1f", plugin.getDistanceToStart()), new Color(20, 210, 10, 100));
+                renderTileMarkerWorldPoint(plugin.getStartLocation(), graphics2D, "(Start) Dist: " + String.format("%.1f", plugin.getDistanceToStart()), new Color(20, 210, 10, 100), 0);
+            }
+
+            if (WorldPoint.isInScene(client.getTopLevelWorldView(), plugin.getSafeSpotLocation().getX(), plugin.getSafeSpotLocation().getY()))
+            {
+                renderTileMarkerWorldPoint(plugin.getSafeSpotLocation(), graphics2D, "(Safespot) Dist: " + String.format("%.1f", plugin.getDistanceToStart()), new Color(210, 210, 210, 100), -25);
             }
         }
 
@@ -52,7 +57,7 @@ public class LucidCombatTileOverlay extends OverlayPanel
                     t.getWorldLocation();
                     if (WorldPoint.isInScene(client.getTopLevelWorldView(), t.getWorldLocation().getX(), t.getWorldLocation().getY()))
                     {
-                        renderTileMarkerLocalPoint(t.getLocalLocation(), graphics2D, "", new Color(210, 20, 10, 100));
+                        renderTileMarkerLocalPoint(t.getLocalLocation(), graphics2D, "", new Color(210, 20, 10, 100), 0);
                     }
                 }
             }
@@ -70,7 +75,7 @@ public class LucidCombatTileOverlay extends OverlayPanel
         return super.render(graphics2D);
     }
 
-    private void renderTileMarkerLocalPoint(LocalPoint lp, Graphics2D graphics2D, String text, Color color)
+    private void renderTileMarkerLocalPoint(LocalPoint lp, Graphics2D graphics2D, String text, Color color, int offset)
     {
         if (lp == null)
         {
@@ -83,7 +88,7 @@ public class LucidCombatTileOverlay extends OverlayPanel
             return;
         }
 
-        final Point point = Perspective.getCanvasTextLocation(client, graphics2D, lp, text, -25);
+        final Point point = Perspective.getCanvasTextLocation(client, graphics2D, lp, text, offset);
         if (point == null)
         {
             return;
@@ -97,14 +102,14 @@ public class LucidCombatTileOverlay extends OverlayPanel
         graphics2D.setFont(originalFont);
     }
 
-    private void renderTileMarkerWorldPoint(WorldPoint wp, Graphics2D graphics2D, String text, Color color)
+    private void renderTileMarkerWorldPoint(WorldPoint wp, Graphics2D graphics2D, String text, Color color, int offset)
     {
         if (wp == null)
         {
             return;
         }
 
-        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client.getTopLevelWorldView(), wp), graphics2D, text, color);
+        renderTileMarkerLocalPoint(LocalPoint.fromWorld(client.getTopLevelWorldView(), wp), graphics2D, text, color, offset);
     }
 
     static void drawOutlineAndFill(final Graphics2D graphics2D, final Color outlineColor, final Color fillColor, final float strokeWidth, final Shape shape)

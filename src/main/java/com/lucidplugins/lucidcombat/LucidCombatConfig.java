@@ -4,6 +4,8 @@ import com.lucidplugins.api.spells.Spells;
 import lombok.Getter;
 import net.runelite.client.config.*;
 
+import java.util.Set;
+
 @ConfigGroup("lucid-combat")
 public interface LucidCombatConfig extends Config
 {
@@ -104,6 +106,18 @@ public interface LucidCombatConfig extends Config
     default boolean deactivatePrayersOnIdle()
     {
         return false;
+    }
+
+    @ConfigItem(name = "Reset Target Range Hotkey", description = "This hotkey will reset the starting position, used for targeting range.", position = 16, keyName = "resetTargetRangeHotkey", section = autoCombatSection)
+    default Keybind resetTargetRangeHotkey()
+    {
+        return Keybind.NOT_SET;
+    }
+
+    @ConfigItem(name = "Reset Safespot Hotkey", description = "This hotkey reset the safespot location to the players current location.", position = 17, keyName = "resetSafeSpotHotkey", section = autoCombatSection)
+    default Keybind resetSafeSpotHotkey()
+    {
+        return Keybind.NOT_SET;
     }
 
     @ConfigSection(name = "Loot Settings", description = "Control loot settings for auto-combat", position = 1, closedByDefault = true)
