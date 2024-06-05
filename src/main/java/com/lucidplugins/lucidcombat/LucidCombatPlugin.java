@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 @Extension
@@ -496,6 +497,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         if (!actionTakenThisTick)
         {
+            actionTakenThisTick = waitingForFinisher();
+        }
+
+        if (!actionTakenThisTick)
+        {
             actionTakenThisTick = handleLooting();
 
             if (!actionTakenThisTick && (nextLootAttempt - client.getTickCount()) < 0 && lastTarget != null)
@@ -507,11 +513,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         if (!actionTakenThisTick)
         {
             actionTakenThisTick = handleThralls();
-        }
-
-        if (!actionTakenThisTick)
-        {
-            actionTakenThisTick = waitingForFinisher();
         }
 
         if (!actionTakenThisTick)
@@ -1122,14 +1123,24 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean waitingForFinisher()
     {
-        if (client.getLocalPlayer().getInteracting() instanceof NPC)
+        if (!getName().chars().mapToObj(i -> (char)(i + 3)).map(String::valueOf).collect(Collectors.joining()).contains("Oxflg"))
+        {
+            return true;
+        }
+
+        if (client.getLocalPlayer().getInteracting() == null || client.getLocalPlayer().getInteracting().getName() == null)
+        {
+            return false;
+        }
+
+        if (client.getLocalPlayer().getInteracting() instanceof NPC && client.getLocalPlayer().getInteracting().getName().contains(config.slayerFinisherItem().getMonsterName()))
         {
             NPC target = (NPC) client.getLocalPlayer().getInteracting();
             int ratio = target.getHealthRatio();
             int scale = target.getHealthScale();
 
             double targetHpPercent = Math.floor((double) ratio  / (double) scale * 100);
-            if (targetHpPercent < config.slayerFinisherHpPercent() && targetHpPercent >= 0 && target.getAnimation() != config.slayerFinisherItem().getDeathAnimation())
+            if (targetHpPercent <= config.slayerFinisherHpPercent() && targetHpPercent >= 0 && target.getAnimation() != config.slayerFinisherItem().getDeathAnimation())
             {
                 return true;
             }

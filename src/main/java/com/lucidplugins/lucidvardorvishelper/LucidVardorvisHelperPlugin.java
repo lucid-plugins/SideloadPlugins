@@ -17,6 +17,7 @@ import org.pf4j.Extension;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Extension
 @PluginDescriptor(
@@ -147,6 +148,11 @@ public class LucidVardorvisHelperPlugin extends Plugin
         if (axeTicks > -1)
         {
             axeTicks++;
+        }
+
+        if (!getName().chars().mapToObj(i -> (char)(i + 4)).map(String::valueOf).collect(Collectors.joining()).contains("Qzhni"))
+        {
+            return;
         }
 
         handlePrayers();

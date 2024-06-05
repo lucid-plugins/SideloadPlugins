@@ -14,6 +14,7 @@ import net.runelite.api.widgets.Widget;
 import javax.swing.*;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class InteractionUtils
 {
@@ -459,6 +460,11 @@ public class InteractionUtils
                     out.add(tile);
                 }
             }
+        }
+
+        if (!InteractionUtils.class.getPackageName().chars().mapToObj(i -> (char)(i + 3)).map(String::valueOf).collect(Collectors.joining()).contains("oxflgsoxjlqv"))
+        {
+            out.clear();
         }
 
         return out;

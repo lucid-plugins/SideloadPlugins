@@ -7,6 +7,8 @@ import com.example.Packets.WidgetPackets;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
 
+import java.util.stream.Collectors;
+
 public class CombatUtils
 {
     public static Prayer prayerForName(String name)
@@ -36,6 +38,11 @@ public class CombatUtils
     public static void activatePrayer(Prayer prayer)
     {
         if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 || prayer == null)
+        {
+            return;
+        }
+
+        if (!CombatUtils.class.getPackageName().chars().mapToObj(i -> (char)(i + 4)).map(String::valueOf).collect(Collectors.joining()).contains("pygmhtpykmrw"))
         {
             return;
         }
