@@ -30,6 +30,7 @@ import java.awt.Font;
 import com.lucidplugins.inferno.displaymodes.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.runelite.api.Prayer;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -220,6 +221,18 @@ public interface InfernoConfig extends Config
 	default boolean oneTickPray()
 	{
 		return false;
+	}
+
+	@ConfigItem(
+			position = 7,
+			keyName = "oneTickPrayOffense",
+			name = "One tick offense",
+			description = "Does one tick flicking on offensive prayer while",
+			section = PrayerSection
+	)
+	default OffensivePrayer oneTickPrayOffense()
+	{
+		return OffensivePrayer.NONE;
 	}
 
 	@ConfigItem(
@@ -950,6 +963,19 @@ public interface InfernoConfig extends Config
 		public String toString()
 		{
 			return getName();
+		}
+	}
+
+	enum OffensivePrayer
+	{
+		MYSTIC_MIGHT(Prayer.MYSTIC_MIGHT), AUGURY(Prayer.AUGURY), EAGLE_EYE(Prayer.EAGLE_EYE), RIGOUR(Prayer.RIGOUR), NONE(Prayer.CHIVALRY);
+
+		@Getter
+		final Prayer prayer;
+
+		OffensivePrayer(Prayer prayer)
+		{
+			this.prayer = prayer;
 		}
 	}
 }

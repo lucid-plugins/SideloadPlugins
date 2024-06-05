@@ -1,4 +1,4 @@
-package com.lucidplugins.autodialog;
+package com.lucidplugins.lucidautodialog;
 
 import com.google.inject.Provides;
 import com.lucidplugins.api.utils.DialogUtils;

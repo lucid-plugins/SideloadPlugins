@@ -1,4 +1,4 @@
-package com.lucidplugins.autodialog;
+package com.lucidplugins.lucidautodialog;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;

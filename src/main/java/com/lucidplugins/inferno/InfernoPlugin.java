@@ -332,14 +332,26 @@ public class InfernoPlugin extends Plugin
 			if (config.oneTickPray())
 			{
 				final Prayer active = getActiveOverhead();
+				final Prayer activeOffense = getActiveOffense();
+
 				if (active != null)
 				{
 					CombatUtils.deactivatePrayer(active);
 				}
 
+				if (activeOffense != null)
+				{
+					CombatUtils.deactivatePrayer(activeOffense);
+				}
+
 				if (bestPrayer != null || active != null)
 				{
 					CombatUtils.activatePrayer(bestPrayer != null ? bestPrayer : active);
+				}
+
+				if (config.oneTickPrayOffense() != InfernoConfig.OffensivePrayer.NONE)
+				{
+					CombatUtils.activatePrayer(config.oneTickPrayOffense().getPrayer());
 				}
 			}
 			else if (bestPrayer != null)
@@ -362,6 +374,27 @@ public class InfernoPlugin extends Plugin
 		else if (client.isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
 		{
 			return Prayer.PROTECT_FROM_MISSILES;
+		}
+		return null;
+	}
+
+	public Prayer getActiveOffense()
+	{
+		if (client.isPrayerActive(Prayer.MYSTIC_MIGHT))
+		{
+			return Prayer.MYSTIC_MIGHT;
+		}
+		else if(client.isPrayerActive(Prayer.AUGURY))
+		{
+			return Prayer.AUGURY;
+		}
+		else if (client.isPrayerActive(Prayer.EAGLE_EYE))
+		{
+			return Prayer.EAGLE_EYE;
+		}
+		else if (client.isPrayerActive(Prayer.RIGOUR))
+		{
+			return Prayer.RIGOUR;
 		}
 		return null;
 	}
