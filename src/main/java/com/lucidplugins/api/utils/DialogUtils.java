@@ -6,8 +6,8 @@ import com.example.Packets.WidgetPackets;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 
 public class DialogUtils
@@ -20,34 +20,30 @@ public class DialogUtils
         WidgetPackets.queueResumePause(widgetId, childId);
     }
 
-    public static List<String> getOptions()
+    public static List<DialogOption> getOptions()
     {
+        List<DialogOption> out = new ArrayList<>();
         Widget widget = EthanApiPlugin.getClient().getWidget(219, 1);
         if (widget == null || widget.isSelfHidden())
         {
-            return Collections.emptyList();
+            return out;
         }
-        else
-        {
-            List<String> out = new ArrayList<>();
-            Widget[] children = widget.getChildren();
-            if (children == null)
-            {
-                return out;
-            }
-            else
-            {
-                for (int i = 1; i < children.length; ++i)
-                {
-                    if (children[i] != null && !children[i].getText().isBlank())
-                    {
-                        out.add(children[i].getText());
-                    }
-                }
 
-                return out;
+        Widget[] children = widget.getChildren();
+        if (children == null)
+        {
+            return out;
+        }
+
+        for (int i = 1; i < children.length; ++i)
+        {
+            if (children[i] != null && !children[i].getText().isBlank())
+            {
+                out.add(new DialogOption(i, children[i].getText(), children[i].getTextColor()));
             }
         }
+
+        return out;
     }
 
     public static boolean canContinue()
@@ -88,17 +84,17 @@ public class DialogUtils
 
     public static int getOptionIndex(String option)
     {
-        if (getOptions().isEmpty())
+        List<DialogOption> options = getOptions();
+        if (options.isEmpty())
         {
             return -1;
         }
 
-        List<String> options = getOptions();
-        for (int index = 0; index < options.size(); index++)
+        for (DialogOption opt : options)
         {
-            if (options.get(index).contains(option))
+            if (opt.getOptionText().contains(option))
             {
-                return index + 1;
+                return opt.getIndex();
             }
         }
 

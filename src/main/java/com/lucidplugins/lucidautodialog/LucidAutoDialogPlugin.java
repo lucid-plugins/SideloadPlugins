@@ -1,9 +1,7 @@
 package com.lucidplugins.lucidautodialog;
 
 import com.google.inject.Provides;
-import com.lucidplugins.api.utils.DialogUtils;
-import com.lucidplugins.api.utils.InventoryUtils;
-import com.lucidplugins.api.utils.NpcUtils;
+import com.lucidplugins.api.utils.*;
 import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.events.GameTick;
@@ -11,9 +9,9 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,6 +27,9 @@ public class LucidAutoDialogPlugin extends Plugin
 
     @Inject
     private LucidAutoDialogConfig config;
+
+    @Inject
+    private ConfigManager configManager;
 
     @Inject
     private Client client;
@@ -54,6 +55,11 @@ public class LucidAutoDialogPlugin extends Plugin
         if (config.autoContinue() && !didSomething)
         {
             didSomething = doContinue();
+        }
+
+        if (config.autoSelectHighlight() && !didSomething)
+        {
+            didSomething = doAutoSelectHighlight();
         }
 
         if (timeout > 0)
@@ -176,17 +182,46 @@ public class LucidAutoDialogPlugin extends Plugin
 
     private boolean doQuestDialog()
     {
-        List<String> options = DialogUtils.getOptions();
+        List<DialogOption> options = DialogUtils.getOptions();
         if (options.isEmpty())
         {
             return false;
         }
 
-        for (String option : DialogUtils.getOptions())
+        for (DialogOption option : options)
         {
-            if (option.startsWith("["))
+            if (option.getOptionText().startsWith("["))
             {
-                DialogUtils.selectOptionIndex(DialogUtils.getOptionIndex(option));
+                DialogUtils.selectOptionIndex(option.getIndex());
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean doAutoSelectHighlight()
+    {
+        List<DialogOption> options = DialogUtils.getOptions();
+        if (options.isEmpty())
+        {
+            return false;
+        }
+
+        String hilCol = configManager.getConfiguration("DIALOGUE_ASSISTANT", "optionHighlightColour");
+
+        if (hilCol == null)
+        {
+            return false;
+        }
+
+        Color highlight = Color.decode(hilCol);
+
+        for (DialogOption option : options)
+        {
+            if (option.getTextColor() != 0 && option.getTextColor() == highlight.getRGB())
+            {
+                DialogUtils.selectOptionIndex(option.getIndex());
                 return true;
             }
         }

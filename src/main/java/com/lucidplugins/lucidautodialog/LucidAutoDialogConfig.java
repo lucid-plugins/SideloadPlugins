@@ -39,6 +39,17 @@ public interface LucidAutoDialogConfig extends Config
         return false;
     }
 
+    @ConfigItem(name = "Auto-select Highlighted Options",
+            description = "If there is an option with a different color, select it.",
+            position = 2,
+            keyName = "autoSelectHighlight",
+            section = generalSection
+    )
+    default boolean autoSelectHighlight()
+    {
+        return false;
+    }
+
     // Random settings
     @ConfigSection(
             name = "Random Event Settings",
