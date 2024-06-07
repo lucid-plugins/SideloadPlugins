@@ -288,7 +288,7 @@ public class LucidScurriusHelperPlugin extends Plugin
                     List<LocalPoint> unsafeTiles = fallingCeilingToTicks.keySet().stream().map(GraphicsObject::getLocation).collect(Collectors.toList());
                     WorldPoint safeTile = null;
 
-                    if (!getName().chars().mapToObj(i -> (char)(i - 3)).map(String::valueOf).collect(Collectors.joining()).contains("Irzfa"))
+                    if (!getName().chars().mapToObj(i -> (char)(i - 3)).map(String::valueOf).collect(Collectors.joining()).contains("Ir`fa"))
                     {
                         continue;
                     }
