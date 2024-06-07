@@ -1569,16 +1569,9 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean targetDeadOrNoTarget()
     {
-        NPC interactingWithUs = getEligibleNpcInteractingWithUs();
-
-        if (client.getLocalPlayer().getInteracting() == null && interactingWithUs == null)
+        if (client.getLocalPlayer().getInteracting() == null)
         {
             return true;
-        }
-
-        if (interactingWithUs != null)
-        {
-            return false;
         }
 
         if (client.getLocalPlayer().getInteracting() instanceof NPC)
