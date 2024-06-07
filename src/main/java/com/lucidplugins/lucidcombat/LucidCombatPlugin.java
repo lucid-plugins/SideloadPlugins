@@ -1525,7 +1525,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 (npc.getInteracting() == client.getLocalPlayer() ||
                 (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
                 (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc)));
-        boolean multiway = InteractionUtils.getWidgetSpriteId(161, 20) == 442;
+        boolean multiway = !InteractionUtils.isWidgetHidden(161, 20) && InteractionUtils.getWidgetSpriteId(161, 20) == 442;
         Predicate<NPC> restOfFilter = npc ->
                 (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
                 (npc.getHealthRatio() != 0 && (!npc.getName().contains(config.slayerFinisherItem().getMonsterName()) || (npc.getName().contains(config.slayerFinisherItem().getMonsterName()) && npc.getAnimation() != config.slayerFinisherItem().getDeathAnimation()))) &&
