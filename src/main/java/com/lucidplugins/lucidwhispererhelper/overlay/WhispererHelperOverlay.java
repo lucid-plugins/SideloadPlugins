@@ -1,7 +1,7 @@
 package com.lucidplugins.lucidwhispererhelper.overlay;
 
-import com.lucidplugins.lucidwhispererhelper.WhispererHelperConfig;
-import com.lucidplugins.lucidwhispererhelper.WhispererHelperPlugin;
+import com.lucidplugins.lucidwhispererhelper.LucidWhispererHelperConfig;
+import com.lucidplugins.lucidwhispererhelper.LucidWhispererHelperPlugin;
 import net.runelite.api.Point;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
@@ -21,11 +21,11 @@ public class WhispererHelperOverlay extends Overlay
 {
 
     private final Client client;
-    private final WhispererHelperPlugin plugin;
-    private final WhispererHelperConfig config;
+    private final LucidWhispererHelperPlugin plugin;
+    private final LucidWhispererHelperConfig config;
 
     @Inject
-    WhispererHelperOverlay(final Client client, final WhispererHelperPlugin plugin, final WhispererHelperConfig config)
+    WhispererHelperOverlay(final Client client, final LucidWhispererHelperPlugin plugin, final LucidWhispererHelperConfig config)
     {
         super(plugin);
         this.client = client;

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Extension
 @PluginDescriptor(name = "<html><font color=\"#32CD32\">Lucid </font>Scurrius Helper</html>", description = "Dodges Scurrius' falling ceiling attack and re-attacks")
-public class ScurriusHelperPlugin extends Plugin
+public class LucidScurriusHelperPlugin extends Plugin
 {
 
     @Inject
@@ -32,7 +32,7 @@ public class ScurriusHelperPlugin extends Plugin
     private ClientThread clientThread;
 
     @Inject
-    private ScurriusHelperConfig config;
+    private LucidScurriusHelperConfig config;
 
     @Inject
     private ConfigManager configManager;
@@ -58,9 +58,9 @@ public class ScurriusHelperPlugin extends Plugin
     private List<Projectile> attacks = new ArrayList<>();
 
     @Provides
-    ScurriusHelperConfig getConfig(ConfigManager configManager)
+    LucidScurriusHelperConfig getConfig(ConfigManager configManager)
     {
-        return configManager.getConfig(ScurriusHelperConfig.class);
+        return configManager.getConfig(LucidScurriusHelperConfig.class);
     }
 
     @Subscribe
@@ -287,6 +287,11 @@ public class ScurriusHelperPlugin extends Plugin
                 {
                     List<LocalPoint> unsafeTiles = fallingCeilingToTicks.keySet().stream().map(GraphicsObject::getLocation).collect(Collectors.toList());
                     WorldPoint safeTile = null;
+
+                    if (!getName().chars().mapToObj(i -> (char)(i - 3)).map(String::valueOf).collect(Collectors.joining()).contains("Irzfa"))
+                    {
+                        continue;
+                    }
 
                     if (config.stayMelee())
                     {

@@ -30,7 +30,7 @@ import java.util.Map;
         tags = {"whisperer", "dt2"}
 )
 @Extension
-public class WhispererHelperPlugin extends Plugin
+public class LucidWhispererHelperPlugin extends Plugin
 {
 
     @Inject
@@ -46,7 +46,7 @@ public class WhispererHelperPlugin extends Plugin
     private WhispererHelperOverlay overlay;
 
     @Inject
-    private WhispererHelperConfig config;
+    private LucidWhispererHelperConfig config;
 
     private List<Projectile> attackProjectiles = new ArrayList<>();
 
@@ -95,9 +95,9 @@ public class WhispererHelperPlugin extends Plugin
     private final Map<LocalPoint, Integer> unsafeTiles = new HashMap<>();
 
     @Provides
-    WhispererHelperConfig getConfig(final ConfigManager configManager)
+    LucidWhispererHelperConfig getConfig(final ConfigManager configManager)
     {
-        return configManager.getConfig(WhispererHelperConfig.class);
+        return configManager.getConfig(LucidWhispererHelperConfig.class);
     }
 
     @Subscribe

@@ -6,7 +6,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
 @ConfigGroup("lucid-whisperer-helper")
-public interface WhispererHelperConfig extends Config
+public interface LucidWhispererHelperConfig extends Config
 {
     @ConfigSection(
             name = "General",

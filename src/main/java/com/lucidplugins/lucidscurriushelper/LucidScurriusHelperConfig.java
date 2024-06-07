@@ -5,7 +5,7 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
 @ConfigGroup("lucid-scurrius-helper")
-public interface ScurriusHelperConfig extends Config
+public interface LucidScurriusHelperConfig extends Config
 {
     @ConfigItem(
             name = "Dodge within melee range",
