@@ -999,7 +999,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
     private boolean nameInLootBlackList(String name)
     {
-        if (config.lootBlacklist().strip().isEmpty())
+        if (config.lootBlacklist().isBlank())
         {
             return false;
         }
@@ -1932,7 +1932,6 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         if (strengthBoost < config.minMeleeBoost())
         {
-
             final Item strengthBoostingItem = getStrengthBoostingItem();
             if (strengthBoostingItem != null)
             {
@@ -2010,19 +2009,19 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         if (!config.onlyRemovePoison())
         {
-            if (!activeVenomProtection())
+            if (!activeVenomProtection() && getLowestDoseAntiVenom() != null)
             {
                 Item anti = getLowestDoseAntiVenom();
-                if (config.enablePoisonUpkeep() && anti != null && canPotUp())
+                if (config.enablePoisonUpkeep() && canPotUp())
                 {
                     InventoryUtils.itemInteract(anti.getId(), "Drink");
                     boosted = true;
                 }
             }
-            else if (!activePoisonProtection())
+            else if (!activePoisonProtection() && getLowestDoseAntiPoison() != null)
             {
                 Item anti = getLowestDoseAntiPoison();
-                if (config.enablePoisonUpkeep() && anti != null && canPotUp())
+                if (config.enablePoisonUpkeep() && canPotUp())
                 {
                     InventoryUtils.itemInteract(anti.getId(), "Drink");
                     boosted = true;
