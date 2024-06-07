@@ -35,6 +35,7 @@ import javax.inject.Inject;
 
 import com.lucidplugins.api.utils.CombatUtils;
 import com.lucidplugins.api.utils.MessageUtils;
+import com.lucidplugins.api.utils.NpcUtils;
 import com.lucidplugins.inferno.displaymodes.InfernoPrayerDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoSafespotDisplayMode;
 import com.lucidplugins.inferno.displaymodes.InfernoWaveDisplayMode;
@@ -325,6 +326,11 @@ public class InfernoPlugin extends Plugin
 			{
 				bestPrayer = bestAttack.getPrayer();
 			}
+		}
+
+		if (config.offTickMeleeJad() && bestPrayer == null && NpcUtils.getNearestNpc("JalTok-Jad") != null)
+		{
+			bestPrayer = Prayer.PROTECT_FROM_MELEE;
 		}
 
 		if (config.autoPray())

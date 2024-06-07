@@ -236,6 +236,18 @@ public interface InfernoConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 8,
+			keyName = "offTickMeleeJad",
+			name = "Jadd Off-tick Melee",
+			description = "Will pray melee during jads if there are no incoming attacks",
+			section = PrayerSection
+	)
+	default boolean offTickMeleeJad()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		position = 4,
 		keyName = "safespotDisplayMode",
 		name = "Tile Safespots",
