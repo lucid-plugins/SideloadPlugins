@@ -161,9 +161,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     {
         keyManager.registerKeyListener(this);
 
-        if (configManager.getConfiguration("lucid-combat", "autocombatEnabled") == null)
+        if (config.allowExternalSetup())
         {
-            configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+            if (configManager.getConfiguration("lucid-combat", "autocombatEnabled") == null)
+            {
+                configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+            }
         }
 
         if (!overlayManager.anyMatch(p -> p == overlay))
@@ -184,7 +187,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
     protected void shutDown()
     {
         keyManager.unregisterKeyListener(this);
-        configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+        if (config.allowExternalSetup())
+        {
+            configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+        }
+
         resetAutoCombat();
 
         if (overlayManager.anyMatch(p -> p == overlay))
@@ -229,11 +236,15 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 clientThread.invoke(() ->
                 {
                     configManager.setConfiguration("lucid-combat", "npcToFight", attackEntry.get().getNpc().getName());
-                    configManager.setConfiguration("lucid-combat", "autocombatEnabled", true);
+
+                    if (config.allowExternalSetup())
+                    {
+                        configManager.setConfiguration("lucid-combat", "autocombatEnabled", true);
+                    }
+
                     resetAutoCombat();
                     startAutoCombat();
                 });
-
             });
         }
         else
@@ -304,7 +315,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return;
         }
 
-        if (event.getKey().equals("autocombatEnabled"))
+        if (config.allowExternalSetup() && event.getKey().equals("autocombatEnabled"))
         {
             boolean enabled = Boolean.parseBoolean(event.getNewValue());
             clientThread.invoke(() -> {
@@ -367,8 +378,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             {
                 secondaryStatus = "Slayer Task Done";
                 startLocation = null;
-                configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
-                configManager.setConfiguration("lucid-combat", "npcToFight", "");
+
+                if (config.allowExternalSetup())
+                {
+                    configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+                }
+
                 autoCombatRunning = false;
                 taskEnded = true;
                 lastTarget = null;
@@ -1802,7 +1817,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             if (autoCombatRunning)
             {
                 secondaryStatus = "Ran out of food";
-                configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+                if (config.allowExternalSetup())
+                {
+                    configManager.setConfiguration("lucid-combat", "autocombatEnabled", false);
+                }
                 autoCombatRunning = false;
                 lastTarget = null;
             }

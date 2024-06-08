@@ -120,6 +120,12 @@ public interface LucidCombatConfig extends Config
         return Keybind.NOT_SET;
     }
 
+    @ConfigItem(name = "Allow External Setup", description = "Allows the state of auto-combat to be controlled by config changes. This is to allow Lucid Hotkeys 2 to work with the setAutoCombat action.", position = 18, keyName = "allowExternalSetup", section = autoCombatSection)
+    default boolean allowExternalSetup()
+    {
+        return false;
+    }
+
     @ConfigSection(name = "Loot Settings", description = "Control loot settings for auto-combat", position = 1, closedByDefault = true)
     String lootSection = "Loot Settings";
 
