@@ -125,7 +125,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         keyManager.unregisterKeyListener(this);
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onAnimationChanged(final AnimationChanged event)
     {
         if (event.getActor() == null)
@@ -151,7 +151,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onNpcSpawned(final NpcSpawned event)
     {
         if (event.getNpc() == null)
@@ -168,7 +168,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onNpcDespawned(final NpcDespawned event)
     {
         if (event.getNpc() == null)
@@ -185,7 +185,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onNpcChanged(final NpcChanged event)
     {
         if (event.getNpc() == null)
@@ -202,7 +202,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onProjectileMoved(final ProjectileMoved event)
     {
         if (validProjectiles.contains(event.getProjectile()))
@@ -220,7 +220,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onGraphicsObjectCreated(final GraphicsObjectCreated event)
     {
         int graphicsId = event.getGraphicsObject().getId();
@@ -232,7 +232,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onGameObjectSpawned(final GameObjectSpawned event)
     {
         int objectId = event.getGameObject().getId();
@@ -244,7 +244,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onInteractingChanged(final InteractingChanged event)
     {
         Actor source = event.getSource();
@@ -276,7 +276,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onConfigChanged(final ConfigChanged event)
     {
         if (!event.getGroup().equals("lucid-custom-prayers"))
@@ -287,7 +287,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         parsePrayers();
     }
 
-    @Subscribe
+    @Subscribe(priority = 20)
     private void onGameTick(final GameTick event)
     {
 
