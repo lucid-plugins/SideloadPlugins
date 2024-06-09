@@ -27,8 +27,10 @@ import net.runelite.client.ui.overlay.OverlayManager;
 import org.pf4j.Extension;
 
 import javax.inject.Inject;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -319,7 +321,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         {
             boolean enabled = Boolean.parseBoolean(event.getNewValue());
             clientThread.invoke(() -> {
-                MessageUtils.addMessage(client, "Auto combat state changed externally.");
+                MessageUtils.addMessage("Auto combat state changed externally.", Color.RED);
                 resetAutoCombat();
                 if (enabled)
                 {
@@ -1285,13 +1287,13 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         boolean hasRunes = (isHighAlching() && hasAlchRunes(true)) || (!isHighAlching() && hasAlchRunes(false));
         if (!hasRunes)
         {
-            MessageUtils.addMessage(client, "Need to alch but not enough runes");
+            MessageUtils.addMessage("Need to alch but not enough runes", Color.RED);
             return false;
         }
 
         if (client.getVarbitValue(4070) != 0)
         {
-            MessageUtils.addMessage(client, "Need to alch but not on normal spellbook");
+            MessageUtils.addMessage("Need to alch but not on normal spellbook", Color.RED);
             return false;
         }
 
@@ -1703,7 +1705,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         String[] actionNames = config.itemActions().split(",");
         if (itemNames.length != actionNames.length)
         {
-            MessageUtils.addMessage(client, "Length mismatch. You have " + itemNames.length + " items listed and " + actionNames.length + " item actions.");
+            MessageUtils.addMessage("Length mismatch. You have " + itemNames.length + " items listed and " + actionNames.length + " item actions.", Color.RED);
             return;
         }
 

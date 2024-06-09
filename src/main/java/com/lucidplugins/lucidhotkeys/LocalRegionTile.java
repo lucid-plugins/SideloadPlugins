@@ -2,15 +2,17 @@ package com.lucidplugins.lucidhotkeys;
 
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import lombok.Getter;
+import net.runelite.api.Client;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.RuneLite;
 
 import java.util.Collection;
 
 @Getter
 public class LocalRegionTile
 {
-
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
     private LocalPoint localTile;
     private final int regionId;
     private final int lpX;
@@ -26,8 +28,8 @@ public class LocalRegionTile
 
     public static LocalPoint getInstanceLocalPoint(int regionId, int x, int y)
     {
-        final Collection<WorldPoint> worldPoints = WorldPoint.toLocalInstance(EthanApiPlugin.getClient().getTopLevelWorldView(),
-                WorldPoint.fromRegion(regionId, x, y, EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation().getPlane()));
+        final Collection<WorldPoint> worldPoints = WorldPoint.toLocalInstance(client.getTopLevelWorldView(),
+                WorldPoint.fromRegion(regionId, x, y, client.getLocalPlayer().getWorldLocation().getPlane()));
 
         final WorldPoint worldPoint = worldPoints.stream().findFirst().orElse(null);
 
@@ -36,7 +38,7 @@ public class LocalRegionTile
             return null;
         }
 
-        return LocalPoint.fromWorld(EthanApiPlugin.getClient().getTopLevelWorldView(), worldPoint);
+        return LocalPoint.fromWorld(client.getTopLevelWorldView(), worldPoint);
     }
 
     public LocalPoint getLocalTile()

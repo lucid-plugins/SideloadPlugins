@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
@@ -290,7 +291,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
     @Subscribe(priority = 20)
     private void onGameTick(final GameTick event)
     {
-
+        boolean prayedThisTick = false;
         getEquipmentChanges();
 
         if (oneTickFlicking)
@@ -304,36 +305,52 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
             {
                 CombatUtils.toggleQuickPrayers();
             }
+            prayedThisTick = true;
         }
         else
         {
             if (disableQuickPrayers && CombatUtils.isQuickPrayersEnabled())
             {
+                prayedThisTick = true;
                 CombatUtils.toggleQuickPrayers();
                 disableQuickPrayers = false;
             }
             else if (config.flickOnActivate())
             {
-                if (CombatUtils.isQuickPrayersEnabled())
+                boolean usedQP = CombatUtils.isQuickPrayersEnabled();
+                Prayer offense = CombatUtils.getActiveOffense();
+                Prayer overhead = CombatUtils.getActiveOverhead();
+                if (usedQP)
                 {
                     CombatUtils.toggleQuickPrayers();
                     CombatUtils.toggleQuickPrayers();
+                    prayedThisTick = true;
                 }
-                else if (getActiveOverhead() != null)
+                else if (overhead != null)
                 {
-                    final Prayer overhead = getActiveOverhead();
                     CombatUtils.deactivatePrayer(overhead);
                     CombatUtils.activatePrayer(overhead);
+                    prayedThisTick = true;
+                }
+
+                if (offense != null)
+                {
+                    CombatUtils.deactivatePrayer(offense);
+                    CombatUtils.activatePrayer(offense);
+                    prayedThisTick = true;
                 }
             }
         }
 
-        for (ScheduledPrayer prayer : scheduledPrayers)
+        if (!prayedThisTick)
         {
-            boolean ignore = config.ignoreDeadNpcEvents() && (prayer.getAttached() == null || prayer.getAttached().isDead());
-            if (client.getTickCount() == prayer.getActivationTick() && !ignore)
+            for (ScheduledPrayer prayer : scheduledPrayers)
             {
-                activatePrayer(client, prayer.getPrayer(), prayer.isToggle());
+                boolean ignore = config.ignoreDeadNpcEvents() && (prayer.getAttached() == null || prayer.getAttached().isDead());
+                if (client.getTickCount() == prayer.getActivationTick() && !ignore)
+                {
+                    activatePrayer(client, prayer.getPrayer(), prayer.isToggle());
+                }
             }
         }
 
@@ -350,23 +367,6 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         npcsYouInteractedWithThisTick.clear();
 
         validProjectiles.removeIf(proj -> proj.getRemainingCycles() < 1);
-    }
-
-    public Prayer getActiveOverhead()
-    {
-        if (client.isPrayerActive(Prayer.PROTECT_FROM_MELEE))
-        {
-            return Prayer.PROTECT_FROM_MELEE;
-        }
-        else if(client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
-        {
-            return Prayer.PROTECT_FROM_MAGIC;
-        }
-        else if (client.isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
-        {
-            return Prayer.PROTECT_FROM_MISSILES;
-        }
-        return null;
     }
 
     private void getEquipmentChanges()
@@ -580,7 +580,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         {
             if (client.getGameState() == GameState.LOGGED_IN)
             {
-                clientThread.invoke(() -> MessageUtils.addMessage(client, "If delays are specified, delays and ids list must be the same length!"));
+                clientThread.invoke(() -> MessageUtils.addMessage("If delays are specified, delays and ids list must be the same length!", Color.RED));
             }
             delays.clear();
         }
@@ -671,7 +671,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
         {
             if ((config.hideNonTargetEventsDebug() && isTargetingPlayer) || !config.hideNonTargetEventsDebug())
             {
-                MessageUtils.addMessage(client, "Event Type: " + type.name() + ",  ID: " + id + ", Tick: " + client.getTickCount() + ", Targeting player: " + isTargetingPlayer);
+                MessageUtils.addMessage("Event Type: " + type.name() + ",  ID: " + id + ", Tick: " + client.getTickCount() + ", Targeting player: " + isTargetingPlayer, Color.RED);
             }
         }
 

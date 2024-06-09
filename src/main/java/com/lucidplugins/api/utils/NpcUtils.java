@@ -2,7 +2,9 @@ package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.NPCs;
 import com.example.InteractionApi.NPCInteraction;
+import net.runelite.api.Client;
 import net.runelite.api.NPC;
+import net.runelite.client.RuneLite;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class NpcUtils
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
 
     public static List<NPC> getAll(Predicate<NPC> filter)
     {

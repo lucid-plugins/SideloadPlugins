@@ -214,7 +214,7 @@ public interface InfernoConfig extends Config
 	@ConfigItem(
 			position = 6,
 			keyName = "oneTickPray",
-			name = "One tick flicking",
+			name = "One Tick Flicking",
 			description = "Does one tick flicking.",
 			section = PrayerSection
 	)
@@ -226,13 +226,13 @@ public interface InfernoConfig extends Config
 	@ConfigItem(
 			position = 7,
 			keyName = "oneTickPrayOffense",
-			name = "One tick offense",
+			name = "One Tick Offense",
 			description = "Does one tick flicking on offensive prayer while",
 			section = PrayerSection
 	)
-	default OffensivePrayer oneTickPrayOffense()
+	default boolean oneTickPrayOffense()
 	{
-		return OffensivePrayer.NONE;
+		return false;
 	}
 
 	@ConfigItem(

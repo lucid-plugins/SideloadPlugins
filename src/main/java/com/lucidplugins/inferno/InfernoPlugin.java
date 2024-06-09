@@ -27,13 +27,17 @@ package com.lucidplugins.inferno;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.google.inject.Provides;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 
+import com.lucidplugins.api.Weapon;
+import com.lucidplugins.api.WeaponType;
 import com.lucidplugins.api.utils.CombatUtils;
+import com.lucidplugins.api.utils.EquipmentUtils;
 import com.lucidplugins.api.utils.MessageUtils;
 import com.lucidplugins.api.utils.NpcUtils;
 import com.lucidplugins.inferno.displaymodes.InfernoPrayerDisplayMode;
@@ -333,21 +337,40 @@ public class InfernoPlugin extends Plugin
 			bestPrayer = Prayer.PROTECT_FROM_MELEE;
 		}
 
+		Prayer bestOffence = null;
+
+		if (config.oneTickPrayOffense())
+		{
+			Item wep = EquipmentUtils.getWepSlotItem();
+			if (wep != null)
+			{
+				Weapon weapon = Weapon.getWeaponForId(wep.getId());
+				if (weapon != Weapon.nothing())
+				{
+					bestOffence = weapon.getWeaponType().getOffensivePrayer();
+				}
+			}
+		}
+
+		if (bestOffence == null && CombatUtils.getActiveOffense() != null)
+		{
+			bestOffence = CombatUtils.getActiveOffense();
+		}
+
 		if (config.autoPray())
 		{
 			if (config.oneTickPray())
 			{
-				final Prayer active = getActiveOverhead();
-				final Prayer activeOffense = getActiveOffense();
+				final Prayer active = CombatUtils.getActiveOverhead();
 
 				if (active != null)
 				{
 					CombatUtils.deactivatePrayer(active);
 				}
 
-				if (activeOffense != null)
+				if (bestOffence != null)
 				{
-					CombatUtils.deactivatePrayer(activeOffense);
+					CombatUtils.deactivatePrayer(bestOffence);
 				}
 
 				if (bestPrayer != null || active != null)
@@ -355,9 +378,9 @@ public class InfernoPlugin extends Plugin
 					CombatUtils.activatePrayer(bestPrayer != null ? bestPrayer : active);
 				}
 
-				if (config.oneTickPrayOffense() != InfernoConfig.OffensivePrayer.NONE)
+				if (config.oneTickPrayOffense() && bestOffence != null)
 				{
-					CombatUtils.activatePrayer(config.oneTickPrayOffense().getPrayer());
+					CombatUtils.activatePrayer(bestOffence);
 				}
 			}
 			else if (bestPrayer != null)
@@ -366,45 +389,6 @@ public class InfernoPlugin extends Plugin
 			}
 		}
 	}
-
-	public Prayer getActiveOverhead()
-	{
-		if (client.isPrayerActive(Prayer.PROTECT_FROM_MELEE))
-		{
-			return Prayer.PROTECT_FROM_MELEE;
-		}
-		else if(client.isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
-		{
-			return Prayer.PROTECT_FROM_MAGIC;
-		}
-		else if (client.isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
-		{
-			return Prayer.PROTECT_FROM_MISSILES;
-		}
-		return null;
-	}
-
-	public Prayer getActiveOffense()
-	{
-		if (client.isPrayerActive(Prayer.MYSTIC_MIGHT))
-		{
-			return Prayer.MYSTIC_MIGHT;
-		}
-		else if(client.isPrayerActive(Prayer.AUGURY))
-		{
-			return Prayer.AUGURY;
-		}
-		else if (client.isPrayerActive(Prayer.EAGLE_EYE))
-		{
-			return Prayer.EAGLE_EYE;
-		}
-		else if (client.isPrayerActive(Prayer.RIGOUR))
-		{
-			return Prayer.RIGOUR;
-		}
-		return null;
-	}
-
 
 	@Subscribe
 	private void onNpcSpawned(NpcSpawned event)
@@ -1278,6 +1262,6 @@ public class InfernoPlugin extends Plugin
 			return;
 		}
 
-		MessageUtils.addMessage(client, message);
+		MessageUtils.addMessage(message, Color.RED);
 	}
 }

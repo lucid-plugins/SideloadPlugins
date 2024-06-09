@@ -2,6 +2,8 @@ package com.lucidplugins.lucidhotkeys2;
 
 import net.runelite.client.config.*;
 
+import java.awt.*;
+
 @ConfigGroup("lucid-hotkeys2")
 public interface LucidHotkeys2Config extends Config
 {
@@ -73,6 +75,12 @@ public interface LucidHotkeys2Config extends Config
         return false;
     }
 
+    @ConfigItem(name = "Debug Msg Color", description = "Color to use for debug messages.", position = 2, keyName = "debugColor", section = generalSection)
+    default Color debugColor()
+    {
+        return Color.RED;
+    }
+
     // Preset Loading/Saving
 
     @ConfigItem(name = "Preset Name", description = "Name of the preset (replaces all non-alphanumerical characters with a space)", position = 0, keyName = "presetName", section = presetSection)
@@ -95,13 +103,19 @@ public interface LucidHotkeys2Config extends Config
 
     // Custom Variables
 
-    @ConfigItem(name = "Custom Variables", description = "format: variableName = value e.g. time = 1 ;", position = 0, keyName = "customVariables", section = customVariablesSection)
+    @ConfigItem(name = "Show Overlay Panel", description = "Renders an overlay panel showing the current custom vars and their values", position = 0, keyName = "customVarPanel", section = customVariablesSection)
+    default boolean customVarPanel()
+    {
+        return false;
+    }
+
+    @ConfigItem(name = "Custom Variables", description = "format: variableName = value e.g. time = 1 ;", position = 1, keyName = "customVariables", section = customVariablesSection)
     default String customVariables()
     {
         return "variable = 1;";
     }
 
-    @ConfigItem(name = "Re-initialize when changed", description = "Will re-initialize the values when the config is changed, otherwise user vars only initialize on plugin start or with var reload action", position = 1, keyName = "initWhenChanged", section = customVariablesSection)
+    @ConfigItem(name = "Re-initialize when changed", description = "Will re-initialize the values when the config is changed, otherwise user vars only initialize on plugin start or with var reload action", position = 2, keyName = "initWhenChanged", section = customVariablesSection)
     default boolean initWhenChanged()
     {
         return false;

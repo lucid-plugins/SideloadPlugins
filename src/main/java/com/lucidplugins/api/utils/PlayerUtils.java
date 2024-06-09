@@ -3,13 +3,17 @@ package com.lucidplugins.api.utils;
 import com.example.EthanApiPlugin.Collections.Players;
 import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PlayerInteractionHelper;
+import net.runelite.api.Client;
 import net.runelite.api.Player;
+import net.runelite.client.RuneLite;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 public class PlayerUtils
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
+
     public static void interactPlayer(String name, String action)
     {
         PlayerInteractionHelper.interact(name, action);
@@ -30,7 +34,7 @@ public class PlayerUtils
             float closest = 999;
             for (Player p : players)
             {
-                float testDistance = InteractionUtils.distanceTo2DHypotenuse(EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation(), p.getWorldLocation());
+                float testDistance = InteractionUtils.distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), p.getWorldLocation());
 
                 if (testDistance < closest)
                 {
@@ -52,7 +56,7 @@ public class PlayerUtils
             float closest = 999;
             for (Player p : players)
             {
-                float testDistance = InteractionUtils.distanceTo2DHypotenuse(EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation(), p.getWorldLocation());
+                float testDistance = InteractionUtils.distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), p.getWorldLocation());
 
                 if (testDistance < closest)
                 {

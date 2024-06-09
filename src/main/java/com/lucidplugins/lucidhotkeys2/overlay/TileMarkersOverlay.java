@@ -32,7 +32,7 @@ public class TileMarkersOverlay extends Overlay
         this.config = config;
 
         setPosition(OverlayPosition.DYNAMIC);
-        setPriority(OverlayPriority.HIGH);
+        setPriority(Overlay.PRIORITY_HIGH);
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
 

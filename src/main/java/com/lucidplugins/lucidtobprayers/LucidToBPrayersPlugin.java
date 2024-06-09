@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,7 +113,7 @@ public class LucidToBPrayersPlugin extends Plugin
 
                         if (inventoryItem != null)
                         {
-                            MessageUtils.addMessage(client, "Attempting to tick eat ball with id: " + inventoryItem.getId());
+                            MessageUtils.addMessage("Attempting to tick eat ball with id: " + inventoryItem.getId(), Color.RED);
                             InventoryUtils.itemInteract(inventoryItem.getId(), option);
                         }
                     }

@@ -1,6 +1,5 @@
 package com.lucidplugins.lucid1tkarambwans;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.google.inject.Provides;
 import com.lucidplugins.api.utils.*;
 import lombok.Getter;
@@ -17,6 +16,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 
@@ -220,7 +220,7 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
 
         if (!bankExists())
         {
-            MessageUtils.addMessage(client, "No nearby bank.");
+            MessageUtils.addMessage("No nearby bank.", Color.RED);
             running = false;
             return;
         }
@@ -228,7 +228,7 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
         TileObject range = getRange();
         if (range == null)
         {
-            MessageUtils.addMessage(client, "No nearby range.");
+            MessageUtils.addMessage("No nearby range.", Color.RED);
             running = false;
             return;
         }
@@ -275,7 +275,7 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
                 }
                 else
                 {
-                    MessageUtils.addMessage(client, "Out of Karambwans to cook.");
+                    MessageUtils.addMessage("Out of Karambwans to cook.", Color.RED);
                     resetToDefault();
                     BankUtils.close();
                     running = false;
@@ -307,7 +307,7 @@ public class Lucid1TKarambwansPlugin extends Plugin implements KeyListener
     {
         if (!bankExists())
         {
-            MessageUtils.addMessage(EthanApiPlugin.getClient(), "There's no bank nearby with that config.");
+            MessageUtils.addMessage("There's no bank nearby with that config.", Color.RED);
             return;
         }
 

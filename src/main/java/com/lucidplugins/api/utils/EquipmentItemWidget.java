@@ -1,17 +1,20 @@
 package com.lucidplugins.api.utils;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
+import net.runelite.api.Client;
 import net.runelite.api.FontTypeFace;
 import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.RuneLite;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
 public class EquipmentItemWidget implements Widget
 {
+
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
     String name;
     String[] actions;
     int packedId;
@@ -30,7 +33,7 @@ public class EquipmentItemWidget implements Widget
 
     public void interact(String... actions) {
         MousePackets.queueClickPacket();
-        WidgetPackets.queueWidgetAction(EthanApiPlugin.getClient().getWidget(packedId), actions);
+        WidgetPackets.queueWidgetAction(client.getWidget(packedId), actions);
     }
 
     public int getEquipmentItemId() {

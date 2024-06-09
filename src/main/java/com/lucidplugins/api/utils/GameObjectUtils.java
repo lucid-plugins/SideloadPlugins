@@ -1,9 +1,9 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.TileObjects;
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.TileObjectInteraction;
 import net.runelite.api.*;
+import net.runelite.client.RuneLite;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +11,8 @@ import java.util.function.Predicate;
 
 public class GameObjectUtils
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
+
     public static TileObject getFirstTileObjectAt(Tile tile, int... ids)
     {
         return Arrays.stream(tile.getGameObjects()).filter(gameObject -> gameObject != null && Arrays.asList(ids).contains(gameObject.getId())).findFirst().orElse(null);
@@ -33,7 +35,7 @@ public class GameObjectUtils
 
     public static boolean hasAction(int objectId, String action)
     {
-        ObjectComposition composition = EthanApiPlugin.getClient().getObjectDefinition(objectId);
+        ObjectComposition composition = client.getObjectDefinition(objectId);
         if (composition == null)
         {
             return false;

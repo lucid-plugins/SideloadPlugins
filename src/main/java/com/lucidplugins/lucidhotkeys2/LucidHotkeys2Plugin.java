@@ -11,6 +11,7 @@ import com.lucidplugins.api.spells.Spells;
 import com.lucidplugins.api.spells.WidgetInfo;
 import com.lucidplugins.api.utils.*;
 import com.lucidplugins.lucidhotkeys2.overlay.TileMarkersOverlay;
+import com.lucidplugins.lucidhotkeys2.overlay.UserVariablesPanelOverlay;
 import lombok.Getter;
 import net.runelite.api.*;
 import net.runelite.api.Deque;
@@ -36,12 +37,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -73,6 +76,9 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
     private ClientThread clientThread;
 
     @Inject
+    private UserVariablesPanelOverlay userVariablesPanelOverlay;
+
+    @Inject
     private TileMarkersOverlay tileMarkersOverlay;
 
     @Inject
@@ -90,6 +96,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             .setPrettyPrinting();
     public final Gson gson = builder.create();
 
+    @Getter
     private Map<String, String> userVariables = new HashMap<>();
 
     private List<String> playerNamesTracked = new ArrayList<>();
@@ -216,6 +223,11 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         {
             overlayManager.add(tileMarkersOverlay);
         }
+
+        if (!overlayManager.anyMatch(p -> p == userVariablesPanelOverlay))
+        {
+            overlayManager.add(userVariablesPanelOverlay);
+        }
     }
 
     @Override
@@ -228,6 +240,11 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         if (overlayManager.anyMatch(p -> p == tileMarkersOverlay))
         {
             overlayManager.remove(tileMarkersOverlay);
+        }
+
+        if (overlayManager.anyMatch(p -> p == userVariablesPanelOverlay))
+        {
+            overlayManager.remove(userVariablesPanelOverlay);
         }
     }
 
@@ -962,7 +979,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                         return;
                     }
                     MousePackets.queueClickPacket();
-                    EthanApiPlugin.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, -1, EthanApiPlugin.getClient().getTopLevelWorldView().getId(), "", "", -1, -1);
+                    EthanApiPlugin.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 }
                 else
                 {
@@ -986,7 +1003,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     }
                     //EthanApiPlugin.invoke(int param0, int param1, int opcode, int id, int itemId, String option, String target, int canvasX, int canvasY)
                     MousePackets.queueClickPacket();
-                    EthanApiPlugin.invoke(-1, spellInfo3.getPackedId(), MenuAction.CC_OP.getId(), 2, -1, EthanApiPlugin.getClient().getTopLevelWorldView().getId(), "", "", -1, -1);
+                    EthanApiPlugin.invoke(-1, spellInfo3.getPackedId(), MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 }
                 else
                 {
@@ -1095,16 +1112,16 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
             case WIDGET_CC_OP_1:
                 int packedId = ((int) params.get(0) << 16)| (int) params.get(1);
                 MousePackets.queueClickPacket();
-                EthanApiPlugin.invoke(-1, packedId, MenuAction.CC_OP.getId(), 1, -1, EthanApiPlugin.getClient().getTopLevelWorldView().getId(), "", "", -1, -1);
+                EthanApiPlugin.invoke(-1, packedId, MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 break;
             case WIDGET_CC_OP_2:
                 int packedId2 = ((int) params.get(0) << 16)| (int) params.get(1);
                 MousePackets.queueClickPacket();
-                EthanApiPlugin.invoke(-1, packedId2, MenuAction.CC_OP.getId(), 2, -1, EthanApiPlugin.getClient().getTopLevelWorldView().getId(), "", "", -1, -1);
+                EthanApiPlugin.invoke(-1, packedId2, MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 break;
             case INVOKE_MENU_ACTION:
                 MousePackets.queueClickPacket();
-                EthanApiPlugin.invoke((int) params.get(0), (int) params.get(1), (int) params.get(2), (int) params.get(3), -1, EthanApiPlugin.getClient().getTopLevelWorldView().getId(), "", "", -1, -1);
+                EthanApiPlugin.invoke((int) params.get(0), (int) params.get(1), (int) params.get(2), (int) params.get(3), -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 break;
             case SEND_CLIENTSCRIPT:
                 debugMessage("Running script : " + params.get(0));
@@ -1468,7 +1485,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     int distance = (int) InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), tile.getWorldLocation(), npc.getWorldArea().getWidth(), 1);
                     if (distance < tWithinNpcDistance && distance > tFurtherThanNpcDistance)
                     {
-                        MessageUtils.addMessage(client, "NPC " + npc.getName() + " Dist: " + distance);
+                        MessageUtils.addMessage("NPC " + npc.getName() + " Dist: " + distance, Color.RED);
                         distanceToNpcsGood = true;
                         break;
                     }
@@ -2200,7 +2217,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
     private void handleVariablePrinting(String var)
     {
         Object val = getValueFromString(var);
-        MessageUtils.addMessage(client, "Var: " + var + " value {" + val + "}");
+        MessageUtils.addMessage("Var: " + var + " value {" + val + "}", Color.RED);
     }
 
     private int ticksSinceLastPlayerAnimation()
@@ -3805,7 +3822,7 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
 
         if (client.getGameState() == GameState.LOGGED_IN)
         {
-            MessageUtils.addMessage(client, message);
+            MessageUtils.addMessage(message, config.debugColor());
         }
         else
         {

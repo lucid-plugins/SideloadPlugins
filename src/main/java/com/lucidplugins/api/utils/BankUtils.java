@@ -1,18 +1,21 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.Bank;
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.BankInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
+import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.RuneLite;
 
 public class BankUtils
 {
+
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
     public static boolean isOpen()
     {
-        Widget bankWidget = EthanApiPlugin.getClient().getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
+        Widget bankWidget = client.getWidget(WidgetInfo.BANK_ITEM_CONTAINER);
         if (bankWidget != null && !bankWidget.isSelfHidden())
         {
             return true;
@@ -22,7 +25,7 @@ public class BankUtils
     }
 
     public static void depositAll() {
-        Widget depositInventory = EthanApiPlugin.getClient().getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
+        Widget depositInventory = client.getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
         if (depositInventory != null && !depositInventory.isSelfHidden()) {
             MousePackets.queueClickPacket();
             WidgetPackets.queueWidgetAction(depositInventory, "Deposit inventory");
@@ -55,7 +58,7 @@ public class BankUtils
     {
         if (isOpen())
         {
-            EthanApiPlugin.getClient().runScript(29);
+            client.runScript(29);
         }
     }
 }

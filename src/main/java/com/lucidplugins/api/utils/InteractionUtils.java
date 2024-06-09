@@ -10,6 +10,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.RuneLite;
 
 import javax.swing.*;
 import java.util.*;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 public class InteractionUtils
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
     private static int lastLoadedBaseX = -1;
     private static int lastLoadedBaseY = -1;
     private static int lastLoadedPlane = -1;
@@ -25,7 +27,7 @@ public class InteractionUtils
 
     public static boolean isRunEnabled()
     {
-        return EthanApiPlugin.getClient().getVarpValue(173) == 1;
+        return client.getVarpValue(173) == 1;
     }
 
     public static void toggleRun()
@@ -36,13 +38,13 @@ public class InteractionUtils
 
     public static int getRunEnergy()
     {
-        return EthanApiPlugin.getClient().getEnergy() / 100;
+        return client.getEnergy() / 100;
     }
 
 
     public static boolean isWidgetHidden(int parentId, int childId, int grandchildId)
     {
-        Widget target = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget target = client.getWidget(parentId, childId);
         if (grandchildId != -1)
         {
             if (target == null || target.isHidden())
@@ -72,7 +74,7 @@ public class InteractionUtils
 
     public static int getWidgetSpriteId(int parentId, int childId, int grandchildId)
     {
-        Widget target = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget target = client.getWidget(parentId, childId);
         if (grandchildId != -1)
         {
             if (target == null || target.isSelfHidden())
@@ -102,7 +104,7 @@ public class InteractionUtils
 
     public static String getWidgetText(int parentId, int childId, int grandchildId)
     {
-        Widget target = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget target = client.getWidget(parentId, childId);
         if (grandchildId != -1)
         {
             if (target == null || target.isSelfHidden())
@@ -136,7 +138,7 @@ public class InteractionUtils
 
     public static void widgetInteract(int parentId, int childId, int grandchildId, String action)
     {
-        Widget target = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget target = client.getWidget(parentId, childId);
         if (target != null && grandchildId != -1)
         {
             target = target.getChild(grandchildId);
@@ -249,7 +251,7 @@ public class InteractionUtils
 
     public static boolean isMoving()
     {
-        return EthanApiPlugin.getClient().getLocalPlayer().getPoseAnimation() != EthanApiPlugin.getClient().getLocalPlayer().getIdlePoseAnimation();
+        return client.getLocalPlayer().getPoseAnimation() != client.getLocalPlayer().getIdlePoseAnimation();
     }
 
     public static void walk(WorldPoint point)
@@ -262,7 +264,7 @@ public class InteractionUtils
     {
         List<Tile> safeTiles = getAll(tile ->
                 !list.contains(tile.getLocalLocation()) &&
-                        approxDistanceTo(tile.getWorldLocation(), EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()) < 6
+                        approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6
                         && isWalkable(tile.getWorldLocation())
         );
 
@@ -280,7 +282,7 @@ public class InteractionUtils
     {
         List<Tile> safeTiles = getAll(tile ->
                 !list.contains(tile.getLocalLocation()) &&
-                        approxDistanceTo(tile.getWorldLocation(), EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()) < 6
+                        approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6
                         && isWalkable(tile.getWorldLocation())
                         && within2RowsWardens(tile.getWorldLocation())
         );
@@ -305,26 +307,26 @@ public class InteractionUtils
 
     public static WorldPoint getSafeLocationNorthSouth(List<LocalPoint> list)
     {
-        final WorldPoint loc = EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation();
+        final WorldPoint loc = client.getLocalPlayer().getWorldLocation();
         final WorldPoint north = loc.dy(1);
         final WorldPoint northPlus = loc.dy(2);
         final WorldPoint south = loc.dy(-1);
         final WorldPoint southPlus = loc.dy(-2);
 
         // If last movement setup isnt available just find the first available instead
-        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(EthanApiPlugin.getClient(), point).equals(north)) || !EthanApiPlugin.reachableTiles().contains(north))
+        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(client, point).equals(north)) || !EthanApiPlugin.reachableTiles().contains(north))
         {
             return north;
         }
-        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(EthanApiPlugin.getClient(), point).equals(south)) || !EthanApiPlugin.reachableTiles().contains(south))
+        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(client, point).equals(south)) || !EthanApiPlugin.reachableTiles().contains(south))
         {
             return south;
         }
-        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(EthanApiPlugin.getClient(), point).equals(northPlus)) || !EthanApiPlugin.reachableTiles().contains(northPlus))
+        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(client, point).equals(northPlus)) || !EthanApiPlugin.reachableTiles().contains(northPlus))
         {
             return northPlus;
         }
-        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(EthanApiPlugin.getClient(), point).equals(southPlus)) || !EthanApiPlugin.reachableTiles().contains(southPlus))
+        if (list.stream().noneMatch(point -> WorldPoint.fromLocal(client, point).equals(southPlus)) || !EthanApiPlugin.reachableTiles().contains(southPlus))
         {
             return southPlus;
         }
@@ -336,7 +338,7 @@ public class InteractionUtils
         List<Tile> safeTiles = getAll(tile ->
                 !list.contains(tile.getLocalLocation()) &&
                         !target.getWorldArea().contains(tile.getWorldLocation()) &&
-                        approxDistanceTo(tile.getWorldLocation(), EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()) < 6 &&
+                        approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
                         isWalkable(tile.getWorldLocation()));
 
         Tile closestTile = getClosestTile(safeTiles);
@@ -360,7 +362,7 @@ public class InteractionUtils
                 !list.contains(tile.getLocalLocation()) &&
                         !isNpcInMeleeDistanceToLocation(target, tile.getWorldLocation()) &&
                         !target.getWorldArea().contains(tile.getWorldLocation()) &&
-                        approxDistanceTo(tile.getWorldLocation(), EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()) < maxRange &&
+                        approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < maxRange &&
                         isWalkable(tile.getWorldLocation())
         );
 
@@ -380,7 +382,7 @@ public class InteractionUtils
                 !list.contains(tile.getLocalLocation()) &&
                         isNpcInMeleeDistanceToLocation(target, tile.getWorldLocation()) &&
                         !target.getWorldArea().contains(tile.getWorldLocation()) &&
-                        approxDistanceTo(tile.getWorldLocation(), EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation()) < 6 &&
+                        approxDistanceTo(tile.getWorldLocation(), client.getLocalPlayer().getWorldLocation()) < 6 &&
                         isWalkable(tile.getWorldLocation())
         );
 
@@ -433,7 +435,7 @@ public class InteractionUtils
             float closest = 999;
             for (Tile closeTile : tiles)
             {
-                float testDistance = distanceTo2DHypotenuse(EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation(), closeTile.getWorldLocation());
+                float testDistance = distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), closeTile.getWorldLocation());
 
                 // TODO try if ((int)testDistance < (int)closest)
                 if (testDistance < closest)
@@ -454,7 +456,7 @@ public class InteractionUtils
         {
             for (int y = 0; y < Constants.SCENE_SIZE; y++)
             {
-                Tile tile = EthanApiPlugin.getClient().getTopLevelWorldView().getScene().getTiles()[EthanApiPlugin.getClient().getTopLevelWorldView().getPlane()][x][y];
+                Tile tile = client.getTopLevelWorldView().getScene().getTiles()[client.getTopLevelWorldView().getPlane()][x][y];
                 if (tile != null && filter.test(tile))
                 {
                     out.add(tile);
@@ -472,7 +474,7 @@ public class InteractionUtils
 
     public static boolean isNpcInMeleeDistanceToPlayer(NPC target)
     {
-        return target.getWorldArea().isInMeleeDistance(EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation());
+        return target.getWorldArea().isInMeleeDistance(client.getLocalPlayer().getWorldLocation());
     }
 
     public static boolean isNpcInMeleeDistanceToLocation(NPC target, WorldPoint location)
@@ -483,9 +485,9 @@ public class InteractionUtils
     public static List<WorldPoint> reachableTiles() {
         checkedTiles.clear();
         boolean[][] visited = new boolean[104][104];
-        int[][] flags = EthanApiPlugin.getClient().getTopLevelWorldView().getCollisionMaps()[EthanApiPlugin.getClient().getTopLevelWorldView().getPlane()].getFlags();
-        WorldPoint playerLoc = EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation();
-        int firstPoint = (playerLoc.getX()-EthanApiPlugin.getClient().getTopLevelWorldView().getBaseX() << 16) | playerLoc.getY()-EthanApiPlugin.getClient().getTopLevelWorldView().getBaseY();
+        int[][] flags = client.getTopLevelWorldView().getCollisionMaps()[client.getTopLevelWorldView().getPlane()].getFlags();
+        WorldPoint playerLoc = client.getLocalPlayer().getWorldLocation();
+        int firstPoint = (playerLoc.getX()-client.getTopLevelWorldView().getBaseX() << 16) | playerLoc.getY()-client.getTopLevelWorldView().getBaseY();
         ArrayDeque<Integer> queue = new ArrayDeque<>();
         queue.add(firstPoint);
         while (!queue.isEmpty()) {
@@ -513,9 +515,9 @@ public class InteractionUtils
             }
         }
 
-        int baseX = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseX();
-        int baseY = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseY();
-        int plane = EthanApiPlugin.getClient().getTopLevelWorldView().getPlane();
+        int baseX = client.getTopLevelWorldView().getBaseX();
+        int baseY = client.getTopLevelWorldView().getBaseY();
+        int plane = client.getTopLevelWorldView().getPlane();
         lastLoadedBaseX = baseX;
         lastLoadedBaseY = baseY;
         lastLoadedPlane = plane;
@@ -533,9 +535,9 @@ public class InteractionUtils
 
     public static boolean isWalkable(WorldPoint point)
     {
-        int baseX = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseX();
-        int baseY = EthanApiPlugin.getClient().getTopLevelWorldView().getBaseY();
-        int plane = EthanApiPlugin.getClient().getTopLevelWorldView().getPlane();
+        int baseX = client.getTopLevelWorldView().getBaseX();
+        int baseY = client.getTopLevelWorldView().getBaseY();
+        int plane = client.getTopLevelWorldView().getPlane();
 
         if (baseX == lastLoadedBaseX && baseY == lastLoadedBaseY && plane == lastLoadedPlane)
         {

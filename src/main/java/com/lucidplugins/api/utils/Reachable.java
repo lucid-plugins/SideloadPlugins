@@ -1,11 +1,12 @@
 package com.lucidplugins.api.utils;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
+import net.runelite.api.Client;
 import net.runelite.api.CollisionData;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.RuneLite;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 
 public class Reachable
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
+
     public static boolean isInteractable(WorldArea locatableArea)
     {
         return getInteractable(locatableArea).stream().anyMatch(InteractionUtils::isWalkable);
@@ -102,21 +105,21 @@ public class Reachable
 
     public static int getCollisionFlag(WorldPoint point)
     {
-        CollisionData[] collisionMaps = EthanApiPlugin.getClient().getTopLevelWorldView().getCollisionMaps();
+        CollisionData[] collisionMaps = client.getTopLevelWorldView().getCollisionMaps();
         if (collisionMaps == null)
         {
             return 16777215;
         }
         else
         {
-            CollisionData collisionData = collisionMaps[EthanApiPlugin.getClient().getTopLevelWorldView().getPlane()];
+            CollisionData collisionData = collisionMaps[client.getTopLevelWorldView().getPlane()];
             if (collisionData == null)
             {
                 return 16777215;
             }
             else
             {
-                LocalPoint localPoint = LocalPoint.fromWorld(EthanApiPlugin.getClient().getTopLevelWorldView(), point);
+                LocalPoint localPoint = LocalPoint.fromWorld(client.getTopLevelWorldView(), point);
                 return localPoint == null ? 16777215 : collisionData.getFlags()[localPoint.getSceneX()][localPoint.getSceneY()];
             }
         }
@@ -140,7 +143,7 @@ public class Reachable
         }
         else
         {
-            LocalPoint lp = LocalPoint.fromWorld(EthanApiPlugin.getClient().getTopLevelWorldView(), w1.getX(), w1.getY());
+            LocalPoint lp = LocalPoint.fromWorld(client.getTopLevelWorldView(), w1.getX(), w1.getY());
             int startX = 0;
             if (lp != null)
             {
@@ -214,7 +217,7 @@ public class Reachable
                     xyFlags |= 64;
                 }
 
-                CollisionData[] collisionData = EthanApiPlugin.getClient().getTopLevelWorldView().getCollisionMaps();
+                CollisionData[] collisionData = client.getTopLevelWorldView().getCollisionMaps();
                 if (collisionData == null)
                 {
                     return false;
@@ -258,7 +261,7 @@ public class Reachable
                                 }
                             }
 
-                            if ((collisionDataFlags[checkX][x] & xFlags) != 0 || !extraCondition.test(WorldPoint.fromScene(EthanApiPlugin.getClient().getTopLevelWorldView(), checkX, x, w1.getPlane())))
+                            if ((collisionDataFlags[checkX][x] & xFlags) != 0 || !extraCondition.test(WorldPoint.fromScene(client.getTopLevelWorldView(), checkX, x, w1.getPlane())))
                             {
                                 return false;
                             }
@@ -302,7 +305,7 @@ public class Reachable
                                 }
                             }
 
-                            if ((collisionDataFlags[x][checkY] & yFlags) != 0 || !extraCondition.test(WorldPoint.fromScene(EthanApiPlugin.getClient().getTopLevelWorldView(), x, checkY, EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation().getPlane())))
+                            if ((collisionDataFlags[x][checkY] & yFlags) != 0 || !extraCondition.test(WorldPoint.fromScene(client.getTopLevelWorldView(), x, checkY, client.getLocalPlayer().getWorldLocation().getPlane())))
                             {
                                 return false;
                             }
@@ -313,19 +316,19 @@ public class Reachable
 
                     if (dx != 0 && dy != 0)
                     {
-                        if ((collisionDataFlags[checkX][checkY] & xyFlags) != 0 || !extraCondition.test(WorldPoint.fromScene(EthanApiPlugin.getClient().getTopLevelWorldView(), checkX, checkY, EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation().getPlane())))
+                        if ((collisionDataFlags[checkX][checkY] & xyFlags) != 0 || !extraCondition.test(WorldPoint.fromScene(client.getTopLevelWorldView(), checkX, checkY, client.getLocalPlayer().getWorldLocation().getPlane())))
                         {
                             return false;
                         }
 
-                        if (w1.getWidth() == 1 && (collisionDataFlags[checkX][checkY - dy] & xFlags) != 0 && extraCondition.test(WorldPoint.fromScene(EthanApiPlugin.getClient().getTopLevelWorldView(), checkX, startY, EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation().getPlane())))
+                        if (w1.getWidth() == 1 && (collisionDataFlags[checkX][checkY - dy] & xFlags) != 0 && extraCondition.test(WorldPoint.fromScene(client.getTopLevelWorldView(), checkX, startY, client.getLocalPlayer().getWorldLocation().getPlane())))
                         {
                             return false;
                         }
 
                         if (w1.getHeight() == 1)
                         {
-                            return (collisionDataFlags[checkX - dx][checkY] & yFlags) == 0 || !extraCondition.test(WorldPoint.fromScene(EthanApiPlugin.getClient().getTopLevelWorldView(), startX, checkY, EthanApiPlugin.getClient().getLocalPlayer().getWorldLocation().getPlane()));
+                            return (collisionDataFlags[checkX - dx][checkY] & yFlags) == 0 || !extraCondition.test(WorldPoint.fromScene(client.getTopLevelWorldView(), startX, checkY, client.getLocalPlayer().getWorldLocation().getPlane()));
                         }
                     }
 

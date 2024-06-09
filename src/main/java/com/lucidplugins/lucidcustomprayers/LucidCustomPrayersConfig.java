@@ -113,6 +113,18 @@ public interface LucidCustomPrayersConfig extends Config
         return false;
     }
 
+    @ConfigItem(
+            name = "1-Tick Flick Offensives",
+            description = "On top of flicking overheads, the plugin will also flick any offensive prayers",
+            position = 2,
+            keyName = "flickOffensives",
+            section = flickingSection
+    )
+    default boolean flickOffensives()
+    {
+        return false;
+    }
+
     // General Section
 
     @ConfigItem(

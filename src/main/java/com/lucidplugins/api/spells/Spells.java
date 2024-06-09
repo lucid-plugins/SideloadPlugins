@@ -1,13 +1,15 @@
 package com.lucidplugins.api.spells;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
+import net.runelite.api.Client;
 import net.runelite.api.Varbits;
-
+import net.runelite.client.RuneLite;
 public class Spells
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
+
     public static boolean onCorrectSpellbook(String spellName)
     {
-        int bookId = EthanApiPlugin.getClient().getVarbitValue(Varbits.SPELLBOOK);
+        int bookId = client.getVarbitValue(Varbits.SPELLBOOK);
         String spellbook = spellName.substring(0, spellName.indexOf('.'));
         if (spellbook.equalsIgnoreCase("Standard"))
         {

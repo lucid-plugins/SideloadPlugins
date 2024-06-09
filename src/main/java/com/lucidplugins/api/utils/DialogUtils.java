@@ -1,17 +1,16 @@
 package com.lucidplugins.api.utils;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
-import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.RuneLite;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 public class DialogUtils
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
     private static List<Integer> continueParentIds = List.of(193, 229, 229, 231, 217, 11);
     private static List<Integer> continueChildIds = List.of(   0,   0,   2,   5,   5,  4);
 
@@ -23,7 +22,7 @@ public class DialogUtils
     public static List<DialogOption> getOptions()
     {
         List<DialogOption> out = new ArrayList<>();
-        Widget widget = EthanApiPlugin.getClient().getWidget(219, 1);
+        Widget widget = client.getWidget(219, 1);
         if (widget == null || widget.isSelfHidden())
         {
             return out;
@@ -72,7 +71,7 @@ public class DialogUtils
 
     public static void selectOptionIndex(int index)
     {
-        Widget widget = EthanApiPlugin.getClient().getWidget(219, 1);
+        Widget widget = client.getWidget(219, 1);
         if (widget == null || widget.isSelfHidden())
         {
             return;

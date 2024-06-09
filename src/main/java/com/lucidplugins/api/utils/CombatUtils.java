@@ -1,16 +1,22 @@
 package com.lucidplugins.api.utils;
 
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PrayerInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
 import net.runelite.api.*;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.RuneLite;
 
 import java.util.stream.Collectors;
 
 public class CombatUtils
 {
+
+    public static final int RIGOUR_UNLOCKED = 5451;
+    public static final int AUGURY_UNLOCKED = 5452;
+    public static final int CAMELOT_TRAINING_ROOM_STATUS = 3909;
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
+
     public static Prayer prayerForName(String name)
     {
         String p = name.toUpperCase().replaceAll(" ", "_");
@@ -37,7 +43,7 @@ public class CombatUtils
     }
     public static void activatePrayer(Prayer prayer)
     {
-        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 || prayer == null)
+        if (client.getBoostedSkillLevel(Skill.PRAYER) == 0 || checkPrayer(prayer) == null)
         {
             return;
         }
@@ -47,51 +53,43 @@ public class CombatUtils
             return;
         }
 
-        if (!EthanApiPlugin.getClient().isPrayerActive(prayer))
+        if (!client.isPrayerActive(checkPrayer(prayer)))
         {
-            PrayerInteraction.togglePrayer(prayer);
+            PrayerInteraction.togglePrayer(checkPrayer(prayer));
         }
     }
 
     public static void deactivatePrayer(Prayer prayer)
     {
-        if (EthanApiPlugin.getClient() == null || prayer == null || EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 || !EthanApiPlugin.getClient().isPrayerActive(prayer))
+        if (client == null || checkPrayer(prayer) == null || client.getBoostedSkillLevel(Skill.PRAYER) == 0 || !client.isPrayerActive(checkPrayer(prayer)))
         {
             return;
         }
 
-        PrayerInteraction.togglePrayer(prayer);
+        PrayerInteraction.togglePrayer(checkPrayer(prayer));
     }
 
     public static void deactivatePrayers(boolean protectionOnly)
     {
-        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0)
+        if (client.getBoostedSkillLevel(Skill.PRAYER) == 0)
         {
             return;
         }
 
         if (protectionOnly)
         {
-            if (EthanApiPlugin.getClient().isPrayerActive(Prayer.PROTECT_FROM_MISSILES))
-            {
-                PrayerInteraction.togglePrayer(Prayer.PROTECT_FROM_MISSILES);
-            }
+            Prayer overhead = getActiveOverhead();
 
-            if (EthanApiPlugin.getClient().isPrayerActive(Prayer.PROTECT_FROM_MAGIC))
+            if (overhead != null)
             {
-                PrayerInteraction.togglePrayer(Prayer.PROTECT_FROM_MAGIC);
-            }
-
-            if (EthanApiPlugin.getClient().isPrayerActive(Prayer.PROTECT_FROM_MELEE))
-            {
-                PrayerInteraction.togglePrayer(Prayer.PROTECT_FROM_MELEE);
+                PrayerInteraction.togglePrayer(overhead);
             }
         }
         else
         {
             for (Prayer prayer : PrayerInteraction.prayerMap.keySet())
             {
-                if (EthanApiPlugin.getClient().isPrayerActive(prayer))
+                if (client.isPrayerActive(prayer))
                 {
                     PrayerInteraction.togglePrayer(prayer);
                 }
@@ -101,22 +99,54 @@ public class CombatUtils
 
     public static void togglePrayer(Prayer prayer)
     {
-        if (prayer == null)
+        if (checkPrayer(prayer) == null)
         {
             return;
         }
 
-        if (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 && !EthanApiPlugin.getClient().isPrayerActive(prayer))
+        if (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !client.isPrayerActive(checkPrayer(prayer)))
         {
             return;
         }
 
-        PrayerInteraction.togglePrayer(prayer);
+        PrayerInteraction.togglePrayer(checkPrayer(prayer));
+    }
+
+
+    public static Prayer checkPrayer(Prayer prayer)
+    {
+        switch (prayer)
+        {
+            case AUGURY:
+                if (client.getVarbitValue(AUGURY_UNLOCKED) != 1 || client.getRealSkillLevel(Skill.PRAYER) < 77)
+                {
+                    return Prayer.MYSTIC_MIGHT;
+                }
+                return Prayer.AUGURY;
+            case RIGOUR:
+                if (client.getVarbitValue(RIGOUR_UNLOCKED) != 1 || client.getRealSkillLevel(Skill.PRAYER) < 74)
+                {
+                    return Prayer.EAGLE_EYE;
+                }
+                return Prayer.RIGOUR;
+            case PIETY:
+                if (client.getVarbitValue(CAMELOT_TRAINING_ROOM_STATUS) < 8)
+                {
+                    return Prayer.SUPERHUMAN_STRENGTH;
+                }
+                if (client.getRealSkillLevel(Skill.PRAYER) < 70)
+                {
+                    return Prayer.CHIVALRY;
+                }
+                return Prayer.PIETY;
+        }
+
+        return prayer;
     }
 
     public static void toggleQuickPrayers()
     {
-        if (EthanApiPlugin.getClient() == null || (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled()))
+        if (client == null || (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled()))
         {
             return;
         }
@@ -127,7 +157,7 @@ public class CombatUtils
 
     public static void activateQuickPrayers()
     {
-        if (EthanApiPlugin.getClient() == null || (EthanApiPlugin.getClient().getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled()))
+        if (client == null || (client.getBoostedSkillLevel(Skill.PRAYER) == 0 && !isQuickPrayersEnabled()))
         {
             return;
         }
@@ -139,14 +169,44 @@ public class CombatUtils
         }
     }
 
+    public static Prayer getActiveOverhead()
+    {
+        final Prayer[] overheads = new Prayer[] {Prayer.PROTECT_FROM_MELEE, Prayer.PROTECT_FROM_MISSILES, Prayer.PROTECT_FROM_MAGIC};
+
+        for (Prayer over : overheads)
+        {
+            if (client.isPrayerActive(over))
+            {
+                return over;
+            }
+        }
+
+        return null;
+    }
+
+    public static Prayer getActiveOffense()
+    {
+        final Prayer[] offensives = new Prayer[] {Prayer.MYSTIC_MIGHT, Prayer.AUGURY, Prayer.EAGLE_EYE, Prayer.RIGOUR, Prayer.CHIVALRY, Prayer.PIETY};
+
+        for (Prayer off : offensives)
+        {
+            if (client.isPrayerActive(off))
+            {
+                return off;
+            }
+        }
+
+        return null;
+    }
+
     public static boolean isQuickPrayersEnabled()
     {
-        return EthanApiPlugin.getClient().getVarbitValue(Varbits.QUICK_PRAYER) == 1;
+        return client.getVarbitValue(Varbits.QUICK_PRAYER) == 1;
     }
 
     public static int getSpecEnergy()
     {
-        return EquipmentUtils.contains("Soulreaper axe") ? EthanApiPlugin.getClient().getVarpValue(3784)  : EthanApiPlugin.getClient().getVarpValue(300) / 10;
+        return EquipmentUtils.contains("Soulreaper axe") ? client.getVarpValue(3784)  : client.getVarpValue(300) / 10;
     }
 
     public static void toggleSpec()
@@ -156,7 +216,7 @@ public class CombatUtils
     }
 
     public static boolean isSpecEnabled() {
-        return EthanApiPlugin.getClient().getVarpValue(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1;
+        return client.getVarpValue(VarPlayer.SPECIAL_ATTACK_ENABLED) == 1;
     }
 
 }

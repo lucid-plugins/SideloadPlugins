@@ -2,15 +2,16 @@ package com.lucidplugins.api.utils;
 
 
 import com.example.EthanApiPlugin.Collections.Inventory;
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.InventoryInteraction;
 import com.example.Packets.MousePackets;
 import com.example.Packets.WidgetPackets;
 import com.lucidplugins.api.item.SlottedItem;
+import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.RuneLite;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 
 public class InventoryUtils
 {
+    static Client client = RuneLite.getInjector().getInstance(Client.class);
+
     public static void itemOnItem(Item item1, Item item2)
     {
         Optional<Widget> itemToUse = Inventory.search().withId(item1.getId()).first();
@@ -93,7 +96,7 @@ public class InventoryUtils
 
     public static int getFreeSlots(int parentId, int childId)
     {
-        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget inventoryWidget = client.getWidget(parentId, childId);
         if (inventoryWidget == null)
         {
             return 0;
@@ -132,7 +135,7 @@ public class InventoryUtils
 
     public static int getItemCount(Object id, int parentId, int childId)
     {
-        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget inventoryWidget = client.getWidget(parentId, childId);
         if (inventoryWidget == null)
         {
             return 0;
@@ -176,7 +179,7 @@ public class InventoryUtils
     public static List<Item> getItems(int parentId, int childId)
     {
         List<Item> items = new ArrayList<>();
-        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget inventoryWidget = client.getWidget(parentId, childId);
         if (inventoryWidget == null)
         {
             return List.of();
@@ -202,7 +205,7 @@ public class InventoryUtils
     public static List<SlottedItem> getItemsSlotted(int parentId, int childId)
     {
         List<SlottedItem> items = new ArrayList<>();
-        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget inventoryWidget = client.getWidget(parentId, childId);
         if (inventoryWidget == null)
         {
             return List.of();
@@ -227,7 +230,7 @@ public class InventoryUtils
 
     public static int getItemIndex(Object id, int parentId, int childId)
     {
-        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(parentId, childId);
+        Widget inventoryWidget = client.getWidget(parentId, childId);
         if (inventoryWidget == null)
         {
             return -1;
@@ -268,7 +271,7 @@ public class InventoryUtils
 
     public static boolean itemHasAction(int itemId, String action)
     {
-        return Arrays.stream(EthanApiPlugin.getClient().getItemDefinition(itemId).getInventoryActions()).anyMatch(a -> a != null && a.equalsIgnoreCase(action));
+        return Arrays.stream(client.getItemDefinition(itemId).getInventoryActions()).anyMatch(a -> a != null && a.equalsIgnoreCase(action));
     }
 
     public static void itemInteract(int itemId, String action)
@@ -280,7 +283,7 @@ public class InventoryUtils
     {
         Optional<Widget> itemWidget = Inventory.search().withId(id).first();
         final int alchemyWidgetId = highAlchemy ? 14286892 : 14286869;
-        Widget alchemyWidget = EthanApiPlugin.getClient().getWidget(alchemyWidgetId);
+        Widget alchemyWidget = client.getWidget(alchemyWidgetId);
 
         if (alchemyWidget != null)
         {
@@ -293,7 +296,7 @@ public class InventoryUtils
 
     public static int calculateWidgetId(Item item)
     {
-        Widget inventoryWidget = EthanApiPlugin.getClient().getWidget(WidgetInfo.INVENTORY.getPackedId());
+        Widget inventoryWidget = client.getWidget(WidgetInfo.INVENTORY.getPackedId());
         if (inventoryWidget == null)
         {
             return -1;
@@ -402,7 +405,7 @@ public class InventoryUtils
     public static Item getFirstItem(String name)
     {
         return getAll(item2 -> {
-           ItemComposition composition = EthanApiPlugin.getClient().getItemDefinition(item2.getId());
+           ItemComposition composition = client.getItemDefinition(item2.getId());
            return composition.getName().contains(name);
         }).stream().findFirst().orElse(null);
     }
@@ -415,7 +418,7 @@ public class InventoryUtils
     public static int count(String name)
     {
         Predicate<SlottedItem> filter = (item) -> {
-            final ItemComposition itemDef = EthanApiPlugin.getClient().getItemDefinition(item.getItem().getId());
+            final ItemComposition itemDef = client.getItemDefinition(item.getItem().getId());
             return itemDef.getName() != null && itemDef.getName().toLowerCase().contains(name.toLowerCase());
         };
         List<SlottedItem> itemsToCount = BankUtils.isOpen() ?

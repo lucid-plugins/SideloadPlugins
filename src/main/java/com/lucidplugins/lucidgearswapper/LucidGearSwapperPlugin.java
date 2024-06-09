@@ -24,12 +24,14 @@ import org.pf4j.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
@@ -328,7 +330,7 @@ public class LucidGearSwapperPlugin extends Plugin implements KeyListener
                     String equippedItemsString = equippedGear.stream().map(slottedItem -> client.getItemDefinition(slottedItem.getItem().getId()).getName()).collect(Collectors.joining(","));
                     String key = "swap" + slotSelected + "String";
                     configManager.setConfiguration("lucid-gear-swapper", key, equippedItemsString);
-                    MessageUtils.addMessage(client, "Copied Equipment to Preset Slot " + slotSelected);
+                    MessageUtils.addMessage("Copied Equipment to Preset Slot " + slotSelected, Color.RED);
                 });
             }
         }

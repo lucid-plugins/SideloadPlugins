@@ -29,12 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static net.runelite.client.RuneLite.RUNELITE_DIR;
@@ -141,7 +143,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
         if (client.getGameState() == GameState.LOGGED_IN)
         {
-            MessageUtils.addMessage(client, getName() + " Started");
+            MessageUtils.addMessage(getName() + " Started", Color.RED);
         }
 
         keyManager.registerKeyListener(this);
@@ -392,7 +394,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         {
             if (!Strings.isNullOrEmpty(preconditions))
             {
-                MessageUtils.addMessage(client, "Pre-conditions length (" + (splitPreconditions.length ) + ") must match actions length (" + splitActions.length + ") for preset " + index + "!" );
+                MessageUtils.addMessage("Pre-conditions length (" + (splitPreconditions.length ) + ") must match actions length (" + splitActions.length + ") for preset " + index + "!", Color.RED);
                 return;
             }
         }
@@ -429,7 +431,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
                     if (precondition.getParamsNeeded() != params.length)
                     {
-                        MessageUtils.addMessage(client, "Invalid param length for pre-condition index [" + i + "][" + j + "] in preset " + index);
+                        MessageUtils.addMessage("Invalid param length for pre-condition index [" + i + "][" + j + "] in preset " + index, Color.RED);
                         return;
                     }
 
@@ -448,7 +450,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
                 if (config.debugOutput())
                 {
                     String failMessage = "Hotkey " + index + " [" + i + "][" + failedIndex + "] pre-condition failed for params<br>" + preconditionsArray;
-                    MessageUtils.addMessage(client, failMessage);
+                    MessageUtils.addMessage(failMessage, Color.RED);
                     System.out.println(failMessage);
                 }
                 continue;
@@ -458,14 +460,14 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
             if (action.getParamsNeeded() != actionParams.length)
             {
-                MessageUtils.addMessage(client, "Invalid param length for action index " + i + " in preset " + index + "!");
+                MessageUtils.addMessage("Invalid param length for action index " + i + " in preset " + index + "!", Color.RED);
                 return;
             }
 
             if (config.debugOutput())
             {
                 String successMessage = "Hotkey " + index + " [" + i + "] pre-condition succeeded. Executing action:<br>" + splitActions[i];
-                MessageUtils.addMessage(client, successMessage);
+                MessageUtils.addMessage(successMessage, Color.RED);
                 System.out.println("Hotkey " + successMessage);
             }
 
@@ -1344,7 +1346,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
         {
             if (config.debugOutput())
             {
-                MessageUtils.addMessage(client, "Tick delay of " + tickDelay + " not processing actions");
+                MessageUtils.addMessage("Tick delay of " + tickDelay + " not processing actions", Color.RED);
             }
             return;
         }
@@ -1802,11 +1804,11 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
 
         if (!varValue.isEmpty())
         {
-            MessageUtils.addMessage(client, "Var " + userVar + ": " + varValue);
+            MessageUtils.addMessage("Var " + userVar + ": " + varValue, Color.RED);
         }
         else
         {
-            MessageUtils.addMessage(client, "Var " + userVar + " doesn't exist.");
+            MessageUtils.addMessage("Var " + userVar + " doesn't exist.", Color.RED);
         }
 
     }
@@ -1840,7 +1842,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             {
                 if (client.getGameState() == GameState.LOGGED_IN)
                 {
-                    MessageUtils.addMessage(client, varsSplit[i] + " is not a valid variable assignment.");
+                    MessageUtils.addMessage(varsSplit[i] + " is not a valid variable assignment.", Color.RED);
                 }
                 continue;
             }
@@ -1859,7 +1861,7 @@ public class LucidHotkeysPlugin extends Plugin implements KeyListener
             {
                 if (client.getGameState() == GameState.LOGGED_IN)
                 {
-                    MessageUtils.addMessage(client, varName + " is part of a reserved var name and cannot be used");
+                    MessageUtils.addMessage(varName + " is part of a reserved var name and cannot be used", Color.RED);
                 }
                 continue;
             }

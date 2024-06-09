@@ -4,10 +4,12 @@ import com.lucidplugins.api.utils.GameObjectUtils;
 import com.lucidplugins.api.utils.MessageUtils;
 import lombok.Getter;
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.coords.WorldPoint;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -117,7 +119,7 @@ public class GauntletInstanceGrid
         {
             if (client.getGameState() == GameState.LOGGED_IN)
             {
-                MessageUtils.addMessage(client, "Can't initialize, unable to find barriers. Found: " + barriers.size());
+                MessageUtils.addMessage("Can't initialize, unable to find barriers. Found: " + barriers.size(), Color.RED);
             }
             return;
         }
