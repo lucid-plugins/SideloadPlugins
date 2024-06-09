@@ -2280,7 +2280,8 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
         "targetAnimId", "projsTargetYou", "projsTargetYourTile", "lastNpcYouTargeted", "lastPlayerYouTargeted",
         "lastNpcTargetedYou", "lastPlayerTargetedYou", "numNpcsTargetYou", "numPlayersTargetYou", "numProjsTargetYou",
         "numProjsTargetYourTile", "equipNames", "invNames", "equipIds", "invIds", "hintArrowWLoc", "hintArrowRLoc",
-        "hintArrowNpcWLoc", "hintArrowNpcRLoc", "filteredTile", "distToFilteredTile", "isAutoCombatEnabled", "isCannonClaimed"
+        "hintArrowNpcWLoc", "hintArrowNpcRLoc", "filteredTile", "distToFilteredTile", "isAutoCombatEnabled", "isCannonClaimed",
+            "playerDirection"
     );
 
     private String getGlobalVariableValue(String varName)
@@ -2657,6 +2658,8 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 return booleanAsString(isAutoCombatEnabled());
             case "isCannonClaimed":
                 return booleanAsString(isCannonClaimed());
+            case "playerDirection":
+                return intAsString(client.getLocalPlayer().getCurrentOrientation());
             default:
                 return getDynamicGlobalVariableValue(varName);
         }
