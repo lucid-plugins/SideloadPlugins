@@ -3,10 +3,7 @@ package com.lucidplugins.lucidpvpphelper;
 import com.google.inject.Provides;
 import com.lucidplugins.api.Weapon;
 import com.lucidplugins.api.utils.*;
-import net.runelite.api.Client;
-import net.runelite.api.Item;
-import net.runelite.api.Player;
-import net.runelite.api.Prayer;
+import net.runelite.api.*;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
@@ -60,6 +57,11 @@ public class LucidPvpHelperPlugin extends Plugin
             delay--;
         }
 
+        if (client.getRealSkillLevel(Skill.HITPOINTS) == 0)
+        {
+            return;
+        }
+
         if ((config.combatTicks() == 0 || client.getTickCount() < (lastHit + config.combatTicks())))
         {
             if (delay == 0)
@@ -69,8 +71,6 @@ public class LucidPvpHelperPlugin extends Plugin
 
             activateBestOffensivePrayer();
         }
-
-
     }
 
     @Subscribe
@@ -86,6 +86,11 @@ public class LucidPvpHelperPlugin extends Plugin
     private void onClientTick(ClientTick tick)
     {
         if (!config.instantSwitch())
+        {
+            return;
+        }
+
+        if (client.getRealSkillLevel(Skill.HITPOINTS) == 0)
         {
             return;
         }
