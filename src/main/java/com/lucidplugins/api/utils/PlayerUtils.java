@@ -1,7 +1,6 @@
 package com.lucidplugins.api.utils;
 
 import com.example.EthanApiPlugin.Collections.Players;
-import com.example.EthanApiPlugin.EthanApiPlugin;
 import com.example.InteractionApi.PlayerInteractionHelper;
 import net.runelite.api.Client;
 import net.runelite.api.Player;

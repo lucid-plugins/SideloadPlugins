@@ -345,7 +345,7 @@ public class InfernoPlugin extends Plugin
 			if (wep != null)
 			{
 				Weapon weapon = Weapon.getWeaponForId(wep.getId());
-				if (weapon != Weapon.nothing())
+				if (weapon != Weapon.NOTHING)
 				{
 					bestOffence = weapon.getWeaponType().getOffensivePrayer();
 				}
