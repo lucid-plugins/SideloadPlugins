@@ -43,6 +43,11 @@ public class CombatUtils
     }
     public static void activatePrayer(Prayer prayer)
     {
+        if (client.getBoostedSkillLevel(Skill.HITPOINTS) == 0)
+        {
+            return;
+        }
+
         if (client.getBoostedSkillLevel(Skill.PRAYER) == 0 || checkPrayer(prayer) == null)
         {
             return;
@@ -99,6 +104,11 @@ public class CombatUtils
 
     public static void togglePrayer(Prayer prayer)
     {
+        if (client.getBoostedSkillLevel(Skill.HITPOINTS) == 0)
+        {
+            return;
+        }
+
         if (checkPrayer(prayer) == null)
         {
             return;

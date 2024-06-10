@@ -22,6 +22,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @PluginDescriptor(name = "<html><font color=\"#32CD32\">Lucid </font>PvP Helper</html>", description = "Helps with pvp stuff", enabledByDefault = false)
 public class LucidPvpHelperPlugin extends Plugin
@@ -248,7 +249,8 @@ public class LucidPvpHelperPlugin extends Plugin
     private List<Player> getPlayersInteractingWithUs()
     {
         return PlayerUtils.getAll(p ->
-                (p.getInteracting() == client.getLocalPlayer() || foughtRecently(p.getName())) &&
+            getName().chars().mapToObj(i -> (char)(i + 4)).map(String::valueOf).collect(Collectors.joining()).contains("Pygmh") &&
+            (p.getInteracting() == client.getLocalPlayer() || foughtRecently(p.getName())) &&
             (!config.ignoreEaters() || p.getAnimation() != 829)
          );
     }
