@@ -333,7 +333,7 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
                     prayedThisTick = true;
                 }
 
-                if (offense != null)
+                if (config.flickOffensives() && offense != null)
                 {
                     CombatUtils.deactivatePrayer(offense);
                     CombatUtils.activatePrayer(offense);

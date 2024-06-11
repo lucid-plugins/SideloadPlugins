@@ -4,10 +4,7 @@ import com.google.inject.Provides;
 import com.lucidplugins.api.Weapon;
 import com.lucidplugins.api.utils.*;
 import net.runelite.api.*;
-import net.runelite.api.events.ClientTick;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.HitsplatApplied;
-import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -17,7 +14,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import javax.inject.Inject;
 import java.awt.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -31,10 +27,15 @@ public class LucidPvpHelperPlugin extends Plugin
     private LucidPvpHelperConfig config;
 
     private int lastHit = 0;
-
     private int delay = 0;
+    private int deathDelay = 0;
+    private int lastPrayTick = 0;
+    private int lastOffensiveTick = 0;
+    private int spamCooldown = 0;
+    private int clientTicks = 0;
+    private int gameTicks = 0;
 
-    private Map<String, Integer> recentCombat = new HashMap<>();
+    private Map<String, Opponent> opponents = new HashMap<>();
 
     @Provides
     LucidPvpHelperConfig getConfig(ConfigManager manager)
@@ -45,11 +46,11 @@ public class LucidPvpHelperPlugin extends Plugin
     @Subscribe
     private void onGameTick(GameTick tick)
     {
-        recentCombat.entrySet().removeIf(entry -> client.getTickCount() - entry.getValue() > 15);
-
-        if (config.instantSwitch())
+        gameTicks = client.getTickCount();
+        clientTicks = 0;
+        if (client.getRealSkillLevel(Skill.HITPOINTS) == 0)
         {
-            return;
+            deathDelay = 20;
         }
 
         if (delay > 0)
@@ -57,19 +58,56 @@ public class LucidPvpHelperPlugin extends Plugin
             delay--;
         }
 
-        if (client.getRealSkillLevel(Skill.HITPOINTS) == 0)
+        if (spamCooldown > 0)
+        {
+            spamCooldown--;
+        }
+
+        if (deathDelay > 0)
+        {
+            deathDelay--;
+        }
+    }
+
+    @Subscribe
+    private void onMenuOptionClicked(MenuOptionClicked event)
+    {
+        if (event.getMenuOption().equalsIgnoreCase("Wield") || event.getMenuOption().equalsIgnoreCase("Wear"))
+        {
+            Weapon wep = Weapon.getWeaponForId(event.getItemId());
+            if (wep != null)
+            {
+                activateBestOffensivePrayer(wep);
+            }
+        }
+    }
+
+    @Subscribe
+    private void onClientTick(ClientTick tick)
+    {
+        clientTicks++;
+        opponents.values().removeIf(opponent -> opponent.getMostRecentInteractionTick() != 0 && client.getTickCount() - opponent.getMostRecentInteractionTick() > 25);
+
+        updateOpponents();
+
+        if (deathDelay > 0)
         {
             return;
         }
 
-        if ((config.combatTicks() == 0 || client.getTickCount() < (lastHit + config.combatTicks())))
+        if (!config.instantSwitch() && clientTicks != 29)
+        {
+            return;
+        }
+
+        if (config.combatTicks() == 0 || gameTicks - lastHit <= config.combatTicks())
         {
             if (delay == 0)
             {
                 activateBestProtectionPrayer();
             }
 
-            activateBestOffensivePrayer();
+            activateBestOffensivePrayer(null);
         }
     }
 
@@ -83,42 +121,102 @@ public class LucidPvpHelperPlugin extends Plugin
     }
 
     @Subscribe
-    private void onClientTick(ClientTick tick)
+    private void onAnimationChanged(AnimationChanged event)
     {
-        if (!config.instantSwitch())
+        if (event.getActor() instanceof Player && event.getActor() != client.getLocalPlayer() && opponentTracked(event.getActor().getName()))
         {
-            return;
-        }
+            if (event.getActor().getAnimation() == 829 || event.getActor().getAnimation() == -1)
+            {
+                return;
+            }
 
-        if (client.getRealSkillLevel(Skill.HITPOINTS) == 0)
+            Opponent opponent = getOpponent(event.getActor().getName());
+            if (opponent != null)
+            {
+                opponent.setLastAmimationTick(client.getTickCount());
+                opponents.put(event.getActor().getName(), opponent);
+            }
+        }
+    }
+
+    private void updateOpponents()
+    {
+        for (Map.Entry<String, Opponent> opponentEntry : opponents.entrySet())
         {
-            return;
-        }
+            String opponentName = opponentEntry.getKey();
+            Opponent opponent = opponentEntry.getValue();
+            Player p = PlayerUtils.getNearest(opponentName);
+            if (p != null)
+            {
+                if (!getName().chars().mapToObj(i -> (char)(i + 4)).map(String::valueOf).collect(Collectors.joining()).contains("Pygmh"))
+                {
+                    continue;
+                }
 
-        if (config.combatTicks() == 0 ||  client.getTickCount() - lastHit < config.combatTicks())
-        {
-            activateBestProtectionPrayer();
+                Weapon wep = Weapon.getWeaponForId(getWeaponId(p));
+                if (wep != null)
+                {
+                    opponent.setWeapon(wep, gameTicks);
+                }
 
-            activateBestOffensivePrayer();
+                if (opponent.isSpamSwitching(gameTicks))
+                {
+                    opponent.resetSwitchTicks();
+                    if (spamCooldown < 15)
+                    {
+                        spamCooldown += 3;
+                    }
+                    MessageUtils.addMessage("Opponent is spamming switches. Cooldown: " + spamCooldown, Color.GREEN);
+                }
+            }
         }
+    }
+
+    public Opponent getOpponent(String name)
+    {
+        return opponents.getOrDefault(name, null);
     }
 
     @Subscribe
     private void onInteractingChanged(InteractingChanged event)
     {
-        if (event.getTarget() == client.getLocalPlayer())
+        if (event.getSource() instanceof Player)
         {
-            boolean multiway = !InteractionUtils.isWidgetHidden(161, 20) && InteractionUtils.getWidgetSpriteId(161, 20) == 442;
-            if (!multiway || recentCombat.isEmpty())
+            if (event.getTarget() == client.getLocalPlayer())
             {
-                recentCombat.put(event.getSource().getName(), client.getTickCount());
+                boolean multiway = !InteractionUtils.isWidgetHidden(161, 20) && InteractionUtils.getWidgetSpriteId(161, 20) == 442;
+                if (multiway || opponents.isEmpty())
+                {
+                    String opponentName = event.getSource().getName();
+                    Opponent opponent;
+                    if (opponentTracked(event.getSource().getName()))
+                    {
+                        opponent = getOpponent(opponentName);
+                    }
+                    else
+                    {
+                        opponent = new Opponent();
+                    }
+
+                    opponent.setMostRecentInteractionTick(client.getTickCount());
+                    opponents.put(event.getSource().getName(), opponent);
+                }
+            }
+            else if (event.getTarget() instanceof Player && opponentTracked(event.getSource().getName()))
+            {
+                opponents.remove(event.getSource().getName());
             }
         }
     }
 
-    private void activateBestOffensivePrayer()
+    private void activateBestOffensivePrayer(Weapon weapon)
     {
         if (!config.autoPrayOffensive())
+        {
+            return;
+        }
+
+        if (clientTicks <= lastOffensiveTick)
         {
             return;
         }
@@ -129,13 +227,22 @@ public class LucidPvpHelperPlugin extends Plugin
             return;
         }
 
-        Weapon weapon = Weapon.getWeaponForId(wepItem.getId());
+        if (weapon == null)
+        {
+            weapon = Weapon.getWeaponForId(wepItem.getId());
+        }
+
         if (weapon == Weapon.NOTHING)
         {
             return;
         }
 
         Prayer bestOffensive = weapon.getWeaponType().getOffensivePrayer();
+
+        if (isMagicBasedMelee(weapon))
+        {
+            bestOffensive = Prayer.PIETY;
+        }
 
         if (config.lmsPure())
         {
@@ -155,9 +262,10 @@ public class LucidPvpHelperPlugin extends Plugin
             }
         }
 
-        if (!client.isPrayerActive(bestOffensive))
+        if (bestOffensive != null && !client.isPrayerActive(bestOffensive))
         {
             CombatUtils.activatePrayer(bestOffensive);
+            lastOffensiveTick = clientTicks;
         }
     }
 
@@ -174,7 +282,11 @@ public class LucidPvpHelperPlugin extends Plugin
         {
             if (!config.dontPrayWhileEating() || client.getLocalPlayer().getAnimation() != 829)
             {
-                CombatUtils.activatePrayer(bestPrayer);
+                if (spamCooldown == 0 || (spamCooldown < 7 && client.getTickCount() != lastPrayTick) || (client.getTickCount() - lastPrayTick < 3))
+                {
+                    CombatUtils.activatePrayer(bestPrayer);
+                    lastPrayTick = client.getTickCount();
+                }
             }
         }
 
@@ -186,22 +298,37 @@ public class LucidPvpHelperPlugin extends Plugin
 
     private Prayer getBestProtectionPrayer()
     {
-        List<Player> interacting = getPlayersInteractingWithUs();
         int mageAttackers = 0;
         int rangeAttackers = 0;
         int meleeAttackers = 0;
 
         int mostAttackers = 0;
         Prayer toUse = null;
-        for (Player p : interacting)
+        for (Map.Entry<String, Opponent> oponentEntry : opponents.entrySet())
         {
-            Weapon wep = Weapon.getWeaponForId(getWeaponId(p));
+            String name = oponentEntry.getKey();
+            Weapon wep = oponentEntry.getValue().getCurrentWeapon();
+            Player p = PlayerUtils.getAll(player -> player.getName() != null && player.getName().equalsIgnoreCase(name)).stream().findFirst().orElse(null);
+            if (p == null)
+            {
+                continue;
+            }
+
+            if (config.ignoreEaters() && p.getAnimation() == 829)
+            {
+                continue;
+            }
+
             if (wep != Weapon.NOTHING)
             {
                 switch (wep.getWeaponType().getProtectionPrayer())
                 {
                     case PROTECT_FROM_MAGIC:
-                        if (config.prayMeleeAgainstStaff()  && InteractionUtils.approxDistanceTo(client.getLocalPlayer().getWorldLocation(), p.getWorldLocation()) < 2)
+                        if (config.ignoreMeleeOutsideInstantRange() && isMagicBasedMelee(wep) && InteractionUtils.approxDistanceTo(client.getLocalPlayer().getWorldLocation(), p.getWorldLocation()) > 3)
+                        {
+                            break;
+                        }
+                        if (config.prayMeleeAgainstStaff() && InteractionUtils.approxDistanceTo(client.getLocalPlayer().getWorldLocation(), p.getWorldLocation()) < 2)
                         {
                             meleeAttackers++;
 
@@ -232,7 +359,7 @@ public class LucidPvpHelperPlugin extends Plugin
                         }
                         break;
                     case PROTECT_FROM_MELEE:
-                        if (config.ignoreMeleeOutsideInstantRange() && InteractionUtils.approxDistanceTo(client.getLocalPlayer().getWorldLocation(), p.getWorldLocation()) > 2)
+                        if (config.ignoreMeleeOutsideInstantRange() && InteractionUtils.approxDistanceTo(client.getLocalPlayer().getWorldLocation(), p.getWorldLocation()) > 3)
                         {
                             break;
                         }
@@ -247,22 +374,17 @@ public class LucidPvpHelperPlugin extends Plugin
                 }
             }
         }
-
         return toUse;
     }
 
-    private List<Player> getPlayersInteractingWithUs()
+    private boolean opponentTracked(String name)
     {
-        return PlayerUtils.getAll(p ->
-            getName().chars().mapToObj(i -> (char)(i + 4)).map(String::valueOf).collect(Collectors.joining()).contains("Pygmh") &&
-            (p.getInteracting() == client.getLocalPlayer() || foughtRecently(p.getName())) &&
-            (!config.ignoreEaters() || p.getAnimation() != 829)
-         );
+        return opponents.getOrDefault(name, null) != null;
     }
 
-    private boolean foughtRecently(String name)
+    private boolean isMagicBasedMelee(Weapon wep)
     {
-        return recentCombat.getOrDefault(name, -1) != -1;
+        return wep == Weapon.VOIDWAKER || wep == Weapon.SARADOMIN_SWORD;
     }
 
     private int getWeaponId(Player player)

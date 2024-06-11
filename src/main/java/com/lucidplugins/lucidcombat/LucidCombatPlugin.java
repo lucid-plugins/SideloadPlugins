@@ -1204,14 +1204,14 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
 
         secondaryStatus = "Combat";
 
-        if (targetDeadOrNoTarget() || (config.multipleTargets() && getEligibleTarget() != null && client.getLocalPlayer().getInteracting() != getEligibleTarget()))
+        NPC eligibleTarget = getEligibleTarget();
+        if (targetDeadOrNoTarget() || (config.multipleTargets() && client.getLocalPlayer().getInteracting() != getEligibleTarget() && inMultiwayCombat()))
         {
-            NPC target = getEligibleTarget();
-            if (target != null)
+            if (eligibleTarget != null)
             {
-                NpcUtils.interact(target, "Attack");
+                NpcUtils.interact(eligibleTarget, "Attack");
                 nextReactionTick = client.getTickCount() + getReaction();
-                secondaryStatus = "Attacking " + target.getName();
+                secondaryStatus = "Attacking " + eligibleTarget.getName();
 
                 if (getInactiveTicks() > 2)
                 {
@@ -1242,14 +1242,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
         else
         {
-            if (getEligibleNpcInteractingWithUs() != null && client.getLocalPlayer().getInteracting() == null)
+            NPC interactingWithUs = getEligibleNpcInteractingWithUs();
+            if (interactingWithUs != null && client.getLocalPlayer().getInteracting() != interactingWithUs)
             {
-                if (isNpcEligible(getEligibleNpcInteractingWithUs()))
-                {
-                    NpcUtils.interact(getEligibleNpcInteractingWithUs(), "Attack");
-                    nextReactionTick = client.getTickCount() + getReaction();
-                    secondaryStatus = "Re-attacking " + getEligibleNpcInteractingWithUs().getName();
-                }
+                NpcUtils.interact(interactingWithUs, "Attack");
+                nextReactionTick = client.getTickCount() + getReaction();
+                secondaryStatus = "Re-attacking " + interactingWithUs.getName();
 
                 if (getInactiveTicks() > 2)
                 {
@@ -1542,7 +1540,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 (npc.getInteracting() == client.getLocalPlayer() ||
                 (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
                 (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc)));
-        boolean multiway = !InteractionUtils.isWidgetHidden(161, 20) && InteractionUtils.getWidgetSpriteId(161, 20) == 442;
+
         Predicate<NPC> restOfFilter = npc ->
                 (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
                 (npc.getHealthRatio() != 0 && (!npc.getName().contains(config.slayerFinisherItem().getMonsterName()) || (npc.getName().contains(config.slayerFinisherItem().getMonsterName()) && npc.getAnimation() != config.slayerFinisherItem().getDeathAnimation()))) &&
@@ -1550,7 +1548,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
                 (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
                 InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();
 
-        return NpcUtils.getNearestNpc(config.multipleTargets() && multiway ? multiTargetFilter.and(restOfFilter) : singleTargetFilter.and(restOfFilter));
+        return NpcUtils.getNearestNpc(config.multipleTargets() && inMultiwayCombat() ? multiTargetFilter.and(restOfFilter) : singleTargetFilter.and(restOfFilter));
     }
 
     private boolean isNpcEligible(NPC npc)
@@ -1566,9 +1564,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         return (npc.getName() != null && (isNameInNpcsToFight(npc.getName()) && !idInNpcBlackList(npc.getId()))) &&
-                (((npc.getInteracting() == client.getLocalPlayer() && npc.getHealthRatio() != 0)) ||
+                (npc.getInteracting() == client.getLocalPlayer() ||
                 (npc.getInteracting() == null && noPlayerFightingNpc(npc)) ||
                 (npc.getInteracting() instanceof NPC && noPlayerFightingNpc(npc))) &&
+                npc.getHealthRatio() != 0 &&
                 Arrays.asList(npc.getComposition().getActions()).contains("Attack") &&
                 (config.allowUnreachable() || (!config.allowUnreachable() && InteractionUtils.isWalkable(npc.getWorldLocation()))) &&
                 InteractionUtils.distanceTo2DHypotenuse(npc.getWorldLocation(), startLocation) <= config.maxRange();
@@ -1591,6 +1590,12 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             return true;
         }
 
+        NPC interactingWithUs = getEligibleNpcInteractingWithUs();
+        if (interactingWithUs != null && !inMultiwayCombat())
+        {
+            return interactingWithUs.getHealthRatio() == 0;
+        }
+
         if (client.getLocalPlayer().getInteracting() instanceof NPC)
         {
             NPC npcTarget = (NPC) client.getLocalPlayer().getInteracting();
@@ -1600,6 +1605,11 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         return false;
+    }
+
+    private boolean inMultiwayCombat()
+    {
+        return !InteractionUtils.isWidgetHidden(161, 20) && InteractionUtils.getWidgetSpriteId(161, 20) == 442;
     }
 
 

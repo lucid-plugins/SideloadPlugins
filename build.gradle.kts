@@ -26,7 +26,7 @@ dependencies {
 }
 
 group = "com.lucidplugins"
-version = "6.6.1"
+version = "6.6.2"
 
 val javaMajorVersion = JavaVersion.VERSION_11.majorVersion
 
@@ -44,5 +44,6 @@ tasks {
     withType<ShadowJar> {
         baseName = "LucidPlugins"
         exclude("com/lucidplugins/lucidfletching/")
+        exclude("com/lucidplugins/oneclickagility/")
     }
 }
