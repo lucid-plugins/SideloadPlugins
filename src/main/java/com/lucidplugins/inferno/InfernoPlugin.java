@@ -611,6 +611,14 @@ public class InfernoPlugin extends Plugin
 				zukShieldCornerTicks = 0;
 			}
 
+			if (infernoNPC.getType() == InfernoNPC.Type.RANGER || infernoNPC.getType() == InfernoNPC.Type.MAGE)
+			{
+				if (infernoNPC.getNpc().isDead())
+				{
+					continue;
+				}
+			}
+
 			// Map all upcoming attacks and their priority + determine which NPC is about to attack next
 			if (infernoNPC.getTicksTillNextAttack() > 0 && isPrayerHelper(infernoNPC)
 				&& (infernoNPC.getNextAttack() != InfernoNPC.Attack.UNKNOWN

@@ -205,6 +205,7 @@ public class LucidPvpHelperPlugin extends Plugin
             else if (event.getTarget() instanceof Player && opponentTracked(event.getSource().getName()))
             {
                 opponents.remove(event.getSource().getName());
+                spamCooldown = 0;
             }
         }
     }
@@ -244,11 +245,16 @@ public class LucidPvpHelperPlugin extends Plugin
             bestOffensive = Prayer.PIETY;
         }
 
+        if (bestOffensive == Prayer.PIETY && client.getRealSkillLevel(Skill.PRAYER) < 70)
+        {
+            bestOffensive = Prayer.ULTIMATE_STRENGTH;
+        }
+
         if (config.lmsPure())
         {
             if (bestOffensive == Prayer.PIETY)
             {
-                bestOffensive = Prayer.SUPERHUMAN_STRENGTH;
+                bestOffensive = Prayer.ULTIMATE_STRENGTH;
             }
 
             if (bestOffensive == Prayer.RIGOUR)
