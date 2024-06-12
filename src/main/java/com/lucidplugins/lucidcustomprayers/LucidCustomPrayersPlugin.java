@@ -291,7 +291,6 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
     @Subscribe(priority = 20)
     private void onGameTick(final GameTick event)
     {
-        boolean prayedThisTick = false;
         getEquipmentChanges();
 
         if (oneTickFlicking)
@@ -305,13 +304,11 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
             {
                 CombatUtils.toggleQuickPrayers();
             }
-            prayedThisTick = true;
         }
         else
         {
             if (disableQuickPrayers && CombatUtils.isQuickPrayersEnabled())
             {
-                prayedThisTick = true;
                 CombatUtils.toggleQuickPrayers();
                 disableQuickPrayers = false;
             }
@@ -324,33 +321,27 @@ public class LucidCustomPrayersPlugin extends Plugin implements KeyListener
                 {
                     CombatUtils.toggleQuickPrayers();
                     CombatUtils.toggleQuickPrayers();
-                    prayedThisTick = true;
                 }
                 else if (overhead != null)
                 {
                     CombatUtils.deactivatePrayer(overhead);
                     CombatUtils.activatePrayer(overhead);
-                    prayedThisTick = true;
                 }
 
                 if (config.flickOffensives() && offense != null)
                 {
                     CombatUtils.deactivatePrayer(offense);
                     CombatUtils.activatePrayer(offense);
-                    prayedThisTick = true;
                 }
             }
         }
 
-        if (!prayedThisTick)
+        for (ScheduledPrayer prayer : scheduledPrayers)
         {
-            for (ScheduledPrayer prayer : scheduledPrayers)
+            boolean ignore = config.ignoreDeadNpcEvents() && (prayer.getAttached() == null || prayer.getAttached().isDead());
+            if (client.getTickCount() == prayer.getActivationTick() && !ignore)
             {
-                boolean ignore = config.ignoreDeadNpcEvents() && (prayer.getAttached() == null || prayer.getAttached().isDead());
-                if (client.getTickCount() == prayer.getActivationTick() && !ignore)
-                {
-                    activatePrayer(client, prayer.getPrayer(), prayer.isToggle());
-                }
+                activatePrayer(client, prayer.getPrayer(), prayer.isToggle());
             }
         }
 

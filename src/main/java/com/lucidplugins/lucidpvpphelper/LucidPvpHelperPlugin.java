@@ -217,7 +217,7 @@ public class LucidPvpHelperPlugin extends Plugin
             return;
         }
 
-        if (clientTicks <= lastOffensiveTick)
+        if (gameTicks <= lastOffensiveTick)
         {
             return;
         }

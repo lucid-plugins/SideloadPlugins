@@ -453,6 +453,9 @@ public enum Weapon
     ), WeaponType.MELEE),
     SOULREAPER_AXE(List.of(
             ItemID.SOULREAPER_AXE
+    ), WeaponType.MELEE),
+    CRYSTAL_HALBERD(List.of(
+            ItemID.CRYSTAL_HALBERD
     ), WeaponType.MELEE);
 
 
