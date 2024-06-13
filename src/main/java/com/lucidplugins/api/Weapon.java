@@ -362,11 +362,11 @@ public enum Weapon
             ItemID.RUNE_SCIMITAR_GUTHIX
     ), WeaponType.MELEE),
         GILDED_SCIMITAR(List.of(
-            ItemID.GILDED_SCIMITAR,
+            ItemID.GILDED_SCIMITAR
     ), WeaponType.MELEE),
         ), WeaponType.MELEE),
         HILL_GIANT_CLUB(List.of(
-            ItemID.HILL_GIANT_CLUB,
+            ItemID.HILL_GIANT_CLUB
     ), WeaponType.MELEE),
     GRANITE_MAUL(List.of(
             ItemID.GRANITE_MAUL,
