@@ -350,8 +350,8 @@ public enum Weapon
     ), WeaponType.MELEE),
     RUNE_SCIMITAR(List.of(
             ItemID.RUNE_SCIMITAR,
-            ItemID.RUNE_SCIMITAR_ZAMORAK
-            ItemID.RUNE_SCIMITAR_SARADOMIN
+            ItemID.RUNE_SCIMITAR_ZAMORAK,
+            ItemID.RUNE_SCIMITAR_SARADOMIN,
             ItemID.RUNE_SCIMITAR_GUTHIX
     ), WeaponType.MELEE),
         GILDED_SCIMITAR(List.of(
