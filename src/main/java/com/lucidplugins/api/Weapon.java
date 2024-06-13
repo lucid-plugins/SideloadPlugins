@@ -176,6 +176,13 @@ public enum Weapon
     NIGHTMARE_STAFF(List.of(
             ItemID.NIGHTMARE_STAFF
     ), WeaponType.MAGIC),
+    BRYOPHYTAS_STAFF(List.of(
+            ItemID.BRYOPHYTAS_STAFF,
+            ItemID.BRYOPHYTAS_STAFF_UNCHARGED
+    ), WeaponType.MAGIC),
+     STAFF_OF_FIRE(List.of(
+            ItemID.STAFF_OF_FIRE
+    ), WeaponType.MAGIC),
     ANCIENT_SCEPTRE(List.of(
             ItemID.ANCIENT_SCEPTRE,
             ItemID.ANCIENT_SCEPTRE_L
