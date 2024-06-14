@@ -184,8 +184,7 @@ public class LucidPvpHelperPlugin extends Plugin
         {
             if (event.getTarget() == client.getLocalPlayer())
             {
-                boolean multiway = !InteractionUtils.isWidgetHidden(161, 20) && InteractionUtils.getWidgetSpriteId(161, 20) == 442;
-                if (multiway || opponents.isEmpty())
+                if (CombatUtils.isInMultiwayCombat() || opponents.isEmpty())
                 {
                     String opponentName = event.getSource().getName();
                     Opponent opponent;

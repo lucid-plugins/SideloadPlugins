@@ -209,6 +209,12 @@ public class CombatUtils
         return null;
     }
 
+    public static boolean isInMultiwayCombat()
+    {
+        return (!InteractionUtils.isWidgetHidden(161, 20) && InteractionUtils.getWidgetSpriteId(161, 20) == 442) || // Resizable mode
+                (!InteractionUtils.isWidgetHidden(548, 36) && InteractionUtils.getWidgetSpriteId(548, 36) == 442);  // Fixed mode
+    }
+
     public static boolean isQuickPrayersEnabled()
     {
         return client.getVarbitValue(Varbits.QUICK_PRAYER) == 1;
@@ -216,7 +222,7 @@ public class CombatUtils
 
     public static int getSpecEnergy()
     {
-        return EquipmentUtils.contains("Soulreaper axe") ? client.getVarpValue(3784)  : client.getVarpValue(300) / 10;
+        return EquipmentUtils.contains("Soulreaper axe") ? client.getVarpValue(3784) : client.getVarpValue(300) / 10;
     }
 
     public static void toggleSpec()

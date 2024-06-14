@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 
 import com.lucidplugins.inferno.displaymodes.InfernoPrayerDisplayMode;
 import net.runelite.api.Client;
+import net.runelite.api.ItemID;
 import net.runelite.api.SpriteID;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.overlay.Overlay;
@@ -63,7 +64,7 @@ public class InfernoInfoBoxOverlay extends Overlay
 		this.config = config;
 		this.spriteManager = spriteManager;
 		setPosition(OverlayPosition.BOTTOM_RIGHT);
-		setPriority(OverlayPriority.HIGH);
+		setPriority(Overlay.PRIORITY_HIGH);
 	}
 
 	@Override
