@@ -44,6 +44,6 @@ tasks {
     withType<ShadowJar> {
         baseName = "LucidPlugins"
         exclude("com/lucidplugins/lucidfletching/")
-        exclude("com/lucidplugins/oneclickagility/")
+        //exclude("com/lucidplugins/oneclickagility/")
     }
 }

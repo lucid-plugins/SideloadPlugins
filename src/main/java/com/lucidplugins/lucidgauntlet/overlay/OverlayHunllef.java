@@ -427,14 +427,14 @@ public class OverlayHunllef extends Overlay
     }
 
     public static List<Vertex> getVertices(final Model model) {
-        final int[] verticesX = model.getVerticesX();
-        final int[] verticesY = model.getVerticesY();
-        final int[] verticesZ = model.getVerticesZ();
+        final float[] verticesX = model.getVerticesX();
+        final float[] verticesY = model.getVerticesY();
+        final float[] verticesZ = model.getVerticesZ();
         final int modelVerticesCount = model.getVerticesCount();
         final List<Vertex> vertexList = new ArrayList<>(modelVerticesCount);
 
         for (int i = 0; i < modelVerticesCount; i++) {
-            final Vertex vertex = new Vertex(verticesX[i], verticesY[i], verticesZ[i]);
+            final Vertex vertex = new Vertex((int)verticesX[i], (int)verticesY[i], (int)verticesZ[i]);
             vertexList.add(vertex);
         }
         return vertexList;

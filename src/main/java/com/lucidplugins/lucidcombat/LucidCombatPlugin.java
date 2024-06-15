@@ -1224,7 +1224,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
             {
                 if (config.npcToFight().contains("Zygomite"))
                 {
-                    NPC fungi = NpcUtils.getNearestNpc("Ancient Fungi");
+                    NPC fungi = NpcUtils.getNearestNpc("Fungi");
                     if (fungi != null)
                     {
                         NpcUtils.interact(fungi, "Pick");
