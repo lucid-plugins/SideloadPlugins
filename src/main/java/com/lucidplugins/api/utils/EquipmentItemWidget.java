@@ -22,6 +22,9 @@ public class EquipmentItemWidget implements Widget
     int equipmentItemId;
     int index;
 
+    @Override
+    public void clearActions(){};
+
     EquipmentItemWidget(String name, int itemId, int packedId, int index, String[] actions) {
         this.equipmentItemId = itemId;
         this.name = name;
