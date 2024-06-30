@@ -1,0 +1,22 @@
+package com.lucidplugins.oneclickagility;
+
+public enum AgilityCourse
+{
+    GNOME,
+    DRAYNOR_VILLAGE,
+    AL_KHARID,
+    VARROCK,
+    CANIFIS,
+    FALADOR,
+    SEERS_VILLAGE,
+    POLLNIVNEACH,
+    RELLEKKA,
+    ARDOUGNE,
+    PRIFDDINAS,
+    APE_ATOLL,
+    AGILITY_PYRAMID,
+    SHAYZIEN_BASIC,
+    SHAYZIEN_ADVANCED,
+    PENGUIN_COURSE,
+    WEREWOLF_AGILITY
+}
