@@ -456,9 +456,17 @@ public enum Weapon
     ), WeaponType.MELEE),
     CRYSTAL_HALBERD(List.of(
             ItemID.CRYSTAL_HALBERD
-    ), WeaponType.MELEE);
+    ), WeaponType.MELEE),
+    INQUISITORS_MACE(List.of(
+            ItemID.INQUISITORS_MACE,
+            ItemID.INQUISITORS_MACE_27198
+    ), WeaponType.MELEE),
+    GHRAZI_RAPIER(List.of(
+            ItemID.GHRAZI_RAPIER,
+            ItemID.GHRAZI_RAPIER_23628
+    ), WeaponType.MELEE),
 
-
+    ;
     final List<Integer> ids;
     final WeaponType weaponType;
 

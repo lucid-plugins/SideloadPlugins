@@ -2030,7 +2030,7 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
 
-        if (client.getVarbitValue(Varbits.ANTIFIRE) == 0 && !boosted)
+        if (client.getVarbitValue(Varbits.ANTIFIRE) == 0 && client.getVarbitValue(Varbits.SUPER_ANTIFIRE) == 0 && !boosted)
         {
             Item anti = getLowestDoseAntifire();
             if (config.enableAntiFireUpkeep() && anti != null && canPotUp())

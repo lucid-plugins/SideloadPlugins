@@ -437,7 +437,6 @@ public class InteractionUtils
             {
                 float testDistance = distanceTo2DHypotenuse(client.getLocalPlayer().getWorldLocation(), closeTile.getWorldLocation());
 
-                // TODO try if ((int)testDistance < (int)closest)
                 if (testDistance < closest)
                 {
                     closestTile = closeTile;
@@ -474,12 +473,12 @@ public class InteractionUtils
 
     public static boolean isNpcInMeleeDistanceToPlayer(NPC target)
     {
-        return target.getWorldArea().isInMeleeDistance(client.getLocalPlayer().getWorldLocation());
+        return Reachable.offset(target.getWorldArea(), 1).contains(client.getLocalPlayer().getWorldLocation());
     }
 
     public static boolean isNpcInMeleeDistanceToLocation(NPC target, WorldPoint location)
     {
-        return target.getWorldArea().isInMeleeDistance(location);
+        return Reachable.offset(target.getWorldArea(), 1).contains(location);
     }
 
     public static List<WorldPoint> reachableTiles() {
