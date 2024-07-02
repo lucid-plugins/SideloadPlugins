@@ -86,9 +86,14 @@ public class Util
      * @param player the player to determine attackability
      * @return returns true if the player is attackable, false otherwise
      */
-    public static boolean isAttackable(Client client, Player player)
+    public static boolean isAttackable(Client client, Player player, boolean ignorePlayerWildy)
     {
         int wildernessLevel = 0;
+
+        if (player == null)
+        {
+            return false;
+        }
 
         if (WorldType.isPvpWorld(client.getWorldType()))
         {
@@ -97,7 +102,13 @@ public class Util
         if (client.getVarbitValue(Varbits.IN_WILDERNESS) == 1)
         {
             wildernessLevel += getWildernessLevelFrom(client.getLocalPlayer().getWorldLocation());
+
+            if (getWildernessLevelFrom(player.getWorldLocation()) == 0 && !ignorePlayerWildy)
+            {
+                wildernessLevel = 0;
+            }
         }
+
         return wildernessLevel != 0 && Math.abs(client.getLocalPlayer().getCombatLevel() - player.getCombatLevel()) <= wildernessLevel;
     }
 }

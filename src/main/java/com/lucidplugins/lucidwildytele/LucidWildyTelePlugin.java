@@ -77,7 +77,7 @@ public class LucidWildyTelePlugin extends Plugin
 
     private boolean playerInMyBracketSkulledWithNoAvariceOrPneck()
     {
-        Player skulledPlayerWithoutAvariceorPneck = PlayerUtils.getNearest(player -> player != client.getLocalPlayer() && Util.isAttackable(client, player) &&
+        Player skulledPlayerWithoutAvariceorPneck = PlayerUtils.getNearest(player -> player != client.getLocalPlayer() && Util.isAttackable(client, player, config.ignoreWildyLevel()) &&
                 player.getSkullIcon() != null &&
                 !wearingAvariceOrPhoenixNeck(player));
 
@@ -86,7 +86,7 @@ public class LucidWildyTelePlugin extends Plugin
 
     private boolean playerInMyBracket()
     {
-        Player attackablePlayer = PlayerUtils.getNearest(player -> player != client.getLocalPlayer() && Util.isAttackable(client, player));
+        Player attackablePlayer = PlayerUtils.getNearest(player -> player != client.getLocalPlayer() && Util.isAttackable(client, player, config.ignoreWildyLevel()));
 
         return attackablePlayer != null;
     }
