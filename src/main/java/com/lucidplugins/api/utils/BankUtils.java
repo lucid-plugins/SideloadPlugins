@@ -27,7 +27,7 @@ public class BankUtils
     public static void depositAll() {
         Widget depositInventory = client.getWidget(WidgetInfo.BANK_DEPOSIT_INVENTORY);
         if (depositInventory != null && !depositInventory.isSelfHidden()) {
-            MousePackets.queueClickPacket();
+            InteractionUtils.queueClickPacketCoordinateArea();
             WidgetPackets.queueWidgetAction(depositInventory, "Deposit inventory");
         }
     }

@@ -325,14 +325,18 @@ public class OneClickAgilityPlugin extends Plugin
         if(shouldSeersTele())
         {
             lastClickTick = client.getTickCount();
-            EthanApiPlugin.invoke(-1, WidgetInfoExtended.SPELL_CAMELOT_TELEPORT.getId(), MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "Seers'", "Camelot Teleport", -1, -1);
+
+            InteractionUtils.invoke(-1, WidgetInfoExtended.SPELL_CAMELOT_TELEPORT.getId(), MenuAction.CC_OP.getId(), 2, InteractionUtils.CoordinateArea.INVENTORY, "Seers'", "Camelot Teleport");
+            //EthanApiPlugin.invoke(-1, WidgetInfoExtended.SPELL_CAMELOT_TELEPORT.getId(), MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "Seers'", "Camelot Teleport", -1, -1);
             return;
         }
 
         if(atPyramidTop())
         {
             lastClickTick = client.getTickCount();
-            EthanApiPlugin.invoke(pyramidTopObstacle.getLocalLocation().getSceneX(), pyramidTopObstacle.getLocalLocation().getSceneY(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), pyramidTopObstacle.getId(), -1, client.getTopLevelWorldView().getId(), "Climb", "Climbing rocks", -1, -1);
+
+            InteractionUtils.invoke(pyramidTopObstacle.getLocalLocation().getSceneX(), pyramidTopObstacle.getLocalLocation().getSceneY(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), pyramidTopObstacle.getId(), InteractionUtils.CoordinateArea.MAIN_MODAL, "Climb", "Climbing rocks");
+            //EthanApiPlugin.invoke(pyramidTopObstacle.getLocalLocation().getSceneX(), pyramidTopObstacle.getLocalLocation().getSceneY(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), pyramidTopObstacle.getId(), -1, client.getTopLevelWorldView().getId(), "Climb", "Climbing rocks", -1, -1);
             return;
         }
 
@@ -357,7 +361,9 @@ public class OneClickAgilityPlugin extends Plugin
                 if (obstacleArea.containsObject(portal) && portal.getClickbox() != null)
                 {
                     lastClickTick = client.getTickCount();
-                    EthanApiPlugin.invoke(portal.getLocalLocation().getSceneX(), portal.getLocalLocation().getSceneY(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), portal.getId(), -1, client.getTopLevelWorldView().getId(), "Travel", "Portal", -1, -1);
+
+                    InteractionUtils.invoke(portal.getLocalLocation().getSceneX(), portal.getLocalLocation().getSceneY(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), portal.getId(), InteractionUtils.CoordinateArea.MAIN_MODAL, "Travel", "Portal");
+                    //EthanApiPlugin.invoke(portal.getLocalLocation().getSceneX(), portal.getLocalLocation().getSceneY(), MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), portal.getId(), -1, client.getTopLevelWorldView().getId(), "Travel", "Portal", -1, -1);
                     return;
                 }
             }
@@ -373,7 +379,8 @@ public class OneClickAgilityPlugin extends Plugin
         if (obstacleEntry != null)
         {
             lastClickTick = client.getTickCount();
-            EthanApiPlugin.invoke(obstacleEntry.getParam0(), obstacleEntry.getParam1(), obstacleEntry.getType().getId(), obstacleEntry.getIdentifier(), -1, client.getTopLevelWorldView().getId(), obstacleEntry.getOption(), obstacleEntry.getTarget(), -1, -1);
+            InteractionUtils.invoke(obstacleEntry.getParam0(), obstacleEntry.getParam1(), obstacleEntry.getType().getId(), obstacleEntry.getIdentifier(), InteractionUtils.CoordinateArea.MAIN_MODAL, obstacleEntry.getOption(), obstacleEntry.getTarget());
+            //EthanApiPlugin.invoke(obstacleEntry.getParam0(), obstacleEntry.getParam1(), obstacleEntry.getType().getId(), obstacleEntry.getIdentifier(), -1, client.getTopLevelWorldView().getId(), obstacleEntry.getOption(), obstacleEntry.getTarget(), -1, -1);
         }
 
         if (hasAlched)

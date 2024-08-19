@@ -31,7 +31,7 @@ public class InventoryUtils
 
         if (itemToUse.isPresent() && itemToUseOn.isPresent())
         {
-            MousePackets.queueClickPacket();
+            InteractionUtils.queueClickPacketCoordinateArea();
             WidgetPackets.queueWidgetOnWidget(itemToUse.get(), itemToUseOn.get());
         }
     }
@@ -288,7 +288,7 @@ public class InventoryUtils
         if (alchemyWidget != null)
         {
             itemWidget.ifPresent(widget -> {
-                MousePackets.queueClickPacket();
+                InteractionUtils.queueClickPacketCoordinateArea(InteractionUtils.CoordinateArea.INVENTORY);
                 WidgetPackets.queueWidgetOnWidget(alchemyWidget, widget);
             });
         }

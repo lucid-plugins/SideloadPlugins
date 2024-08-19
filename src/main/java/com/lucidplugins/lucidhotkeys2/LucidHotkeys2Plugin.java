@@ -978,8 +978,10 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     {
                         return;
                     }
-                    MousePackets.queueClickPacket();
-                    EthanApiPlugin.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
+
+                    InteractionUtils.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, InteractionUtils.CoordinateArea.INVENTORY);
+                    //MousePackets.queueClickPacket();
+                    //EthanApiPlugin.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 }
                 else
                 {
@@ -1001,9 +1003,10 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                     {
                         return;
                     }
-                    //EthanApiPlugin.invoke(int param0, int param1, int opcode, int id, int itemId, String option, String target, int canvasX, int canvasY)
-                    MousePackets.queueClickPacket();
-                    EthanApiPlugin.invoke(-1, spellInfo3.getPackedId(), MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
+
+                    InteractionUtils.invoke(-1, spellInfo3.getPackedId(), MenuAction.CC_OP.getId(), 2, InteractionUtils.CoordinateArea.INVENTORY);
+                    //MousePackets.queueClickPacket();
+                    //EthanApiPlugin.invoke(-1, spellInfo3.getPackedId(), MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 }
                 else
                 {
@@ -1111,17 +1114,23 @@ public class LucidHotkeys2Plugin extends Plugin implements KeyListener
                 break;
             case WIDGET_CC_OP_1:
                 int packedId = ((int) params.get(0) << 16)| (int) params.get(1);
-                MousePackets.queueClickPacket();
-                EthanApiPlugin.invoke(-1, packedId, MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
+
+                InteractionUtils.invoke(-1, packedId, MenuAction.CC_OP.getId(), 1, InteractionUtils.CoordinateArea.INVENTORY);
+                //MousePackets.queueClickPacket();
+                //EthanApiPlugin.invoke(-1, packedId, MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 break;
             case WIDGET_CC_OP_2:
                 int packedId2 = ((int) params.get(0) << 16)| (int) params.get(1);
-                MousePackets.queueClickPacket();
-                EthanApiPlugin.invoke(-1, packedId2, MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
+                InteractionUtils.invoke(-1, packedId2, MenuAction.CC_OP.getId(), 2, InteractionUtils.CoordinateArea.INVENTORY);
+
+                //MousePackets.queueClickPacket();
+                //EthanApiPlugin.invoke(-1, packedId2, MenuAction.CC_OP.getId(), 2, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 break;
             case INVOKE_MENU_ACTION:
-                MousePackets.queueClickPacket();
-                EthanApiPlugin.invoke((int) params.get(0), (int) params.get(1), (int) params.get(2), (int) params.get(3), -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
+                InteractionUtils.invoke((int) params.get(0), (int) params.get(1), (int) params.get(2), (int) params.get(3), InteractionUtils.CoordinateArea.MAIN_MODAL);
+
+                //MousePackets.queueClickPacket();
+                //EthanApiPlugin.invoke((int) params.get(0), (int) params.get(1), (int) params.get(2), (int) params.get(3), -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
                 break;
             case SEND_CLIENTSCRIPT:
                 debugMessage("Running script : " + params.get(0));

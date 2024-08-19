@@ -32,7 +32,7 @@ public class InteractionUtils
 
     public static void toggleRun()
     {
-        MousePackets.queueClickPacket();
+        InteractionUtils.queueClickPacketCoordinateArea();
         WidgetPackets.queueWidgetActionPacket(1, 10485787, -1, -1);
     }
 
@@ -146,7 +146,7 @@ public class InteractionUtils
 
         if (target != null && target.getActions() != null)
         {
-            MousePackets.queueClickPacket();
+            InteractionUtils.queueClickPacketCoordinateArea();
             WidgetPackets.queueWidgetAction(target, action);
         }
     }
@@ -167,7 +167,7 @@ public class InteractionUtils
         itemWidget.ifPresent((iw) -> {
             if (object != null)
             {
-                MousePackets.queueClickPacket();
+                InteractionUtils.queueClickPacketCoordinateArea();
                 ObjectPackets.queueWidgetOnTileObject(iw, object);
             }
         });
@@ -179,7 +179,7 @@ public class InteractionUtils
         Widget itemWidget = itemWidgets.get(itemWidgets.size() - 1);
         if (object != null)
         {
-            MousePackets.queueClickPacket();
+            InteractionUtils.queueClickPacketCoordinateArea();
             ObjectPackets.queueWidgetOnTileObject(itemWidget, object);
         }
     }
@@ -198,8 +198,9 @@ public class InteractionUtils
         {
             return;
         }
-            MousePackets.queueClickPacket();
-            NPCPackets.queueWidgetOnNPC(npc, widget);
+
+        InteractionUtils.queueClickPacketCoordinateArea();
+        NPCPackets.queueWidgetOnNPC(npc, widget);
     }
 
     public static void useWidgetOnPlayer(Widget widget, Player player)
@@ -208,8 +209,9 @@ public class InteractionUtils
         {
             return;
         }
-            MousePackets.queueClickPacket();
-            PlayerPackets.queueWidgetOnPlayer(player, widget);
+
+        InteractionUtils.queueClickPacketCoordinateArea();
+        PlayerPackets.queueWidgetOnPlayer(player, widget);
     }
 
     public static void useWidgetOnTileObject(Widget widget, TileObject object)
@@ -218,7 +220,8 @@ public class InteractionUtils
         {
             return;
         }
-        MousePackets.queueClickPacket();
+
+        InteractionUtils.queueClickPacketCoordinateArea();
         ObjectPackets.queueWidgetOnTileObject(widget, object);
     }
 
@@ -229,7 +232,7 @@ public class InteractionUtils
             return;
         }
 
-        MousePackets.queueClickPacket();
+        InteractionUtils.queueClickPacketCoordinateArea();
         TileItemPackets.queueWidgetOnTileItem(tileItem, widget, false);
     }
 
@@ -245,7 +248,7 @@ public class InteractionUtils
             return;
         }
 
-        MousePackets.queueClickPacket();
+        InteractionUtils.queueClickPacketCoordinateArea();
         WidgetPackets.queueWidgetOnWidget(widget, widget2);
     }
 
@@ -256,7 +259,7 @@ public class InteractionUtils
 
     public static void walk(WorldPoint point)
     {
-        MousePackets.queueClickPacket();
+        InteractionUtils.queueClickPacketCoordinateArea();
         MovementPackets.queueMovement(point);
     }
 
@@ -532,6 +535,75 @@ public class InteractionUtils
         return checkedTiles;
     }
 
+    public static void invoke(int param0, int param1, int opcode, int id, CoordinateArea coordinateArea)
+    {
+        invoke(param0, param1, opcode, id, coordinateArea, "", "");
+    }
+
+    public static void invoke(int param0, int param1, int opcode, int id, CoordinateArea coordinateArea, String actionText, String targetText)
+    {
+        Point random = queueClickPacketCoordinateArea(coordinateArea);
+        EthanApiPlugin.invoke(param0, param1, opcode, id, -1, client.getTopLevelWorldView().getId(), actionText, targetText, random.getX(), random.getY());
+    }
+
+    public static Point queueClickPacketCoordinateArea()
+    {
+        return queueClickPacketCoordinateArea(CoordinateArea.MAIN_MODAL);
+    }
+
+    public static Point queueClickPacketCoordinateArea(CoordinateArea area)
+    {
+        if (area == null)
+        {
+            return new Point(-1, -1);
+        }
+        Point random = pointFromCoordinateArea(area);
+        MousePackets.queueClickPacket(random.getX(), random.getY());
+        return random;
+    }
+
+    private static Random coordRandom = new Random();
+    private static final int CHAT_X = 47, CHAT_Y = 863;
+    private static final int CHAT_WIDTH = 746, CHAT_HEIGHT = 143;
+    private static final int MAIN_X = 42, MAIN_Y = 46;
+    private static final int MAIN_WIDTH = 1396, MAIN_HEIGHT = 747;
+    private static final int INVENTORY_X = 1570, INVENTORY_Y = 630;
+    private static final int INVENTORY_WIDTH = 300, INVENTORY_HEIGHT = 400;
+
+
+    public static Point pointFromCoordinateArea(CoordinateArea area)
+    {
+        int clickX = -1;
+        int clickY = -1;
+
+        switch (area)
+        {
+            case CHAT:
+                clickX = CHAT_X + coordRandom.nextInt(CHAT_WIDTH);
+                clickY = CHAT_Y + coordRandom.nextInt(CHAT_HEIGHT);
+                break;
+            case INVENTORY:
+                clickX = INVENTORY_X + coordRandom.nextInt(INVENTORY_WIDTH);
+                clickY = INVENTORY_Y + coordRandom.nextInt(INVENTORY_HEIGHT);
+                break;
+            case MAIN_MODAL:
+                clickX = MAIN_X + coordRandom.nextInt(MAIN_WIDTH);
+                clickY = MAIN_Y + coordRandom.nextInt(MAIN_HEIGHT);
+                break;
+        }
+
+        if (coordRandom.nextInt(10) == 0 && clickX % 2 == 0)
+        {
+            clickX -= coordRandom.nextInt(7);
+        }
+        else if (coordRandom.nextInt(10) == 0 && clickY % 2 == 0)
+        {
+            clickY -= coordRandom.nextInt(7);
+        }
+
+        return new Point(clickX, clickY);
+    }
+
     public static boolean isWalkable(WorldPoint point)
     {
         int baseX = client.getTopLevelWorldView().getBaseX();
@@ -628,5 +700,10 @@ public class InteractionUtils
 
         dialog.setModal(false);
         dialog.setVisible(true);
+    }
+
+    public enum CoordinateArea
+    {
+        INVENTORY, CHAT, MAIN_MODAL
     }
 }

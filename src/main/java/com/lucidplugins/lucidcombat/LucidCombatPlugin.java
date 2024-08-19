@@ -1094,8 +1094,10 @@ public class LucidCombatPlugin extends Plugin implements KeyListener
         }
 
         lastThrallTick = client.getTickCount();
-        MousePackets.queueClickPacket();
-        EthanApiPlugin.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
+        InteractionUtils.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, InteractionUtils.CoordinateArea.INVENTORY);
+
+        //MousePackets.queueClickPacket();
+        //EthanApiPlugin.invoke(-1, spellInfo2.getPackedId(), MenuAction.CC_OP.getId(), 1, -1, client.getTopLevelWorldView().getId(), "", "", -1, -1);
 
         return true;
     }

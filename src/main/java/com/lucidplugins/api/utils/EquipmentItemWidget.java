@@ -35,7 +35,7 @@ public class EquipmentItemWidget implements Widget
 
 
     public void interact(String... actions) {
-        MousePackets.queueClickPacket();
+        InteractionUtils.queueClickPacketCoordinateArea();
         WidgetPackets.queueWidgetAction(client.getWidget(packedId), actions);
     }
 

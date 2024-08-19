@@ -81,7 +81,7 @@ public class EquipmentUtils
 
         if (itemWidget != null)
         {
-            MousePackets.queueClickPacket();
+            InteractionUtils.queueClickPacketCoordinateArea();
             WidgetPackets.queueWidgetAction(itemWidget, "Remove");
         }
     }

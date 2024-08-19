@@ -161,7 +161,7 @@ public class CombatUtils
             return;
         }
 
-        MousePackets.queueClickPacket();
+        InteractionUtils.queueClickPacketCoordinateArea();
         WidgetPackets.queueWidgetActionPacket(1, WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
     }
 
@@ -174,7 +174,7 @@ public class CombatUtils
 
         if (!isQuickPrayersEnabled())
         {
-            MousePackets.queueClickPacket();
+            InteractionUtils.queueClickPacketCoordinateArea();
             WidgetPackets.queueWidgetActionPacket(1, WidgetInfo.MINIMAP_QUICK_PRAYER_ORB.getPackedId(), -1, -1);
         }
     }
@@ -227,7 +227,7 @@ public class CombatUtils
 
     public static void toggleSpec()
     {
-        MousePackets.queueClickPacket();
+        InteractionUtils.queueClickPacketCoordinateArea();
         WidgetPackets.queueWidgetActionPacket(1, 10485795, -1, -1);
     }
 
