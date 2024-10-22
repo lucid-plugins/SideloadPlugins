@@ -745,6 +745,12 @@ public class EquipmentItemWidget implements Widget
     }
 
     @Override
+    public int[] getVarTransmitTrigger()
+    {
+        return new int[0];
+    }
+
+    @Override
     public void setVarTransmitTrigger(int... trigger) {
 
     }
